@@ -6,10 +6,11 @@ import (
 )
 
 type SwiftGen struct {
+	langs.BaseGen
 }
 
 func (o *SwiftGen) Generate(parsedThrift map[string]*parser.Thrift) {
-
+	o.BaseGen.Init("swift", parsedThrift)
 }
 
 func init() {

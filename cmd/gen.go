@@ -47,12 +47,6 @@ var genCmd = &cobra.Command{
 			os.Exit(2)
 		}
 
-		// for _, v := range parsedThrift {
-		// 	for k, i := range v.Namespaces {
-		// 		println(k, i)
-		// 	}
-		// }
-
 		if generator, ok := langs.Langs[lang]; ok {
 			generator.Generate(parsedThrift)
 		} else {
