@@ -1,6 +1,7 @@
 package langs
 
 import (
+	"bufio"
 	"fmt"
 	"os"
 
@@ -29,6 +30,7 @@ func (g *BaseGen) CheckNamespace() {
 		}
 	}
 
-	fmt.Fprintf("Namespace not found for: %s\n", g.Lang)
+	w := bufio.NewWriter(os.Stdout)
+	fmt.Fprintf(w, "Namespace not found for: %s\n", g.Lang)
 	os.Exit(2)
 }
