@@ -19,6 +19,7 @@ import (
 	"os"
 
 	"github.com/ezbuy/tgen/langs"
+	_ "github.com/ezbuy/tgen/langs/go"
 	_ "github.com/ezbuy/tgen/langs/swift"
 	"github.com/samuel/go-thrift/parser"
 	"github.com/spf13/cobra"
