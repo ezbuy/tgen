@@ -16,10 +16,16 @@ package cmd
 
 import (
 	"fmt"
+	"io/ioutil"
 	"os"
+	"path/filepath"
+	"strconv"
+	"strings"
+	"time"
 
 	"github.com/ezbuy/tgen/langs"
 	_ "github.com/ezbuy/tgen/langs/swift"
+	"github.com/ezbuy/tgen/utils"
 	"github.com/samuel/go-thrift/parser"
 	"github.com/spf13/cobra"
 )
@@ -29,7 +35,8 @@ var genCmd = &cobra.Command{
 	Use:   "gen",
 	Short: "Generate api source code",
 	Run: func(cmd *cobra.Command, args []string) {
-		// TODO: Work your own magic here
+		// Work your own magic here
+
 		if lang == "" {
 			fmt.Println("-l language must be specified")
 			return
@@ -37,6 +44,22 @@ var genCmd = &cobra.Command{
 
 		if input == "" {
 			fmt.Println("-i input thrift file must be specified")
+			return
+		}
+
+		if tplpath == "" {
+			fmt.Println("-t template file must be specified")
+			return
+		}
+
+		if output == "" {
+			fmt.Println("-o output swift file must be specified")
+			return
+		}
+
+		// check whether the path is existed
+		if res, _ := utils.PathExists(output); !res {
+			fmt.Printf("output path [%s] is not valid\n", output)
 			return
 		}
 
@@ -48,7 +71,27 @@ var genCmd = &cobra.Command{
 		}
 
 		if generator, ok := langs.Langs[lang]; ok {
-			generator.Generate(parsedThrift)
+			results, err := generator.Generate(tplpath, parsedThrift)
+			if err != nil {
+				panic(err)
+			}
+
+			// save to disk
+			for _, result := range results {
+				path := filepath.Join(output, result.Filename)
+
+				// if the output file is already exist
+				// rename the file with current timestamp
+				if exist, _ := utils.PathExists(path); exist {
+					tick := strconv.FormatInt(time.Now().UnixNano(), 10)
+					ext := filepath.Ext(path)
+					path = strings.TrimRight(path, ext) + "-" + tick + ext
+				}
+
+				if err := ioutil.WriteFile(path, result.Data, os.ModePerm); err != nil {
+					panic(err)
+				}
+			}
 		} else {
 			fmt.Printf("lang %s is not supported\n", lang)
 			fmt.Println("Supported language options are:")
@@ -61,6 +104,7 @@ var genCmd = &cobra.Command{
 
 var lang string
 var input string
+var tplpath string
 var output string
 
 func init() {
@@ -72,6 +116,7 @@ func init() {
 	// and all subcommands, e.g.:
 	genCmd.PersistentFlags().StringVarP(&lang, "lang", "l", "", "language")
 	genCmd.PersistentFlags().StringVarP(&input, "input", "i", "", "input file")
+	genCmd.PersistentFlags().StringVarP(&tplpath, "tplpath", "t", "", "template path")
 	genCmd.PersistentFlags().StringVarP(&output, "output", "o", "", "output path")
 
 	// Cobra supports local flags which will only run when this command
