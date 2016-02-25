@@ -29,6 +29,6 @@ func (g *BaseGen) CheckNamespace() {
 		}
 	}
 
-	fmt.Fprintf("Namespace not found for: %s\n", g.Lang)
+	fmt.Fprintf(os.Stderr, "Namespace not found for: %s\n", g.Lang)
 	os.Exit(2)
 }
