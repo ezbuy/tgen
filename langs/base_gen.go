@@ -10,11 +10,13 @@ import (
 type BaseGen struct {
 	Lang      string
 	Namespace string
+	Tplpath   string
 	Thrifts   map[string]*parser.Thrift
 }
 
-func (g *BaseGen) Init(lang string, parsedThrift map[string]*parser.Thrift) {
+func (g *BaseGen) Init(lang string, tplpath string, parsedThrift map[string]*parser.Thrift) {
 	g.Lang = lang
+	g.Tplpath = tplpath
 	g.Thrifts = parsedThrift
 	g.CheckNamespace()
 }
@@ -29,6 +31,6 @@ func (g *BaseGen) CheckNamespace() {
 		}
 	}
 
-	fmt.Fprintf(os.Stderr, "Namespace not found for: %s\n", g.Lang)
+	fmt.Fprintf(os.Stdout, "Namespace not found for: %s\n", g.Lang)
 	os.Exit(2)
 }
