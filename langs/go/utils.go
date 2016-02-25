@@ -33,7 +33,7 @@ var typeStrs = map[string]string{
 
 func genTypeString(fieldName string, typ *parser.Type, optional bool, isMapKey bool) string {
 	if typ == nil {
-		panicWithErr("filed %s with nil type", fieldName)
+		panicWithErr("field %s with nil type", fieldName)
 	}
 
 	var str string

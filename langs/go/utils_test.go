@@ -1,6 +1,7 @@
 package gogen
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/samuel/go-thrift/parser"
@@ -358,4 +359,54 @@ func TestGenTypeString(t *testing.T) {
 			t.Errorf("expected: %q, got: %q", one.result, str)
 		}
 	}
+}
+
+type genTypeStringPanicTestCase struct {
+	typ       *parser.Type
+	optional  bool
+	isMapKey  bool
+	err       string
+	recovered interface{}
+}
+
+func TestGenTypeStringPanics(t *testing.T) {
+	fieldName := "testfield"
+
+	var nilType *parser.Type
+
+	cases := []genTypeStringPanicTestCase{
+		{
+			nilType,
+			false,
+			false,
+			fmt.Sprintf("field %s with nil type", fieldName),
+			nil,
+		},
+	}
+
+	for _, one := range cases {
+		ptr := &one
+		getGenTypeStringPanic(fieldName, ptr)
+
+		err, ok := (ptr.recovered).(error)
+		if !ok {
+			t.Errorf("expected an error, got %s", ptr.recovered)
+			continue
+		}
+
+		if str := err.Error(); str != ptr.err {
+			t.Errorf("expected: %q, got: %q", ptr.err, str)
+		}
+
+	}
+
+}
+
+func getGenTypeStringPanic(fieldName string, testCase *genTypeStringPanicTestCase) {
+	defer func() {
+		testCase.recovered = recover()
+	}()
+
+	genTypeString(fieldName, testCase.typ, testCase.optional, testCase.isMapKey)
+	return
 }
