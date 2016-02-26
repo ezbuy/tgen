@@ -2,6 +2,8 @@ package gogen
 
 import (
 	"fmt"
+	"path/filepath"
+	"strings"
 
 	"github.com/samuel/go-thrift/parser"
 )
@@ -29,6 +31,46 @@ var typeStrs = map[string]string{
 	TypeDouble: "float64",
 	TypeBinary: "[]byte",
 	TypeString: "string",
+}
+
+func getNamespace(namespaces map[string]string) string {
+	if namespace, ok := namespaces[langName]; ok {
+		return namespace
+	}
+
+	return ""
+}
+
+func getIncludes(parsedThrift map[string]*parser.Thrift, includes map[string]string) [][2]string {
+	results := make([][2]string, 0, len(includes))
+
+	for includeName, filename := range includes {
+		parsed, ok := parsedThrift[filename]
+		if !ok {
+			panicWithErr("include thrift %q not found %s", includeName, parsedThrift)
+		}
+
+		importPath, _ := genNamespace(getNamespace(parsed.Namespaces))
+
+		results = append(results, [2]string{includeName, importPath})
+	}
+
+	return results
+}
+
+func genNamespace(namespace string) (string, string) {
+	path := strings.Replace(namespace, ".", "/", -1)
+	pkgName := filepath.Base(path)
+	return path, pkgName
+}
+
+func upperHead(name string) string {
+	if name == "" {
+		return name
+	}
+
+	head := name[0:1]
+	return strings.ToUpper(head) + name[1:]
 }
 
 func genTypeString(fieldName string, typ *parser.Type, optional bool, isMapKey bool) string {
