@@ -49,7 +49,7 @@ var genCmd = &cobra.Command{
 		}
 
 		if generator, ok := langs.Langs[lang]; ok {
-			generator.Generate(parsedThrift)
+			generator.Generate(output, parsedThrift)
 		} else {
 			fmt.Printf("lang %s is not supported\n", lang)
 			fmt.Println("Supported language options are:")

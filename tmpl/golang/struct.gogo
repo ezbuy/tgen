@@ -1,0 +1,7 @@
+{{define "struct" -}}
+type {{.Name}} struct {
+    {{- range $field := .Fields}}
+    {{upperHead $field.Name}} {{genTypeString $field.Name $field.Type $field.Optional false}} `thrift:"{{$field.ID}}{{if not $field.Optional}},required{{end}}" json:"{{$field.Name}}{{if $field.Optional}},omitempty{{end}}"`
+    {{- end}}
+}
+{{- end}}

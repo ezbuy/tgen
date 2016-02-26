@@ -1,0 +1,25 @@
+{{define "service"}}{{$serviceName := .Name}}
+{{- range $method := .Methods}}
+type Request{{$serviceName}}Service{{upperHead $method.Name}}Arguments struct {
+    {{- range $arg := $method.Arguments}}
+    {{upperHead $arg.Name}} {{genTypeString $arg.Name $arg.Type $arg.Optional false}} `thrift:"{{$arg.ID}}{{if not $arg.Optional}},required{{end}}" json:"{{$arg.Name}}{{if $arg.Optional}},omitempty{{end}}"`
+    {{- end}}
+}
+{{end}}
+type {{.Name}}Service interface {
+    {{- range $method := .Methods}}
+    {{upperHead $method.Name}}({{template "method_args" $method.Arguments}}) {{template "method_return" $method.ReturnType}}
+    {{- end}}
+}
+{{end}}
+
+{{- define "method_args"}}{{$argsCount := len . -}}
+{{range $idx, $arg := . -}}
+{{$last := isLast $idx $argsCount -}}
+{{$arg.Name}} {{genTypeString $arg.Name $arg.Type $arg.Optional false}}{{if not $last}}, {{end}}
+{{- end -}}
+{{end}}
+
+{{- define "method_return" -}}
+{{if isNilType .}}error{{else}}({{genTypeString "method return value" . false false}}, error){{end}}
+{{- end -}}

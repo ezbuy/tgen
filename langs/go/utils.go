@@ -2,6 +2,8 @@ package gogen
 
 import (
 	"fmt"
+	"os"
+	"os/exec"
 	"path/filepath"
 	"strings"
 
@@ -141,4 +143,17 @@ func genTypeString(fieldName string, typ *parser.Type, optional bool, isMapKey b
 
 func panicWithErr(format string, msg ...interface{}) {
 	panic(fmt.Errorf(format, msg...))
+}
+
+func gofmt(paths ...string) {
+	args := []string{"-l", "-w"}
+	args = append(args, paths...)
+
+	cmd := exec.Command("gofmt", args...)
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+
+	if err := cmd.Run(); err != nil {
+		fmt.Fprintf(os.Stderr, "fail to gofmt %s", err)
+	}
 }

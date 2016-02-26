@@ -3,6 +3,7 @@ package gogen
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 
 	"github.com/ezbuy/tgen/langs"
 	"github.com/samuel/go-thrift/parser"
@@ -14,67 +15,51 @@ type GoGen struct {
 	langs.BaseGen
 }
 
-func (this *GoGen) Generate(parsedThrift map[string]*parser.Thrift) {
+func (this *GoGen) Generate(output string, parsedThrift map[string]*parser.Thrift) {
 	this.BaseGen.Init(langName, parsedThrift)
 
-	// for filename, parsed := range parsedThrift {
-	// 	for nKey, nValue := range parsed.Namespaces {
-	// 		if nKey == langName {
-	// 			fmt.Printf("namespace: %s\n", nValue)
-	// 		}
-	// 	}
+	outputPath, err := filepath.Abs(output)
+	if err != nil {
+		panicWithErr("fail to get absolute path for %q", output)
+	}
 
-	// 	fmt.Printf("name: %s\n", filename)
-	// 	fmt.Printf("include: %s\n", parsed.Includes)
-	// 	for structName, pStruct := range parsed.Structs {
-	// 		fmt.Printf("struct name %s\n", structName)
-	// 		fmt.Printf("struct structname %s\n", pStruct.Name)
-	// 		for _, field := range pStruct.Fields {
-	// 			fmt.Printf("field name %s\n", field.Name)
+	outputPackageDirs := make([]string, 0, len(parsedThrift))
 
-	// 			typ := field.Type
-	// 			fmt.Println("=======")
-	// 			fmt.Printf("field type %s\n", typ.Name)
-	// 			if typ.KeyType != nil {
-	// 				fmt.Printf("field type key %s \n", typ.KeyType.Name)
-	// 			}
-
-	// 			if typ.ValueType != nil {
-	// 				fmt.Printf("field type value %s\n", typ.ValueType.Name)
-	// 			}
-
-	// 			fmt.Println("=======")
-	// 		}
-	// 	}
-
-	// 	fmt.Println(">>>>>>>>>>>>>>")
-
-	// }
-
+	fmt.Println("##### Parsing:")
 	for filename, parsed := range parsedThrift {
-		fmt.Printf("Parsing: %s >>>>>>>>>>>>>>>\n", filename)
+		fmt.Printf("%s\n", filename)
 
 		importPath, pkgName := genNamespace(getNamespace(parsed.Namespaces))
-		fmt.Printf("import path: %s\n", importPath)
 
 		includes := getIncludes(parsedThrift, parsed.Includes)
 
-		data := &structsFileData{
-			Package:  pkgName,
-			Includes: includes,
+		// make output dir
+		pkgDir := filepath.Join(outputPath, importPath)
+		if err := os.MkdirAll(pkgDir, 0755); err != nil {
+			panicWithErr("fail to make package directory %s", pkgDir)
 		}
 
-		for structName, parsedStruct := range parsed.Structs {
-			data.Structs = append(data.Structs, &structData{
-				Name:   upperHead(structName),
-				Fields: parsedStruct.Fields,
-			})
+		outputPackageDirs = append(outputPackageDirs, pkgDir)
+
+		// output struct file
+		dataForStructsFile := getStructsFileData(pkgName, pkgDir, includes, parsed.Structs)
+
+		if err := outputFile(dataForStructsFile.FilePath, "structs_file", dataForStructsFile); err != nil {
+			panicWithErr("fail to write structs file %q : %s", dataForStructsFile.FilePath, err)
 		}
 
-		tpl.ExecuteTemplate(os.Stderr, "structs_file", data)
+		// output service file
+		dataForServicesFile := getServicesFileData(pkgName, pkgDir, includes, parsed.Services)
 
-		fmt.Printf("<<<<<<<<<<< Parsed %s\n", filename)
+		if err := outputFile(dataForServicesFile.FilePath, "services_file", dataForServicesFile); err != nil {
+			panicWithErr("fail to write services file %q : %s", dataForServicesFile.FilePath, err)
+		}
+
+		// TODO output echo file
 	}
+
+	fmt.Println("##### gofmt")
+	gofmt(outputPackageDirs...)
 }
 
 func init() {
