@@ -13,7 +13,7 @@ func Register{{$serviceName}}ServiceAPIModule(mux *echo.Group, service {{$servic
         service: service,
     }
 
-    group := mux.Group("/api/{{$serviceName}}")
+    group := mux.Group("/{{$serviceName}}")
     {{- range $method := .Service.Methods}}
     group.Post("/{{upperHead $method.Name}}", mod.{{upperHead $method.Name}})
     {{- end}}
