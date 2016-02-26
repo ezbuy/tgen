@@ -1,0 +1,56 @@
+{{define "echo_module"}}package {{.Package}}{{$serviceName := .Service.Name}}
+
+import (
+    "encoding/json"
+    "fmt"
+    "net/http"
+
+    "github.com/labstack/echo"
+)
+
+func Register{{$serviceName}}ServiceAPIModule(mux *echo.Group, service {{$serviceName}}Service) {
+    mod := &{{$serviceName}}ServiceAPIModule{
+        service: service,
+    }
+
+    group := mux.Group("/api/{{$serviceName}}")
+    {{- range $method := .Service.Methods}}
+    group.Post("/{{upperHead $method.Name}}", mod.{{upperHead $method.Name}})
+    {{- end}}
+}
+
+type {{$serviceName}}ServiceAPIModule struct {
+    service {{$serviceName}}Service
+}
+
+{{range $method := .Service.Methods}}{{$methodName := upperHead $method.Name}}
+func (this *{{$serviceName}}ServiceAPIModule) {{$methodName}}(c *echo.Context) error {
+    {{- $argsCount := len $method.Arguments}}
+    {{- if ne $argsCount 0}}
+    params := &Request{{$serviceName}}Service{{$methodName}}Arguments{}
+
+    decoder := json.NewDecoder(c.Request().Body)
+    if err := decoder.Decode(params); err != nil {
+        fmt.Printf("/{{$serviceName}}/{{$methodName}}: invalid request body %s\n", err)
+        return c.JSON(http.StatusBadRequest, "invalid request body")
+    }
+    {{end}}
+    {{- $noReturn := isNilType $method.ReturnType}}
+    {{if not $noReturn}}result, {{end}}err := this.service.{{$methodName}}({{template "echo_method_args" $method.Arguments}})
+    
+    if err != nil {
+        fmt.Printf("/{{$serviceName}}/{{$methodName}}: %s", err)
+        return c.JSON(http.StatusInternalServerError, "internal error")
+    }
+
+    return c.JSON(http.StatusOK, {{if not $noReturn}}result{{else}}"ok"{{end}})
+}
+{{end}}
+{{end}}
+
+{{- define "echo_method_args"}}{{$argsCount := len . -}}
+{{range $idx, $arg := . -}}
+{{$last := isLast $idx $argsCount -}}
+params.{{upperHead $arg.Name}}{{if not $last}}, {{end}}
+{{- end -}}
+{{end}}

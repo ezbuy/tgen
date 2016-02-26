@@ -42,20 +42,29 @@ func (this *GoGen) Generate(output string, parsedThrift map[string]*parser.Thrif
 		outputPackageDirs = append(outputPackageDirs, pkgDir)
 
 		// output struct file
-		dataForStructsFile := getStructsFileData(pkgName, pkgDir, includes, parsed.Structs)
+		if len(parsed.Structs) != 0 {
+			dataForStructsFile := getStructsFileData(pkgName, pkgDir, includes, parsed.Structs)
 
-		if err := outputFile(dataForStructsFile.FilePath, "structs_file", dataForStructsFile); err != nil {
-			panicWithErr("fail to write structs file %q : %s", dataForStructsFile.FilePath, err)
+			if err := outputFile(dataForStructsFile.FilePath, "structs_file", dataForStructsFile); err != nil {
+				panicWithErr("fail to write structs file %q : %s", dataForStructsFile.FilePath, err)
+			}
 		}
 
 		// output service file
-		dataForServicesFile := getServicesFileData(pkgName, pkgDir, includes, parsed.Services)
+		if len(parsed.Services) != 0 {
+			dataForServicesFile := getServicesFileData(pkgName, pkgDir, includes, parsed.Services)
 
-		if err := outputFile(dataForServicesFile.FilePath, "services_file", dataForServicesFile); err != nil {
-			panicWithErr("fail to write services file %q : %s", dataForServicesFile.FilePath, err)
+			if err := outputFile(dataForServicesFile.FilePath, "services_file", dataForServicesFile); err != nil {
+				panicWithErr("fail to write services file %q : %s", dataForServicesFile.FilePath, err)
+			}
+
+			for _, sData := range dataForServicesFile.Services {
+				dataForEchoModule := getEchoFileData(pkgName, pkgDir, sData)
+				if err := outputFile(dataForEchoModule.FilePath, "echo_module", dataForEchoModule); err != nil {
+					panicWithErr("fail to write web apis file %q : %s", dataForEchoModule.FilePath, err)
+				}
+			}
 		}
-
-		// TODO output echo file
 	}
 
 	fmt.Println("##### gofmt")

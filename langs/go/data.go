@@ -1,6 +1,7 @@
 package gogen
 
 import (
+	"fmt"
 	"path/filepath"
 	"sort"
 
@@ -76,6 +77,24 @@ func getServicesFileData(pkgName, pkgDir string, includes [][2]string, services 
 		}
 
 		data.Services = append(data.Services, sData)
+	}
+
+	return data
+}
+
+type echoFileData struct {
+	FilePath string
+
+	Package string
+	Service *serviceData
+}
+
+func getEchoFileData(pkgName, pkgDir string, sData *serviceData) *echoFileData {
+	data := &echoFileData{
+		FilePath: filepath.Join(pkgDir, fmt.Sprintf("gen_%s_%s_web_apis.go", pkgName, sData.Name)),
+
+		Package: pkgName,
+		Service: sData,
 	}
 
 	return data
