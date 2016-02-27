@@ -9,6 +9,8 @@ import (
 )
 
 type structsFileData struct {
+	TplUtils
+
 	FilePath string
 
 	Package  string
@@ -17,6 +19,8 @@ type structsFileData struct {
 }
 
 type structData struct {
+	TplUtils
+
 	Name   string
 	Fields []*parser.Field
 }
@@ -30,7 +34,7 @@ func getStructsFileData(pkgName, pkgDir string, includes [][2]string, structs ma
 
 	for structName, parsedStruct := range structs {
 		data.Structs = append(data.Structs, &structData{
-			Name:   upperHead(structName),
+			Name:   structName,
 			Fields: parsedStruct.Fields,
 		})
 	}
@@ -39,6 +43,8 @@ func getStructsFileData(pkgName, pkgDir string, includes [][2]string, structs ma
 }
 
 type servicesFileData struct {
+	TplUtils
+
 	FilePath string
 
 	Package  string
@@ -47,6 +53,8 @@ type servicesFileData struct {
 }
 
 type serviceData struct {
+	TplUtils
+
 	Name    string
 	Methods []*parser.Method
 }
@@ -60,7 +68,7 @@ func getServicesFileData(pkgName, pkgDir string, includes [][2]string, services 
 
 	for serviceName, parsedService := range services {
 		sData := &serviceData{
-			Name: upperHead(serviceName),
+			Name: serviceName,
 		}
 
 		// sort methods
@@ -83,6 +91,8 @@ func getServicesFileData(pkgName, pkgDir string, includes [][2]string, services 
 }
 
 type echoFileData struct {
+	TplUtils
+
 	FilePath string
 
 	Package string

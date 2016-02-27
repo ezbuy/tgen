@@ -5,7 +5,6 @@ import (
 	"text/template"
 
 	"github.com/ezbuy/tgen/tmpl"
-	"github.com/samuel/go-thrift/parser"
 )
 
 var tpl *template.Template
@@ -15,14 +14,7 @@ func Tpl() *template.Template {
 }
 
 func init() {
-	funcMap := template.FuncMap{
-		"upperHead":     upperHead,
-		"genTypeString": genTypeString,
-		"isLast":        tplIsLast,
-		"isNilType":     tplIsNilType,
-	}
-
-	tpl = template.New("tgen/golang").Funcs(funcMap)
+	tpl = template.New("tgen/golang")
 
 	files := []string{
 		"tmpl/golang/include.gogo",
@@ -54,12 +46,4 @@ func outputFile(path string, tplName string, data interface{}) error {
 	defer file.Close()
 
 	return tpl.ExecuteTemplate(file, tplName, data)
-}
-
-func tplIsLast(idx, size int) bool {
-	return idx == size-1
-}
-
-func tplIsNilType(typ *parser.Type) bool {
-	return typ == nil
 }

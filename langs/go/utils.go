@@ -66,7 +66,27 @@ func genNamespace(namespace string) (string, string) {
 	return path, pkgName
 }
 
-func upperHead(name string) string {
+func panicWithErr(format string, msg ...interface{}) {
+	panic(fmt.Errorf(format, msg...))
+}
+
+func gofmt(paths ...string) {
+	args := []string{"-l", "-w"}
+	args = append(args, paths...)
+
+	cmd := exec.Command("gofmt", args...)
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+
+	if err := cmd.Run(); err != nil {
+		fmt.Fprintf(os.Stderr, "fail to gofmt %s", err)
+	}
+}
+
+type TplUtils struct {
+}
+
+func (this *TplUtils) UpperHead(name string) string {
 	if name == "" {
 		return name
 	}
@@ -75,7 +95,7 @@ func upperHead(name string) string {
 	return strings.ToUpper(head) + name[1:]
 }
 
-func genTypeString(fieldName string, typ *parser.Type, optional bool, isMapKey bool) string {
+func (this *TplUtils) GenTypeString(fieldName string, typ *parser.Type, optional bool, isMapKey bool) string {
 	if typ == nil {
 		panicWithErr("field %s with nil type", fieldName)
 	}
@@ -104,7 +124,7 @@ func genTypeString(fieldName string, typ *parser.Type, optional bool, isMapKey b
 			panicWithErr("list field %s with nil value type", fieldName)
 		}
 
-		str = fmt.Sprintf("[]%s", genTypeString(fieldName, typ.ValueType, false, false))
+		str = fmt.Sprintf("[]%s", this.GenTypeString(fieldName, typ.ValueType, false, false))
 
 	case TypeMap:
 		if isMapKey {
@@ -120,8 +140,8 @@ func genTypeString(fieldName string, typ *parser.Type, optional bool, isMapKey b
 		}
 
 		str = fmt.Sprintf("map[%s]%s",
-			genTypeString(fieldName, typ.KeyType, false, true),
-			genTypeString(fieldName, typ.ValueType, false, false),
+			this.GenTypeString(fieldName, typ.KeyType, false, true),
+			this.GenTypeString(fieldName, typ.ValueType, false, false),
 		)
 
 	case TypeSet:
@@ -141,19 +161,10 @@ func genTypeString(fieldName string, typ *parser.Type, optional bool, isMapKey b
 	return str
 }
 
-func panicWithErr(format string, msg ...interface{}) {
-	panic(fmt.Errorf(format, msg...))
+func (this *TplUtils) IsLast(idx, size int) bool {
+	return idx == size-1
 }
 
-func gofmt(paths ...string) {
-	args := []string{"-l", "-w"}
-	args = append(args, paths...)
-
-	cmd := exec.Command("gofmt", args...)
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-
-	if err := cmd.Run(); err != nil {
-		fmt.Fprintf(os.Stderr, "fail to gofmt %s", err)
-	}
+func (this *TplUtils) IsNilType(typ *parser.Type) bool {
+	return typ == nil
 }
