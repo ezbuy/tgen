@@ -1,2 +1,3 @@
 */gen_*.go
 thriftgotest/*
+tmpl/bindata.go
