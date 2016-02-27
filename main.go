@@ -16,6 +16,8 @@ package main
 
 import "github.com/ezbuy/tgen/cmd"
 
+//go:generate go get -u github.com/jteeuwen/go-bindata/...
+//go:generate go-bindata -o ./tmpl/bindata.go -ignore bindata.go -pkg tmpl tmpl/golang tmpl/swift
 func main() {
 	cmd.Execute()
 }
