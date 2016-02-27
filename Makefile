@@ -6,4 +6,7 @@ init:
 	go get -u github.com/jteeuwen/go-bindata/...
 
 buildTpl:
-	go-bindata -o tmpl/bindata.go -ignore bindata.go -pkg tmpl tmpl
+	go-bindata -o tmpl/bindata.go -ignore bindata.go -pkg tmpl tmpl/*
+
+debugTpl:
+	go-bindata -o tmpl/bindata.go -ignore bindata.go -pkg tmpl -debug tmpl/*

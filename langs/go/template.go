@@ -4,7 +4,7 @@ import (
 	"os"
 	"text/template"
 
-	"github.com/ezbuy/tgen/tmpl/golang"
+	"github.com/ezbuy/tgen/tmpl"
 	"github.com/samuel/go-thrift/parser"
 )
 
@@ -34,7 +34,7 @@ func init() {
 	}
 
 	for _, filename := range files {
-		data, err := gotpl.Asset(filename)
+		data, err := tmpl.Asset(filename)
 		if err != nil {
 			panic(err)
 		}

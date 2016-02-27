@@ -8,3 +8,7 @@
 -   support constants
 -   support service one way
 -   support exceptions
+
+##### Example
+
+`go run main.go gen -l go -i example/golang/AdminHomepage.thrift -o ./thriftgotest`
