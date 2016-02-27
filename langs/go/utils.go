@@ -161,10 +161,34 @@ func (this *TplUtils) GenTypeString(fieldName string, typ *parser.Type, optional
 	return str
 }
 
-func (this *TplUtils) IsLast(idx, size int) bool {
-	return idx == size-1
-}
-
 func (this *TplUtils) IsNilType(typ *parser.Type) bool {
 	return typ == nil
+}
+
+func (this *TplUtils) GenServiceMethodArguments(fields []*parser.Field) string {
+	var str string
+
+	maxIdx := len(fields) - 1
+	for idx, field := range fields {
+		str += fmt.Sprintf("%s %s", field.Name, this.GenTypeString(field.Name, field.Type, field.Optional, false))
+		if idx != maxIdx {
+			str += ", "
+		}
+	}
+
+	return str
+}
+
+func (this *TplUtils) GenWebApiServiceParams(fields []*parser.Field) string {
+	var str string
+
+	maxIdx := len(fields) - 1
+	for idx, field := range fields {
+		str += fmt.Sprintf("params.%s", this.UpperHead(field.Name))
+		if idx != maxIdx {
+			str += ", "
+		}
+	}
+
+	return str
 }

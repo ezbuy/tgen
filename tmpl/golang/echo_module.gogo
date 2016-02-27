@@ -1,4 +1,4 @@
-{{define "echo_module"}}package {{.Package}}{{$serviceName := .Service.Name}}
+{{define "echo_module"}}package {{.Package}}{{$utils := .TplUtils}}{{$serviceName := $utils.UpperHead .Service.Name}}
 
 import (
     "encoding/json"
@@ -15,7 +15,7 @@ func Register{{$serviceName}}ServiceAPIModule(mux *echo.Group, service {{$servic
 
     group := mux.Group("/{{$serviceName}}")
     {{- range $method := .Service.Methods}}
-    group.Post("/{{upperHead $method.Name}}", mod.{{upperHead $method.Name}})
+    group.Post("/{{$utils.UpperHead $method.Name}}", mod.{{$utils.UpperHead $method.Name}})
     {{- end}}
 }
 
@@ -23,7 +23,7 @@ type {{$serviceName}}ServiceAPIModule struct {
     service {{$serviceName}}Service
 }
 
-{{range $method := .Service.Methods}}{{$methodName := upperHead $method.Name}}
+{{range $method := .Service.Methods}}{{$methodName := $utils.UpperHead $method.Name}}
 func (this *{{$serviceName}}ServiceAPIModule) {{$methodName}}(c *echo.Context) error {
     {{- $argsCount := len $method.Arguments}}
     {{- if ne $argsCount 0}}
@@ -35,8 +35,8 @@ func (this *{{$serviceName}}ServiceAPIModule) {{$methodName}}(c *echo.Context) e
         return echo.NewHTTPError(http.StatusBadRequest, "invalid request")
     }
     {{end}}
-    {{- $noReturn := isNilType $method.ReturnType}}
-    {{if not $noReturn}}result, {{end}}err := this.service.{{$methodName}}({{template "echo_method_args" $method.Arguments}})
+    {{- $noReturn := $utils.IsNilType $method.ReturnType}}
+    {{if not $noReturn}}result, {{end}}err := this.service.{{$methodName}}({{$utils.GenWebApiServiceParams $method.Arguments}})
     
     if err != nil {
         fmt.Printf("/{{$serviceName}}/{{$methodName}}: %s", err)
@@ -46,11 +46,4 @@ func (this *{{$serviceName}}ServiceAPIModule) {{$methodName}}(c *echo.Context) e
     return c.JSON(http.StatusOK, {{if not $noReturn}}result{{else}}"ok"{{end}})
 }
 {{end}}
-{{end}}
-
-{{- define "echo_method_args"}}{{$argsCount := len . -}}
-{{range $idx, $arg := . -}}
-{{$last := isLast $idx $argsCount -}}
-params.{{upperHead $arg.Name}}{{if not $last}}, {{end}}
-{{- end -}}
 {{end}}
