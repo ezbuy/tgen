@@ -7,6 +7,8 @@ import (
 	"github.com/samuel/go-thrift/parser"
 )
 
+var testTplUtils = &TplUtils{}
+
 func TestGenTypeString(t *testing.T) {
 	fieldName := "testfield"
 
@@ -354,7 +356,7 @@ func TestGenTypeString(t *testing.T) {
 	}
 
 	for _, one := range cases {
-		str := genTypeString(fieldName, one.typ, one.optional, one.isMapKey)
+		str := testTplUtils.GenTypeString(fieldName, one.typ, one.optional, one.isMapKey)
 		if str != one.result {
 			t.Errorf("expected: %q, got: %q", one.result, str)
 		}
@@ -406,7 +408,6 @@ func getGenTypeStringPanic(fieldName string, testCase *genTypeStringPanicTestCas
 	defer func() {
 		testCase.recovered = recover()
 	}()
-
-	genTypeString(fieldName, testCase.typ, testCase.optional, testCase.isMapKey)
+	testTplUtils.GenTypeString(fieldName, testCase.typ, testCase.optional, testCase.isMapKey)
 	return
 }
