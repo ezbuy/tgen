@@ -32,7 +32,7 @@ func (this *{{$serviceName}}ServiceAPIModule) {{$methodName}}(c *echo.Context) e
     decoder := json.NewDecoder(c.Request().Body)
     if err := decoder.Decode(params); err != nil {
         fmt.Printf("/{{$serviceName}}/{{$methodName}}: invalid request body %s\n", err)
-        return c.JSON(http.StatusBadRequest, "invalid request body")
+        return echo.NewHTTPError(http.StatusBadRequest, "invalid request")
     }
     {{end}}
     {{- $noReturn := isNilType $method.ReturnType}}
@@ -40,7 +40,7 @@ func (this *{{$serviceName}}ServiceAPIModule) {{$methodName}}(c *echo.Context) e
     
     if err != nil {
         fmt.Printf("/{{$serviceName}}/{{$methodName}}: %s", err)
-        return c.JSON(http.StatusInternalServerError, "internal error")
+        return echo.NewHTTPError(http.StatusInternalServerError, "internal error")
     }
 
     return c.JSON(http.StatusOK, {{if not $noReturn}}result{{else}}"ok"{{end}})
