@@ -19,6 +19,7 @@ import (
 	"os"
 
 	"github.com/ezbuy/tgen/langs"
+	_ "github.com/ezbuy/tgen/langs/go"
 	_ "github.com/ezbuy/tgen/langs/swift"
 	"github.com/samuel/go-thrift/parser"
 	"github.com/spf13/cobra"
@@ -48,7 +49,7 @@ var genCmd = &cobra.Command{
 		}
 
 		if generator, ok := langs.Langs[lang]; ok {
-			generator.Generate(parsedThrift)
+			generator.Generate(output, parsedThrift)
 		} else {
 			fmt.Printf("lang %s is not supported\n", lang)
 			fmt.Println("Supported language options are:")
