@@ -20,6 +20,7 @@ import (
 
 	"github.com/ezbuy/tgen/langs"
 	_ "github.com/ezbuy/tgen/langs/swift"
+	"github.com/ezbuy/tgen/utils"
 	"github.com/samuel/go-thrift/parser"
 	"github.com/spf13/cobra"
 )
@@ -40,6 +41,17 @@ var genCmd = &cobra.Command{
 			return
 		}
 
+		if output == "" {
+			fmt.Println("-o output path must be specified")
+			return
+		}
+
+		// check whether the path is existed
+		if res := utils.PathExists(output); !res {
+			fmt.Printf("output path [%s] is not valid\n", output)
+			return
+		}
+
 		p := &parser.Parser{}
 		parsedThrift, _, err := p.ParseFile(input)
 		if err != nil {
@@ -48,7 +60,7 @@ var genCmd = &cobra.Command{
 		}
 
 		if generator, ok := langs.Langs[lang]; ok {
-			generator.Generate(parsedThrift)
+			generator.Generate(output, parsedThrift)
 		} else {
 			fmt.Printf("lang %s is not supported\n", lang)
 			fmt.Println("Supported language options are:")
