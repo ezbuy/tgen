@@ -1,3 +1,4 @@
 */gen_*.go
 thriftgotest/*
 tmpl/bindata.go
+**/.DS_Store
