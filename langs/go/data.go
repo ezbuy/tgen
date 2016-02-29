@@ -32,7 +32,16 @@ func getStructsFileData(pkgName, pkgDir string, includes [][2]string, structs ma
 		Includes: includes,
 	}
 
-	for structName, parsedStruct := range structs {
+	structNames := make([]string, 0, len(structs))
+	for name, _ := range structs {
+		structNames = append(structNames, name)
+	}
+
+	sort.Strings(structNames)
+
+	for _, structName := range structNames {
+		parsedStruct := structs[structName]
+
 		data.Structs = append(data.Structs, &structData{
 			Name:   structName,
 			Fields: parsedStruct.Fields,
@@ -66,7 +75,17 @@ func getServicesFileData(pkgName, pkgDir string, includes [][2]string, services 
 		Includes: includes,
 	}
 
-	for serviceName, parsedService := range services {
+	serviceNames := make([]string, 0, len(services))
+
+	for name, _ := range services {
+		serviceNames = append(serviceNames, name)
+	}
+
+	sort.Strings(serviceNames)
+
+	for _, serviceName := range serviceNames {
+		parsedService := services[serviceName]
+
 		sData := &serviceData{
 			Name: serviceName,
 		}

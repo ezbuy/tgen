@@ -46,6 +46,7 @@ func getNamespace(namespaces map[string]string) string {
 func getIncludes(parsedThrift map[string]*parser.Thrift, includes map[string]string) [][2]string {
 	results := make([][2]string, 0, len(includes))
 
+	// 理论上 经过 gofmt, 不会出现顺序不一致
 	for includeName, filename := range includes {
 		parsed, ok := parsedThrift[filename]
 		if !ok {
