@@ -15,7 +15,7 @@ const (
 	TypeByte   = "byte"
 	TypeI16    = "i16"
 	TypeI32    = "i32"
-	TypeI64    = "164"
+	TypeI64    = "i64"
 	TypeDouble = "double"
 	TypeBinary = "binary"
 	TypeString = "string"
