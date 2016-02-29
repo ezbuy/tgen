@@ -2,13 +2,13 @@
 {{- range $method := .Methods}}
 type Request{{$serviceName}}Service{{$utils.UpperHead $method.Name}}Arguments struct {
     {{- range $arg := $method.Arguments}}
-    {{$utils.UpperHead $arg.Name}} {{$utils.GenTypeString $arg.Name $arg.Type $arg.Optional false}} `thrift:"{{$arg.ID}}{{if not $arg.Optional}},required{{end}}" json:"{{$arg.Name}}{{if $arg.Optional}},omitempty{{end}}"`
+    {{$utils.UpperHead $arg.Name}} {{$utils.GenTypeString $arg.Name $arg.Type nil $arg.Optional}} `thrift:"{{$arg.ID}}{{if not $arg.Optional}},required{{end}}" json:"{{$arg.Name}}{{if $arg.Optional}},omitempty{{end}}"`
     {{- end}}
 }
 {{end}}
 type {{$serviceName}}Service interface {
     {{- range $method := .Methods}}
-    {{$utils.UpperHead $method.Name}}({{$utils.GenServiceMethodArguments $method.Arguments}}) {{if $utils.IsNilType $method.ReturnType}}error{{else}}({{$utils.GenTypeString "method return value" $method.ReturnType false false}}, error){{end}}
+    {{$utils.UpperHead $method.Name}}({{$utils.GenServiceMethodArguments $method.Arguments}}) {{if $utils.IsNilType $method.ReturnType}}error{{else}}({{$utils.GenTypeString "method return value" $method.ReturnType nil false}}, error){{end}}
     {{- end}}
 }
 {{end}}

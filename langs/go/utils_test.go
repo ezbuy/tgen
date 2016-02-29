@@ -534,6 +534,17 @@ func TestGenTypeStringPanics(t *testing.T) {
 			fmt.Sprintf("map field %s with nil value type", fieldName),
 			nil,
 		},
+
+		// without type name
+		{
+			&parser.Type{
+				Name: "",
+			},
+			nil,
+			false,
+			fmt.Sprintf("field %s without type name", fieldName),
+			nil,
+		},
 	}
 
 	for _, one := range cases {
