@@ -9,6 +9,64 @@ import (
 
 var testTplUtils = &TplUtils{}
 
+func TestType(t *testing.T) {
+	cases := []struct {
+		expect string
+		actual string
+	}{
+		{
+			"bool",
+			TypeBool,
+		},
+		{
+			"byte",
+			TypeByte,
+		},
+		{
+			"i16",
+			TypeI16,
+		},
+		{
+			"i32",
+			TypeI32,
+		},
+		{
+			"i64",
+			TypeI64,
+		},
+		{
+			"double",
+			TypeDouble,
+		},
+		{
+			"binary",
+			TypeBinary,
+		},
+		{
+			"string",
+			TypeString,
+		},
+		{
+			"list",
+			TypeList,
+		},
+		{
+			"set",
+			TypeSet,
+		},
+		{
+			"map",
+			TypeMap,
+		},
+	}
+
+	for _, one := range cases {
+		if one.expect != one.actual {
+			t.Errorf("expect: %q; actual: %q", one.expect, one.actual)
+		}
+	}
+}
+
 func TestGenTypeString(t *testing.T) {
 	fieldName := "testfield"
 
