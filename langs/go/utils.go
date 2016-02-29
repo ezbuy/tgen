@@ -95,7 +95,7 @@ func (this *TplUtils) UpperHead(name string) string {
 	return strings.ToUpper(head) + name[1:]
 }
 
-func (this *TplUtils) GenTypeString(fieldName string, typ *parser.Type, optional bool, isMapKey bool) string {
+func (this *TplUtils) GenTypeString(fieldName string, typ, parent *parser.Type, optional bool) string {
 	if typ == nil {
 		panicWithErr("field %s with nil type", fieldName)
 	}
@@ -110,13 +110,13 @@ func (this *TplUtils) GenTypeString(fieldName string, typ *parser.Type, optional
 		str += typeStrs[typ.Name]
 
 	case TypeBinary:
-		if isMapKey {
+		if parent != nil && typ == parent.KeyType {
 			panicWithErr("map field %s with binary key", fieldName)
 		}
 		str = typeStrs[TypeBinary]
 
 	case TypeList:
-		if isMapKey {
+		if parent != nil && typ == parent.KeyType {
 			panicWithErr("map field %s with list key", fieldName)
 		}
 
@@ -124,10 +124,10 @@ func (this *TplUtils) GenTypeString(fieldName string, typ *parser.Type, optional
 			panicWithErr("list field %s with nil value type", fieldName)
 		}
 
-		str = fmt.Sprintf("[]%s", this.GenTypeString(fieldName, typ.ValueType, false, false))
+		str = fmt.Sprintf("[]%s", this.GenTypeString(fieldName, typ.ValueType, typ, false))
 
 	case TypeMap:
-		if isMapKey {
+		if parent != nil && typ == parent.KeyType {
 			panicWithErr("map field %s with map key", fieldName)
 		}
 
@@ -140,8 +140,8 @@ func (this *TplUtils) GenTypeString(fieldName string, typ *parser.Type, optional
 		}
 
 		str = fmt.Sprintf("map[%s]%s",
-			this.GenTypeString(fieldName, typ.KeyType, false, true),
-			this.GenTypeString(fieldName, typ.ValueType, false, false),
+			this.GenTypeString(fieldName, typ.KeyType, typ, false),
+			this.GenTypeString(fieldName, typ.ValueType, typ, false),
 		)
 
 	case TypeSet:
@@ -168,7 +168,7 @@ func (this *TplUtils) GenServiceMethodArguments(fields []*parser.Field) string {
 
 	maxIdx := len(fields) - 1
 	for idx, field := range fields {
-		str += fmt.Sprintf("%s %s", field.Name, this.GenTypeString(field.Name, field.Type, field.Optional, false))
+		str += fmt.Sprintf("%s %s", field.Name, this.GenTypeString(field.Name, field.Type, nil, field.Optional))
 		if idx != maxIdx {
 			str += ", "
 		}
