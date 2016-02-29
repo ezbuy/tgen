@@ -152,10 +152,8 @@ func (this *TplUtils) GenTypeString(fieldName string, typ *parser.Type, optional
 			panicWithErr("field %s without type name", fieldName)
 		}
 
-		if optional {
-			str = "*"
-		}
-		str += typ.Name
+		// TODO check if is Enum, Const, TypeDef etc.
+		str = "*" + typ.Name
 	}
 
 	return str

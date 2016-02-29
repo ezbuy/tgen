@@ -227,7 +227,7 @@ func TestGenTypeString(t *testing.T) {
 			},
 			false,
 			false,
-			"SomeStruct",
+			"*SomeStruct",
 		},
 		{
 			&parser.Type{
@@ -272,7 +272,7 @@ func TestGenTypeString(t *testing.T) {
 			},
 			false,
 			false,
-			"[]SomeStruct",
+			"[]*SomeStruct",
 		},
 		{
 			&parser.Type{
@@ -283,7 +283,7 @@ func TestGenTypeString(t *testing.T) {
 			},
 			true,
 			false,
-			"[]SomeStruct",
+			"[]*SomeStruct",
 		},
 
 		// list<list<bool>>
@@ -329,7 +329,7 @@ func TestGenTypeString(t *testing.T) {
 			},
 			false,
 			false,
-			"[][]SomeStruct",
+			"[][]*SomeStruct",
 		},
 		{
 			&parser.Type{
@@ -343,7 +343,7 @@ func TestGenTypeString(t *testing.T) {
 			},
 			true,
 			false,
-			"[][]SomeStruct",
+			"[][]*SomeStruct",
 		},
 
 		// map<string, bool>
@@ -392,7 +392,7 @@ func TestGenTypeString(t *testing.T) {
 			},
 			false,
 			false,
-			"map[string][]SomeStruct",
+			"map[string][]*SomeStruct",
 		},
 		{
 			&parser.Type{
@@ -409,7 +409,7 @@ func TestGenTypeString(t *testing.T) {
 			},
 			true,
 			false,
-			"map[string][]SomeStruct",
+			"map[string][]*SomeStruct",
 		},
 	}
 
