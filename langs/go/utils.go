@@ -153,7 +153,12 @@ func (this *TplUtils) GenTypeString(fieldName string, typ, parent *parser.Type, 
 		}
 
 		// TODO check if is Enum, Const, TypeDef etc.
-		str = "*" + typ.Name
+		name := typ.Name
+		if dotIdx := strings.Index(name, "."); dotIdx != -1 {
+			name = typ.Name[:dotIdx+1] + this.UpperHead(typ.Name[dotIdx+1:])
+		}
+
+		str = "*" + name
 	}
 
 	return str

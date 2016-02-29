@@ -238,6 +238,56 @@ func TestGenTypeString(t *testing.T) {
 			"*SomeStruct",
 		},
 
+		// included custom name
+		{
+			&parser.Type{
+				Name: "SomeIncludes.UpperStruct",
+			},
+			nil,
+			false,
+			"*SomeIncludes.UpperStruct",
+		},
+		{
+			&parser.Type{
+				Name: "SomeIncludes.UpperStruct",
+			},
+			nil,
+			true,
+			"*SomeIncludes.UpperStruct",
+		},
+		{
+			&parser.Type{
+				Name: "SomeIncludes.lowerStruct",
+			},
+			nil,
+			false,
+			"*SomeIncludes.LowerStruct",
+		},
+		{
+			&parser.Type{
+				Name: "SomeIncludes.lowerStruct",
+			},
+			nil,
+			true,
+			"*SomeIncludes.LowerStruct",
+		},
+		{
+			&parser.Type{
+				Name: "SomeIncludes.",
+			},
+			nil,
+			false,
+			"*SomeIncludes.",
+		},
+		{
+			&parser.Type{
+				Name: "SomeIncludes.",
+			},
+			nil,
+			true,
+			"*SomeIncludes.",
+		},
+
 		// list<bool>
 		{
 			&parser.Type{
