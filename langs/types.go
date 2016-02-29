@@ -6,6 +6,7 @@ const (
 	ThriftTypeI64    = "i64"
 	ThriftTypeString = "string"
 	ThriftTypeByte   = "byte"
+	ThriftTypeBinary = "binary"
 	ThriftTypeBool   = "bool"
 	ThriftTypeDouble = "double"
 	ThriftTypeList   = "list"
