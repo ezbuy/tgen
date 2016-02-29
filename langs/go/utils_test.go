@@ -72,8 +72,8 @@ func TestGenTypeString(t *testing.T) {
 
 	cases := []struct {
 		typ      *parser.Type
+		parent   *parser.Type
 		optional bool
-		isMapKey bool
 		result   string
 	}{
 		// bool
@@ -81,7 +81,7 @@ func TestGenTypeString(t *testing.T) {
 			&parser.Type{
 				Name: TypeBool,
 			},
-			false,
+			nil,
 			false,
 			"bool",
 		},
@@ -89,8 +89,8 @@ func TestGenTypeString(t *testing.T) {
 			&parser.Type{
 				Name: TypeBool,
 			},
+			nil,
 			true,
-			false,
 			"*bool",
 		},
 
@@ -99,7 +99,7 @@ func TestGenTypeString(t *testing.T) {
 			&parser.Type{
 				Name: TypeByte,
 			},
-			false,
+			nil,
 			false,
 			"byte",
 		},
@@ -107,8 +107,8 @@ func TestGenTypeString(t *testing.T) {
 			&parser.Type{
 				Name: TypeByte,
 			},
+			nil,
 			true,
-			false,
 			"*byte",
 		},
 
@@ -117,7 +117,7 @@ func TestGenTypeString(t *testing.T) {
 			&parser.Type{
 				Name: TypeI16,
 			},
-			false,
+			nil,
 			false,
 			"int16",
 		},
@@ -125,8 +125,8 @@ func TestGenTypeString(t *testing.T) {
 			&parser.Type{
 				Name: TypeI16,
 			},
+			nil,
 			true,
-			false,
 			"*int16",
 		},
 
@@ -135,7 +135,7 @@ func TestGenTypeString(t *testing.T) {
 			&parser.Type{
 				Name: TypeI32,
 			},
-			false,
+			nil,
 			false,
 			"int32",
 		},
@@ -143,8 +143,8 @@ func TestGenTypeString(t *testing.T) {
 			&parser.Type{
 				Name: TypeI32,
 			},
+			nil,
 			true,
-			false,
 			"*int32",
 		},
 
@@ -153,7 +153,7 @@ func TestGenTypeString(t *testing.T) {
 			&parser.Type{
 				Name: TypeI64,
 			},
-			false,
+			nil,
 			false,
 			"int64",
 		},
@@ -161,8 +161,8 @@ func TestGenTypeString(t *testing.T) {
 			&parser.Type{
 				Name: TypeI64,
 			},
+			nil,
 			true,
-			false,
 			"*int64",
 		},
 
@@ -171,7 +171,7 @@ func TestGenTypeString(t *testing.T) {
 			&parser.Type{
 				Name: TypeDouble,
 			},
-			false,
+			nil,
 			false,
 			"float64",
 		},
@@ -179,8 +179,8 @@ func TestGenTypeString(t *testing.T) {
 			&parser.Type{
 				Name: TypeDouble,
 			},
+			nil,
 			true,
-			false,
 			"*float64",
 		},
 
@@ -189,7 +189,7 @@ func TestGenTypeString(t *testing.T) {
 			&parser.Type{
 				Name: TypeBinary,
 			},
-			false,
+			nil,
 			false,
 			"[]byte",
 		},
@@ -197,8 +197,8 @@ func TestGenTypeString(t *testing.T) {
 			&parser.Type{
 				Name: TypeBinary,
 			},
+			nil,
 			true,
-			false,
 			"[]byte",
 		},
 
@@ -207,7 +207,7 @@ func TestGenTypeString(t *testing.T) {
 			&parser.Type{
 				Name: TypeString,
 			},
-			false,
+			nil,
 			false,
 			"string",
 		},
@@ -215,8 +215,8 @@ func TestGenTypeString(t *testing.T) {
 			&parser.Type{
 				Name: TypeString,
 			},
+			nil,
 			true,
-			false,
 			"*string",
 		},
 
@@ -225,7 +225,7 @@ func TestGenTypeString(t *testing.T) {
 			&parser.Type{
 				Name: "SomeStruct",
 			},
-			false,
+			nil,
 			false,
 			"*SomeStruct",
 		},
@@ -233,9 +233,59 @@ func TestGenTypeString(t *testing.T) {
 			&parser.Type{
 				Name: "SomeStruct",
 			},
+			nil,
 			true,
-			false,
 			"*SomeStruct",
+		},
+
+		// included custom name
+		{
+			&parser.Type{
+				Name: "SomeIncludes.UpperStruct",
+			},
+			nil,
+			false,
+			"*SomeIncludes.UpperStruct",
+		},
+		{
+			&parser.Type{
+				Name: "SomeIncludes.UpperStruct",
+			},
+			nil,
+			true,
+			"*SomeIncludes.UpperStruct",
+		},
+		{
+			&parser.Type{
+				Name: "SomeIncludes.lowerStruct",
+			},
+			nil,
+			false,
+			"*SomeIncludes.LowerStruct",
+		},
+		{
+			&parser.Type{
+				Name: "SomeIncludes.lowerStruct",
+			},
+			nil,
+			true,
+			"*SomeIncludes.LowerStruct",
+		},
+		{
+			&parser.Type{
+				Name: "SomeIncludes.",
+			},
+			nil,
+			false,
+			"*SomeIncludes.",
+		},
+		{
+			&parser.Type{
+				Name: "SomeIncludes.",
+			},
+			nil,
+			true,
+			"*SomeIncludes.",
 		},
 
 		// list<bool>
@@ -246,7 +296,7 @@ func TestGenTypeString(t *testing.T) {
 					Name: TypeBool,
 				},
 			},
-			false,
+			nil,
 			false,
 			"[]bool",
 		},
@@ -257,8 +307,8 @@ func TestGenTypeString(t *testing.T) {
 					Name: TypeBool,
 				},
 			},
+			nil,
 			true,
-			false,
 			"[]bool",
 		},
 
@@ -270,7 +320,7 @@ func TestGenTypeString(t *testing.T) {
 					Name: "SomeStruct",
 				},
 			},
-			false,
+			nil,
 			false,
 			"[]*SomeStruct",
 		},
@@ -281,8 +331,8 @@ func TestGenTypeString(t *testing.T) {
 					Name: "SomeStruct",
 				},
 			},
+			nil,
 			true,
-			false,
 			"[]*SomeStruct",
 		},
 
@@ -297,7 +347,7 @@ func TestGenTypeString(t *testing.T) {
 					},
 				},
 			},
-			false,
+			nil,
 			false,
 			"[][]bool",
 		},
@@ -311,8 +361,8 @@ func TestGenTypeString(t *testing.T) {
 					},
 				},
 			},
+			nil,
 			true,
-			false,
 			"[][]bool",
 		},
 
@@ -327,7 +377,7 @@ func TestGenTypeString(t *testing.T) {
 					},
 				},
 			},
-			false,
+			nil,
 			false,
 			"[][]*SomeStruct",
 		},
@@ -341,8 +391,8 @@ func TestGenTypeString(t *testing.T) {
 					},
 				},
 			},
+			nil,
 			true,
-			false,
 			"[][]*SomeStruct",
 		},
 
@@ -357,7 +407,7 @@ func TestGenTypeString(t *testing.T) {
 					Name: TypeBool,
 				},
 			},
-			false,
+			nil,
 			false,
 			"map[string]bool",
 		},
@@ -371,8 +421,8 @@ func TestGenTypeString(t *testing.T) {
 					Name: TypeBool,
 				},
 			},
+			nil,
 			true,
-			false,
 			"map[string]bool",
 		},
 
@@ -390,7 +440,7 @@ func TestGenTypeString(t *testing.T) {
 					},
 				},
 			},
-			false,
+			nil,
 			false,
 			"map[string][]*SomeStruct",
 		},
@@ -407,14 +457,14 @@ func TestGenTypeString(t *testing.T) {
 					},
 				},
 			},
+			nil,
 			true,
-			false,
 			"map[string][]*SomeStruct",
 		},
 	}
 
 	for _, one := range cases {
-		str := testTplUtils.GenTypeString(fieldName, one.typ, one.optional, one.isMapKey)
+		str := testTplUtils.GenTypeString(fieldName, one.typ, one.parent, one.optional)
 		if str != one.result {
 			t.Errorf("expected: %q, got: %q", one.result, str)
 		}
@@ -423,8 +473,8 @@ func TestGenTypeString(t *testing.T) {
 
 type genTypeStringPanicTestCase struct {
 	typ       *parser.Type
+	parent    *parser.Type
 	optional  bool
-	isMapKey  bool
 	err       string
 	recovered interface{}
 }
@@ -432,14 +482,117 @@ type genTypeStringPanicTestCase struct {
 func TestGenTypeStringPanics(t *testing.T) {
 	fieldName := "testfield"
 
-	var nilType *parser.Type
+	typeMapWithBinaryKey := &parser.Type{
+		Name: TypeMap,
+		KeyType: &parser.Type{
+			Name: TypeBinary,
+		},
+	}
+
+	typeMapWithListKey := &parser.Type{
+		Name: TypeMap,
+		KeyType: &parser.Type{
+			Name: TypeList,
+		},
+	}
+
+	typeListWithNilValue := &parser.Type{
+		Name:      TypeList,
+		ValueType: nil,
+	}
+
+	typeMapWithMapKey := &parser.Type{
+		Name: TypeMap,
+		KeyType: &parser.Type{
+			Name: TypeMap,
+		},
+	}
+
+	typeMapWithNilKey := &parser.Type{
+		Name:    TypeMap,
+		KeyType: nil,
+	}
+
+	typeMapWithNilValue := &parser.Type{
+		Name: TypeMap,
+		KeyType: &parser.Type{
+			Name: TypeString,
+		},
+		ValueType: nil,
+	}
 
 	cases := []genTypeStringPanicTestCase{
+		// nil type
 		{
-			nilType,
-			false,
+			nil,
+			nil,
 			false,
 			fmt.Sprintf("field %s with nil type", fieldName),
+			nil,
+		},
+
+		// map with binary key
+		{
+			typeMapWithBinaryKey.KeyType,
+			typeMapWithBinaryKey,
+			false,
+			fmt.Sprintf("map field %s with binary key", fieldName),
+			nil,
+		},
+
+		// map with list key
+		{
+			typeMapWithListKey.KeyType,
+			typeMapWithListKey,
+			false,
+			fmt.Sprintf("map field %s with list key", fieldName),
+			nil,
+		},
+
+		// list with nil value
+		{
+			typeListWithNilValue,
+			nil,
+			false,
+			fmt.Sprintf("list field %s with nil value type", fieldName),
+			nil,
+		},
+
+		// map with map key
+		{
+			typeMapWithMapKey.KeyType,
+			typeMapWithMapKey,
+			false,
+			fmt.Sprintf("map field %s with map key", fieldName),
+			nil,
+		},
+
+		// map with nil key
+		{
+			typeMapWithNilKey,
+			nil,
+			false,
+			fmt.Sprintf("map field %s with nil key type", fieldName),
+			nil,
+		},
+
+		// map with nil value
+		{
+			typeMapWithNilValue,
+			nil,
+			false,
+			fmt.Sprintf("map field %s with nil value type", fieldName),
+			nil,
+		},
+
+		// without type name
+		{
+			&parser.Type{
+				Name: "",
+			},
+			nil,
+			false,
+			fmt.Sprintf("field %s without type name", fieldName),
 			nil,
 		},
 	}
@@ -466,6 +619,6 @@ func getGenTypeStringPanic(fieldName string, testCase *genTypeStringPanicTestCas
 	defer func() {
 		testCase.recovered = recover()
 	}()
-	testTplUtils.GenTypeString(fieldName, testCase.typ, testCase.optional, testCase.isMapKey)
+	testTplUtils.GenTypeString(fieldName, testCase.typ, testCase.parent, testCase.optional)
 	return
 }
