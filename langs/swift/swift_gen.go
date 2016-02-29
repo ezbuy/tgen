@@ -3,11 +3,13 @@ package swift
 import (
 	"bytes"
 	"fmt"
+	"os"
 	"path/filepath"
 	"strings"
 	"text/template"
 
 	"github.com/ezbuy/tgen/langs"
+	"github.com/ezbuy/tgen/tmpl"
 	"github.com/samuel/go-thrift/parser"
 )
 
@@ -22,6 +24,10 @@ const (
 	// other types (such as array, map, etc.) are implemented in the method 'PlainType'
 )
 
+const (
+	TPL_NAME = "tgen/swift"
+)
+
 var typemapping = map[string]string{
 	langs.ThriftTypeI16:    SwiftTypeInt,
 	langs.ThriftTypeI32:    SwiftTypeInt,
@@ -32,10 +38,10 @@ var typemapping = map[string]string{
 	langs.ThriftTypeDouble: SwiftTypeDouble,
 }
 
+var tpl *template.Template
+
 type SwiftGen struct {
 	langs.BaseGen
-
-	tpl *template.Template
 }
 
 type swiftThrift struct {
@@ -86,6 +92,19 @@ func (st *swiftThrift) ParamsJoinedByComma(args []*parser.Field) string {
 	return buf.String()
 }
 
+func (st *swiftThrift) AssignToDict(f *parser.Field) string {
+	switch f.Type.Name {
+	case langs.ThriftTypeI16, langs.ThriftTypeI32, langs.ThriftTypeByte, langs.ThriftTypeString,
+		langs.ThriftTypeBool, langs.ThriftTypeDouble,
+		langs.ThriftTypeMap:
+		return f.Name
+	case langs.ThriftTypeI64:
+		return fmt.Sprintf("NSNumber(longLong: %s)", f.Name)
+	default:
+		return fmt.Sprintf("%s?.toJSON()", f.Name)
+	}
+}
+
 func (st *swiftThrift) TypecastWithDefaultValue(t *parser.Type) string {
 	return st.Typecast(t, true)
 }
@@ -124,29 +143,28 @@ func (o *SwiftGen) Generate(output string, parsedThrift map[string]*parser.Thrif
 	o.BaseGen.Init("swift", parsedThrift)
 
 	// init template
-	o.tpl = langs.InitTemplate("tmpl/swift/swift.goswift")
+	tpl = initTemplate("tmpl/swift/swift.goswift")
+
+	if err := os.MkdirAll(output, 0755); err != nil {
+		panic(fmt.Errorf("failed to create output directory %s", output))
+	}
 
 	// tp is the absoule path of thrift file
-	for tp, thrift := range parsedThrift {
-		data := o.gen(thrift)
+	for tp, t := range parsedThrift {
+		// get file name
+		name := o.filename(tp, t.Namespaces)
 
-		name := o.filename(tp, thrift.Namespaces)
-
+		// get output file path
 		path := filepath.Join(output, name)
 
-		// save to disk
-		langs.Write(path, data)
+		data := &swiftThrift{Thrift: t}
 
-		fmt.Printf("[%s] generated\n", path)
+		// sort structs & services
+
+		if err := outputfile(path, TPL_NAME, data); err != nil {
+			panic(fmt.Errorf("failed to write file %s. error: %v\n", path, err))
+		}
 	}
-}
-
-func (o *SwiftGen) gen(thrift *parser.Thrift) []byte {
-	st := &swiftThrift{Thrift: thrift}
-
-	data := langs.RenderTemplate(o.tpl, st)
-
-	return data
 }
 
 // Filename returns the final name of the generated file
@@ -164,4 +182,29 @@ func (o *SwiftGen) filename(tplfile string, ns map[string]string) string {
 
 func init() {
 	langs.Langs["swift"] = &SwiftGen{}
+}
+
+func initTemplate(path string) *template.Template {
+	data, err := tmpl.Asset(path)
+	if err != nil {
+		panic(err)
+	}
+
+	tpl, err := template.New(TPL_NAME).Parse(string(data))
+	if err != nil {
+		panic(err)
+	}
+
+	return tpl
+}
+
+func outputfile(fp string, tplname string, data interface{}) error {
+	file, err := os.OpenFile(fp, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
+	if err != nil {
+		return err
+	}
+
+	defer file.Close()
+
+	return tpl.ExecuteTemplate(file, tplname, data)
 }

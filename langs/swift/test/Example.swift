@@ -42,7 +42,6 @@ class TExample: EZObject {
 
     override func toJSON() -> AnyObject {
         var dict = [String: AnyObject]()
-
         dict["amountAvailable"] = amountAvailable
         dict["rebateAmountAvailable"] = rebateAmountAvailable
         dict["amountPendingVerification"] = amountPendingVerification

@@ -7,7 +7,6 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/ezbuy/tgen/utils"
 	"github.com/samuel/go-thrift/parser"
 )
 
@@ -20,8 +19,8 @@ func TestGenerate(t *testing.T) {
 
 	// create output dir
 	outdir := filepath.Dir("./output/")
-	if !utils.PathExists(outdir) {
-		os.MkdirAll(outdir, 0775)
+	if err := os.MkdirAll(outdir, 0755); err != nil {
+		t.Errorf("failed to create output directory %s", outdir)
 	}
 
 	outdir, _ = filepath.Abs(outdir)
@@ -48,9 +47,9 @@ func TestGenerate(t *testing.T) {
 			outfile := filepath.Join(outdir, name)
 			testfile := filepath.Join(testdir, name)
 
-			if !utils.PathExists(outfile) {
+			if !pathExists(outfile) {
 				t.Errorf("geenerate error: thrift [%s]\n", tp)
-			} else if !utils.PathExists(testfile) {
+			} else if !pathExists(testfile) {
 				t.Errorf("no test file found [%s]\n", testfile)
 			} else {
 				// compare the output file with the case
@@ -76,4 +75,17 @@ func TestGenerate(t *testing.T) {
 
 	// do some clean
 	os.RemoveAll(outdir)
+}
+
+func pathExists(path string) bool {
+	_, err := os.Stat(path)
+	if err == nil {
+		return true
+	}
+
+	if os.IsNotExist(err) {
+		return false
+	}
+
+	return false
 }

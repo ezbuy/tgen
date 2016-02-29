@@ -20,7 +20,7 @@ class {{ $k }}: EZObject {
 
         guard let dict = jsonObject as? [String: AnyObject] else { return false }
 {{ range $v.Fields }}
-        {{ $t := .Type | $st.PlainType }}
+        {{ $t := $st.PlainType .Type }}
 {{- if eq $t "String" -}}
         {{ .Name }} = dict["{{ .Name }}"] as? {{ $t }}
 {{- else if or (eq $t "Int") (eq $t "Int64") -}}
@@ -40,18 +40,9 @@ class {{ $k }}: EZObject {
 
     override func toJSON() -> AnyObject {
         var dict = [String: AnyObject]()
-{{ range $v.Fields }}
-        {{ $t := .Type | $st.PlainType }}
-{{- if eq $t "Int64" -}}
-        dict["{{ .Name }}"] = NSNumber(longLong: {{ .Name }})
-{{- else if or (eq $t "String") (eq $t "Int") (eq $t "Bool") (eq $t "Double") -}}
-        dict["{{ .Name }}"] = {{ .Name }}
-{{- else if eq .Type.Name "map" -}}
-        dict["{{ .Name }}"] = {{ .Name }}
-{{- else -}}
-        dict["{{ .Name }}"] = {{ .Name }}?.toJSON()
-{{ end }}
-{{- end }}
+{{- range $v.Fields}}
+        dict["{{ .Name }}"] = {{ $st.AssignToDict .}}{{ end }}
+
         return dict
     }
 
@@ -64,18 +55,8 @@ class {{ $k }}: {{ if $v.Extends }}{{ $v.Extends | $st.LastComponentOfDotStr }}{
     class func {{ .Name }}({{ if .Arguments }}{{ .Arguments | $st.ParamsJoinedByComma }}, {{ end }}success: ({{ if .ReturnType }}{{ .ReturnType | $st.PlainType }}{{ else }}Void{{ end }}) -> Void, failure: ((NSError) -> Void)? = nil) {{ if .ReturnType }}-> {{ .ReturnType | $st.TypecastWithoutDefaultValue }} {{ end }}{
         {{ if .Arguments -}}
         var params = [String: AnyObject]()
-        {{- range .Arguments -}}
-        {{- $t := .Type | $st.PlainType -}}
-        {{- if eq $t "Int64" }}
-        params["{{ .Name }}"] = NSNumber(longLong: {{ .Name }})
-        {{- else if or (eq $t "String") (eq $t "Int") (eq $t "Bool") (eq $t "Double") }}
-        params["{{ .Name }}"] = {{ .Name }}
-        {{- else if eq .Type.Name "map" }}
-        params["{{ .Name }}"] = {{ .Name }}
-        {{- else }}
-        params["{{ .Name }}"] = {{ .Name }}?.toJSON()
-        {{- end }}
-        {{- end }}
+        {{- range .Arguments }}
+        params["{{ .Name }}"] = {{ $st.AssignToDict .}}{{ end }}
 {{ else -}}
         let params = [String: AnyObject]()
         {{- end }}
