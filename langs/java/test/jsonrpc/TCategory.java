@@ -13,18 +13,10 @@ import java.util.ArrayList;
  * Don't change manually
  */
 
-public class TProductSimple extends BaseModule<TProductSimple> implements Serializable {
-
-    public String url;
+public class TCategory extends BaseModule<TCategory> implements Serializable {
+    public int id;
+    public int parentId;
     public String name;
-    public String price;
     public String picture;
-    public int favouriteCount;
-    public String priceWithSymbol;
-    public String originCode;
-    public String vendorName;
-    public String altProductName;
-    public String customerLocalPrice;
-    public boolean isEzBuy;
-    
+    public String altName;
 }

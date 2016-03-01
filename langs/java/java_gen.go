@@ -8,6 +8,7 @@ import (
 	"text/template"
 
 	"github.com/ezbuy/tgen/langs"
+	"github.com/ezbuy/tgen/tmpl"
 	"github.com/samuel/go-thrift/parser"
 )
 
@@ -29,6 +30,11 @@ const (
 	JavaTypeDouble = "Double"
 
 	// other types (such as array, map, etc.) are implemented in the method 'Typecast'
+)
+
+const (
+	TPL_STRUCT  = "tgen/java/struct"
+	TPL_SERVICE = "tgen/java/service"
 )
 
 var plaintypemapping = map[string]string{
@@ -53,22 +59,19 @@ var objecttypemapping = map[string]string{
 
 type JavaGen struct {
 	langs.BaseGen
-
-	structpl *template.Template
-	servtpl  *template.Template
 }
 
 type BaseJava struct{}
 
-func (bj *BaseJava) PlainTypecast(t *parser.Type) string {
-	return bj.typecast(t, true)
+func (this *BaseJava) PlainTypecast(t *parser.Type) string {
+	return this.typecast(t, true)
 }
 
-func (bj *BaseJava) ObjectTypecast(t *parser.Type) string {
-	return bj.typecast(t, false)
+func (this *BaseJava) ObjectTypecast(t *parser.Type) string {
+	return this.typecast(t, false)
 }
 
-func (bj *BaseJava) typecast(t *parser.Type, isplain bool) string {
+func (this *BaseJava) typecast(t *parser.Type, isplain bool) string {
 	if t == nil {
 		if isplain {
 			return "void"
@@ -91,15 +94,15 @@ func (bj *BaseJava) typecast(t *parser.Type, isplain bool) string {
 
 	switch t.Name {
 	case langs.ThriftTypeList, langs.ThriftTypeSet:
-		return fmt.Sprintf("ArrayList<%s>", bj.ObjectTypecast(t.ValueType))
+		return fmt.Sprintf("ArrayList<%s>", this.ObjectTypecast(t.ValueType))
 	case langs.ThriftTypeMap:
-		return fmt.Sprintf("Map<%s, %s>", bj.ObjectTypecast(t.KeyType), bj.ObjectTypecast(t.ValueType))
+		return fmt.Sprintf("Map<%s, %s>", this.ObjectTypecast(t.KeyType), this.ObjectTypecast(t.ValueType))
 	default:
 		return t.Name
 	}
 }
 
-func (bj *BaseJava) AssembleParams(method *parser.Method) string {
+func (this *BaseJava) AssembleParams(method *parser.Method) string {
 	var buf bytes.Buffer
 
 	for i, arg := range method.Arguments {
@@ -107,7 +110,7 @@ func (bj *BaseJava) AssembleParams(method *parser.Method) string {
 			buf.WriteString(", ")
 		}
 
-		buf.WriteString(fmt.Sprintf("final %s %s", bj.PlainTypecast(arg.Type), arg.Name))
+		buf.WriteString(fmt.Sprintf("final %s %s", this.PlainTypecast(arg.Type), arg.Name))
 	}
 
 	if len(method.Arguments) == 0 {
@@ -116,22 +119,22 @@ func (bj *BaseJava) AssembleParams(method *parser.Method) string {
 		buf.WriteString(", ")
 	}
 
-	buf.WriteString(fmt.Sprintf("final Listener<%s> listener", bj.ObjectTypecast(method.ReturnType)))
+	buf.WriteString(fmt.Sprintf("final Listener<%s> listener", this.ObjectTypecast(method.ReturnType)))
 
 	return buf.String()
 }
 
-func (bj *BaseJava) GetInnerType(t *parser.Type) string {
+func (this *BaseJava) GetInnerType(t *parser.Type) string {
 	if t == nil {
 		return "Void"
 	}
 
 	// map is ignored
 	if t.Name == langs.ThriftTypeList || t.Name == langs.ThriftTypeSet {
-		return bj.GetInnerType(t.ValueType)
+		return this.GetInnerType(t.ValueType)
 	}
 
-	return bj.ObjectTypecast(t)
+	return this.ObjectTypecast(t)
 }
 
 type javaStruct struct {
@@ -149,6 +152,18 @@ type javaService struct {
 func (o *JavaGen) Generate(output string, parsedThrift map[string]*parser.Thrift) {
 	o.BaseGen.Init("java", parsedThrift)
 
+	generatejsonrpc(filepath.Join(output, "jsonrpc"), parsedThrift)
+	genraterest(filepath.Join(output, "rest"), parsedThrift)
+}
+
+func generatejsonrpc(output string, parsedThrift map[string]*parser.Thrift) {
+	if err := os.MkdirAll(output, 0755); err != nil {
+		panic(fmt.Errorf("failed to create output directory %s", output))
+	}
+
+	var structpl *template.Template
+	var servicetpl *template.Template
+
 	// key is the absoule path of thrift file
 	for tf, t := range parsedThrift {
 		// due to java's features,
@@ -160,58 +175,120 @@ func (o *JavaGen) Generate(output string, parsedThrift map[string]*parser.Thrift
 			return
 		}
 
-		for _, m := range t.Structs {
-			if o.structpl == nil {
-				o.structpl = langs.InitTemplate("tmpl/java/java_struct.gojava")
+		for _, s := range t.Structs {
+			if structpl == nil {
+				structpl = initemplate(TPL_STRUCT, "tmpl/java/jsonrpc_struct.gojava")
 			}
 
-			data := o.genStruct(namespace, m)
-
 			// filename is the struct name
-			name := m.Name + ".java"
+			name := s.Name + ".java"
 
 			path := filepath.Join(output, name)
 
-			// save to disk
-			langs.Write(path, data)
+			data := &javaStruct{BaseJava: &BaseJava{}, Namespace: namespace, Struct: s}
 
-			fmt.Printf("[%s] generated\n", path)
+			if err := outputfile(path, structpl, TPL_STRUCT, data); err != nil {
+				panic(fmt.Errorf("failed to write file %s. error: %v\n", path, err))
+			}
 		}
 
 		for _, s := range t.Services {
-			if o.servtpl == nil {
-				o.servtpl = langs.InitTemplate("tmpl/java/java_service.gojava")
+			if servicetpl == nil {
+				servicetpl = initemplate(TPL_SERVICE, "tmpl/java/jsonrpc_service.gojava")
 			}
-
-			data := o.genService(namespace, s)
 
 			// filename is the service name plus 'Service'
 			name := s.Name + "Service.java"
 
 			path := filepath.Join(output, name)
 
-			// save to disk
-			langs.Write(path, data)
+			data := &javaService{BaseJava: &BaseJava{}, Namespace: namespace, Service: s}
 
-			fmt.Printf("[%s] generated\n", path)
+			if err := outputfile(path, servicetpl, TPL_SERVICE, data); err != nil {
+				panic(fmt.Errorf("failed to write file %s. error: %v\n", path, err))
+			}
 		}
 	}
 }
 
-func (o *JavaGen) genStruct(ns string, s *parser.Struct) []byte {
-	js := &javaStruct{BaseJava: &BaseJava{}, Namespace: ns, Struct: s}
+func genraterest(output string, parsedThrift map[string]*parser.Thrift) {
+	if err := os.MkdirAll(output, 0755); err != nil {
+		panic(fmt.Errorf("failed to create output directory %s", output))
+	}
 
-	data := langs.RenderTemplate(o.structpl, js)
+	var structpl *template.Template
+	var servicetpl *template.Template
 
-	return data
+	// key is the absoule path of thrift file
+	for tf, t := range parsedThrift {
+		// due to java's features,
+		// we generate the struct and service in seperate template file
+
+		namespace, ok := t.Namespaces["java"]
+		if !ok {
+			fmt.Fprintf(os.Stderr, "error: namespace not found in file[%s] of language[java]\n", tf)
+			return
+		}
+
+		for _, s := range t.Structs {
+			if structpl == nil {
+				structpl = initemplate(TPL_STRUCT, "tmpl/java/rest_struct.gojava")
+			}
+
+			// filename is the struct name
+			name := s.Name + ".java"
+
+			path := filepath.Join(output, name)
+
+			data := &javaStruct{BaseJava: &BaseJava{}, Namespace: namespace, Struct: s}
+
+			if err := outputfile(path, structpl, TPL_STRUCT, data); err != nil {
+				panic(fmt.Errorf("failed to write file %s. error: %v\n", path, err))
+			}
+		}
+
+		for _, s := range t.Services {
+			if servicetpl == nil {
+				servicetpl = initemplate(TPL_SERVICE, "tmpl/java/rest_service.gojava")
+			}
+
+			// filename is the service name plus 'Service'
+			name := s.Name + "Service.java"
+
+			path := filepath.Join(output, name)
+
+			data := &javaService{BaseJava: &BaseJava{}, Namespace: namespace, Service: s}
+
+			if err := outputfile(path, servicetpl, TPL_SERVICE, data); err != nil {
+				panic(fmt.Errorf("failed to write file %s. error: %v\n", path, err))
+			}
+		}
+	}
 }
 
-func (o *JavaGen) genService(ns string, s *parser.Service) []byte {
-	js := &javaService{BaseJava: &BaseJava{}, Namespace: ns, Service: s}
+func initemplate(n string, path string) *template.Template {
+	data, err := tmpl.Asset(path)
+	if err != nil {
+		panic(err)
+	}
 
-	data := langs.RenderTemplate(o.servtpl, js)
+	tpl, err := template.New(n).Parse(string(data))
+	if err != nil {
+		panic(err)
+	}
 
-	return data
+	return tpl
+}
+
+func outputfile(fp string, t *template.Template, tplname string, data interface{}) error {
+	file, err := os.OpenFile(fp, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
+	if err != nil {
+		return err
+	}
+
+	defer file.Close()
+
+	return t.ExecuteTemplate(file, tplname, data)
 }
 
 func init() {

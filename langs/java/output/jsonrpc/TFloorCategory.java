@@ -13,11 +13,9 @@ import java.util.ArrayList;
  * Don't change manually
  */
 
-public class TRecentPrimeCustomer extends BaseModule<TRecentPrimeCustomer> implements Serializable {
-
-    public String customerName;
-    public ArrayList<String> productImage;
-    public String avatar;
-    public int itemCount;
-    
+public class TFloorCategory extends BaseModule<TFloorCategory> implements Serializable {
+    public int id;
+    public String name;
+    public ArrayList<String> names;
+    public ArrayList<TCategory> subCategories;
 }

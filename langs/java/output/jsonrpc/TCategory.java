@@ -13,13 +13,10 @@ import java.util.ArrayList;
  * Don't change manually
  */
 
-public class TFloorCategory extends BaseModule<TFloorCategory> implements Serializable {
-
+public class TCategory extends BaseModule<TCategory> implements Serializable {
     public int id;
-    public int parentId;
+    public long pid;
     public String name;
-    public String picture;
+    public boolean testbool;
     public String altName;
-    public ArrayList<TCategory> subCategories;
-    
 }
