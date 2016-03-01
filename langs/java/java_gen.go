@@ -73,7 +73,12 @@ func (this *BaseJava) FilterVariableName(n string) string {
 
 func (this *BaseJava) IsKeyword(n string) bool {
 	switch n {
-	case "package":
+	case "package", "int", "short", "long", "byte", "boolean", "case", "switch", "if ", "for", "else",
+		"goto", "Integer", "Short", "Long", "Byte", "Boolean", "class", "break", "try", "catch",
+		"double", "Double", "do", "while", "final", "finally", "continue", "interface", "private",
+		"public", "protected", "return", "this", "throw", "static", "super", "throws",
+		"true", "false", "float", "volatile", "synchronized", "abstract", "default", "extends",
+		"native", "new":
 		return true
 	}
 	return false
