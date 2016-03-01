@@ -7,7 +7,6 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/ezbuy/tgen/utils"
 	"github.com/samuel/go-thrift/parser"
 )
 
@@ -16,16 +15,15 @@ func TestGenerate(t *testing.T) {
 	// 2 generate & output
 	// 3 read generated files, compared with corresponding files in folder 'test'
 
-	casedir, _ := filepath.Abs(filepath.Dir("./cases/"))
+	casedir, _ := filepath.Abs("./cases")
 
 	// create output dir
-	outdir := filepath.Dir("./output/")
-	if !utils.PathExists(outdir) {
-		os.MkdirAll(outdir, 0775)
-	}
+	outdir, _ := filepath.Abs("./output")
+	// if err := os.MkdirAll(outdir, 0755); err != nil {
+	// 	t.Errorf("failed to create output directory %s", outdir)
+	// }
 
-	outdir, _ = filepath.Abs(outdir)
-	testdir, _ := filepath.Abs("./test/")
+	testdir, _ := filepath.Abs("./test")
 
 	gen := &JavaGen{}
 	p := &parser.Parser{}
@@ -46,8 +44,15 @@ func TestGenerate(t *testing.T) {
 			for _, m := range thrift.Structs {
 				name := m.Name + ".java"
 
-				outfile := filepath.Join(outdir, name)
-				testfile := filepath.Join(testdir, name)
+				// jsonrpc
+				outfile := filepath.Join(outdir, "jsonrpc", name)
+				testfile := filepath.Join(testdir, "jsonrpc", name)
+
+				fileCompare(t, outfile, testfile)
+
+				// rest
+				outfile = filepath.Join(outdir, "rest", name)
+				testfile = filepath.Join(testdir, "rest", name)
 
 				fileCompare(t, outfile, testfile)
 			}
@@ -55,8 +60,15 @@ func TestGenerate(t *testing.T) {
 			for _, s := range thrift.Services {
 				name := s.Name + "Service.java"
 
-				outfile := filepath.Join(outdir, name)
-				testfile := filepath.Join(testdir, name)
+				// jsonrpc
+				outfile := filepath.Join(outdir, "jsonrpc", name)
+				testfile := filepath.Join(testdir, "jsonrpc", name)
+
+				fileCompare(t, outfile, testfile)
+
+				// rest
+				outfile = filepath.Join(outdir, "rest", name)
+				testfile = filepath.Join(testdir, "rest", name)
 
 				fileCompare(t, outfile, testfile)
 			}
@@ -74,9 +86,9 @@ func TestGenerate(t *testing.T) {
 }
 
 func fileCompare(t *testing.T, src string, dest string) {
-	if !utils.PathExists(src) {
+	if !pathexists(src) {
 		t.Error("geenerate error\n")
-	} else if !utils.PathExists(dest) {
+	} else if !pathexists(dest) {
 		t.Errorf("no test file found [%s]\n", dest)
 	} else {
 		// compare the output file with the case
@@ -91,4 +103,17 @@ func fileCompare(t *testing.T, src string, dest string) {
 			t.Log("PASS")
 		}
 	}
+}
+
+func pathexists(path string) bool {
+	_, err := os.Stat(path)
+	if err == nil {
+		return true
+	}
+
+	if os.IsNotExist(err) {
+		return false
+	}
+
+	return false
 }

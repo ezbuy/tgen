@@ -1,4 +1,4 @@
-package com.daigou.sg.rpc.category;
+package com.daigou.selfstation.rpc.selfstation;
 
 import com.daigou.sg.rpc.BaseModule;
 import com.fasterxml.jackson.core.JsonParser;
@@ -13,9 +13,7 @@ import java.util.ArrayList;
  * Don't change manually
  */
 
-public class TFloorCategory extends BaseModule<TFloorCategory> implements Serializable {
-    public int id;
+public class TParcelSection extends BaseModule<TParcelSection> implements Serializable {
     public String name;
-    public ArrayList<String> names;
-    public ArrayList<TCategory> subCategories;
+    public String value;
 }

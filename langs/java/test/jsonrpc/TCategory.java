@@ -15,8 +15,8 @@ import java.util.ArrayList;
 
 public class TCategory extends BaseModule<TCategory> implements Serializable {
     public int id;
-    public int parentId;
+    public long pid;
     public String name;
-    public String picture;
-    public String altName;
+    public boolean testbool;
+    public double weight;
 }

@@ -149,69 +149,23 @@ type javaService struct {
 	*parser.Service
 }
 
-func (o *JavaGen) Generate(output string, parsedThrift map[string]*parser.Thrift) {
-	o.BaseGen.Init("java", parsedThrift)
+func (this *JavaGen) Generate(output string, parsedThrift map[string]*parser.Thrift) {
+	this.BaseGen.Init("java", parsedThrift)
 
 	generatejsonrpc(filepath.Join(output, "jsonrpc"), parsedThrift)
 	genraterest(filepath.Join(output, "rest"), parsedThrift)
 }
 
 func generatejsonrpc(output string, parsedThrift map[string]*parser.Thrift) {
-	if err := os.MkdirAll(output, 0755); err != nil {
-		panic(fmt.Errorf("failed to create output directory %s", output))
-	}
-
-	var structpl *template.Template
-	var servicetpl *template.Template
-
-	// key is the absoule path of thrift file
-	for tf, t := range parsedThrift {
-		// due to java's features,
-		// we generate the struct and service in seperate template file
-
-		namespace, ok := t.Namespaces["java"]
-		if !ok {
-			fmt.Fprintf(os.Stderr, "error: namespace not found in file[%s] of language[java]\n", tf)
-			return
-		}
-
-		for _, s := range t.Structs {
-			if structpl == nil {
-				structpl = initemplate(TPL_STRUCT, "tmpl/java/jsonrpc_struct.gojava")
-			}
-
-			// filename is the struct name
-			name := s.Name + ".java"
-
-			path := filepath.Join(output, name)
-
-			data := &javaStruct{BaseJava: &BaseJava{}, Namespace: namespace, Struct: s}
-
-			if err := outputfile(path, structpl, TPL_STRUCT, data); err != nil {
-				panic(fmt.Errorf("failed to write file %s. error: %v\n", path, err))
-			}
-		}
-
-		for _, s := range t.Services {
-			if servicetpl == nil {
-				servicetpl = initemplate(TPL_SERVICE, "tmpl/java/jsonrpc_service.gojava")
-			}
-
-			// filename is the service name plus 'Service'
-			name := s.Name + "Service.java"
-
-			path := filepath.Join(output, name)
-
-			data := &javaService{BaseJava: &BaseJava{}, Namespace: namespace, Service: s}
-
-			if err := outputfile(path, servicetpl, TPL_SERVICE, data); err != nil {
-				panic(fmt.Errorf("failed to write file %s. error: %v\n", path, err))
-			}
-		}
-	}
+	dogenerate(output, 0, parsedThrift)
 }
 
 func genraterest(output string, parsedThrift map[string]*parser.Thrift) {
+	dogenerate(output, 1, parsedThrift)
+}
+
+// flag: 0-jsonrpc, 1-rest
+func dogenerate(output string, flag int16, parsedThrift map[string]*parser.Thrift) {
 	if err := os.MkdirAll(output, 0755); err != nil {
 		panic(fmt.Errorf("failed to create output directory %s", output))
 	}
@@ -232,7 +186,11 @@ func genraterest(output string, parsedThrift map[string]*parser.Thrift) {
 
 		for _, s := range t.Structs {
 			if structpl == nil {
-				structpl = initemplate(TPL_STRUCT, "tmpl/java/rest_struct.gojava")
+				if flag == 0 {
+					structpl = initemplate(TPL_STRUCT, "tmpl/java/jsonrpc_struct.gojava")
+				} else if flag == 1 {
+					structpl = initemplate(TPL_STRUCT, "tmpl/java/rest_struct.gojava")
+				}
 			}
 
 			// filename is the struct name
@@ -249,7 +207,11 @@ func genraterest(output string, parsedThrift map[string]*parser.Thrift) {
 
 		for _, s := range t.Services {
 			if servicetpl == nil {
-				servicetpl = initemplate(TPL_SERVICE, "tmpl/java/rest_service.gojava")
+				if flag == 0 {
+					servicetpl = initemplate(TPL_SERVICE, "tmpl/java/jsonrpc_service.gojava")
+				} else if flag == 1 {
+					servicetpl = initemplate(TPL_SERVICE, "tmpl/java/rest_service.gojava")
+				}
 			}
 
 			// filename is the service name plus 'Service'

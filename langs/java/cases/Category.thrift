@@ -9,7 +9,7 @@ struct TCategory {
 	2: required i64 pid;
 	3: required string name;		// category名称
 	4: required bool testbool;
-	5: required string altName;		// 英文名称
+	5: required double weight;
 }
 
 struct TFloorCategory{
