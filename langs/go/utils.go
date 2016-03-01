@@ -7,21 +7,22 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/ezbuy/tgen/langs"
 	"github.com/samuel/go-thrift/parser"
 )
 
 const (
-	TypeBool   = "bool"
-	TypeByte   = "byte"
-	TypeI16    = "i16"
-	TypeI32    = "i32"
-	TypeI64    = "i64"
-	TypeDouble = "double"
-	TypeBinary = "binary"
-	TypeString = "string"
-	TypeList   = "list"
-	TypeMap    = "map"
-	TypeSet    = "set"
+	TypeBool   = langs.ThriftTypeBool
+	TypeByte   = langs.ThriftTypeByte
+	TypeI16    = langs.ThriftTypeI16
+	TypeI32    = langs.ThriftTypeI32
+	TypeI64    = langs.ThriftTypeI64
+	TypeDouble = langs.ThriftTypeDouble
+	TypeBinary = langs.ThriftTypeBinary
+	TypeString = langs.ThriftTypeString
+	TypeList   = langs.ThriftTypeList
+	TypeMap    = langs.ThriftTypeMap
+	TypeSet    = langs.ThriftTypeSet
 )
 
 var typeStrs = map[string]string{

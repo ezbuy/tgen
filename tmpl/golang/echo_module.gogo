@@ -1,10 +1,9 @@
 {{define "echo_module"}}package {{.Package}}{{$utils := .TplUtils}}{{$serviceName := $utils.UpperHead .Service.Name}}
 
 import (
-    "encoding/json"
-    "fmt"
     "net/http"
 
+    "github.com/ezbuy/utils/httputils/echoutils"
     "github.com/labstack/echo"
 )
 
@@ -29,21 +28,19 @@ func (this *{{$serviceName}}ServiceAPIModule) {{$methodName}}(c *echo.Context) e
     {{- if ne $argsCount 0}}
     params := &Request{{$serviceName}}Service{{$methodName}}Arguments{}
 
-    decoder := json.NewDecoder(c.Request().Body)
-    if err := decoder.Decode(params); err != nil {
-        fmt.Printf("/{{$serviceName}}/{{$methodName}}: invalid request body %s\n", err)
-        return echo.NewHTTPError(http.StatusBadRequest, "invalid request")
+    if err := echoutils.DecodeJSONInput(c, params); err != nil {
+        return err
     }
     {{end}}
     {{- $noReturn := $utils.IsNilType $method.ReturnType}}
     {{if not $noReturn}}result, {{end}}err := this.service.{{$methodName}}({{$utils.GenWebApiServiceParams $method.Arguments}})
     
     if err != nil {
-        fmt.Printf("/{{$serviceName}}/{{$methodName}}: %s", err)
-        return echo.NewHTTPError(http.StatusInternalServerError, "internal error")
+        echoutils.RequestLogger(c).Infof("service error: %s", err)
+        return echoutils.InternalError
     }
 
-    return c.JSON(http.StatusOK, {{if not $noReturn}}result{{else}}"ok"{{end}})
+    return c.JSON(http.StatusOK, {{if not $noReturn}}result{{else}}echoutils.OKMessage{{end}})
 }
 {{end}}
 {{end}}
