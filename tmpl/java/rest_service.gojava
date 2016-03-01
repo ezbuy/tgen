@@ -109,7 +109,7 @@ public class {{ .Service.Name}}Service {
                 {{- if $method.Arguments }}
                 HashMap<String, Object> msg = new HashMap<String, Object>();
                 {{- range $arg := $method.Arguments }}
-                msg.put("{{ $arg.Name }}", {{ $arg.Name }});
+                msg.put("{{ $js.FilterVariableName $arg.Name }}", {{ $js.FilterVariableName $arg.Name }});
                 {{- end }}
 
                 return gson.toJson(msg).getBytes(Charset.forName("UTF-8"));

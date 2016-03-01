@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 	"text/template"
 
 	"github.com/ezbuy/tgen/langs"
@@ -63,6 +64,21 @@ type JavaGen struct {
 
 type BaseJava struct{}
 
+func (this *BaseJava) FilterVariableName(n string) string {
+	if this.IsKeyword(n) {
+		return fmt.Sprintf("t%s%s", strings.ToUpper(n[:1]), n[1:])
+	}
+	return n
+}
+
+func (this *BaseJava) IsKeyword(n string) bool {
+	switch n {
+	case "package":
+		return true
+	}
+	return false
+}
+
 func (this *BaseJava) PlainTypecast(t *parser.Type) string {
 	return this.typecast(t, true)
 }
@@ -110,7 +126,7 @@ func (this *BaseJava) AssembleParams(method *parser.Method) string {
 			buf.WriteString(", ")
 		}
 
-		buf.WriteString(fmt.Sprintf("final %s %s", this.PlainTypecast(arg.Type), arg.Name))
+		buf.WriteString(fmt.Sprintf("final %s %s", this.PlainTypecast(arg.Type), this.FilterVariableName(arg.Name)))
 	}
 
 	if len(method.Arguments) == 0 {
@@ -141,6 +157,15 @@ type javaStruct struct {
 	*BaseJava
 	Namespace string
 	*parser.Struct
+}
+
+func (this *javaStruct) HasKeyword() bool {
+	for _, f := range this.Struct.Fields {
+		if this.BaseJava.IsKeyword(f.Name) {
+			return true
+		}
+	}
+	return false
 }
 
 type javaService struct {

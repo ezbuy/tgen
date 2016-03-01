@@ -3,6 +3,7 @@ package com.daigou.selfstation.rpc.selfstation;
 import com.daigou.sg.rpc.BaseModule;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
+import com.google.gson.annotations.SerializedName;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -15,5 +16,7 @@ import java.util.ArrayList;
 
 public class TParcelSection extends BaseModule<TParcelSection> implements Serializable {
     public String name;
-    public String value;
+	@SerializedName("package")
+    public String tPackage;
+    public long value;
 }

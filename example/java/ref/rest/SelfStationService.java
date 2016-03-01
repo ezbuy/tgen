@@ -42,7 +42,7 @@ public class SelfStationService {
         return Integer.toString(msgID);
     }
 
-    public static void Login(final String username, final String password, final Listener<TLoginResult> listener) {
+    public static void Login(final String username, final String tPackage, final Listener<TLoginResult> listener) {
         RpcRequest req = new RpcRequest(Request.Method.POST, AppUrl.kJsonRpcCoreUrl + "SelfStation/Login",
             new Response.Listener<String>() {
                 @Override
@@ -78,7 +78,7 @@ public class SelfStationService {
             public byte[] getBody() {
                 HashMap<String, Object> msg = new HashMap<String, Object>();
                 msg.put("username", username);
-                msg.put("password", password);
+                msg.put("tPackage", tPackage);
 
                 return gson.toJson(msg).getBytes(Charset.forName("UTF-8"));
             }

@@ -9,7 +9,8 @@ struct TLoginResult {
 
 struct TParcelSection {
 	1: required string name;
-	2: required string value;
+	2: required string package;
+	3: required long value;
 }
 
 struct TParcel {
@@ -22,7 +23,7 @@ struct TParcel {
 
 service SelfStation {
 	// 只有登陆成功isSuccessful为true时，token跟StationNames才可能会有值
-	TLoginResult Login(1: string username, 2: string password),
+	TLoginResult Login(1: string username, 2: string package),
 
 	// 获取上次图片去七牛的token
 	string UserGetUploadToken(),

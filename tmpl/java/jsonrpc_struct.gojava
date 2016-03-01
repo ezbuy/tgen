@@ -3,6 +3,9 @@ package {{ .Namespace }};
 import com.daigou.sg.rpc.BaseModule;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
+{{- if .HasKeyword }}
+import com.google.gson.annotations.SerializedName;
+{{- end }}
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -17,5 +20,8 @@ import java.util.ArrayList;
 
 public class {{ .Struct.Name}} extends BaseModule<{{ .Struct.Name }}> implements Serializable {
 {{- range .Struct.Fields }}
-    public {{ .Type | $js.BaseJava.PlainTypecast }} {{ .Name }};{{ end }}
+	{{- if $js.IsKeyword .Name }}
+	@SerializedName("{{ .Name }}")
+	{{- end }}
+    public {{ $js.PlainTypecast .Type }} {{ $js.FilterVariableName .Name }};{{ end }}
 }

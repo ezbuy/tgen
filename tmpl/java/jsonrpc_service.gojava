@@ -90,7 +90,7 @@ public class {{ .Service.Name}}Service {
             public byte[] getBody() {
                 final ArrayList<Object> params = new ArrayList<>();
 {{- range $arg := $method.Arguments }}
-                params.add({{ $arg.Name }});
+                params.add({{ $js.FilterVariableName $arg.Name }});
 {{- end }}
 
                 HashMap<String, Object> msg = new HashMap<>();

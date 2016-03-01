@@ -2,6 +2,7 @@ package com.daigou.selfstation.rpc.selfstation;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
+import com.google.gson.annotations.SerializedName;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -14,7 +15,9 @@ import java.util.ArrayList;
 
 public class TParcelSection implements Serializable {
     public String name;
-    public String value;
+    @SerializedName("package")
+    public String tPackage;
+    public long value;
 
     static TParcelSection fromJSON(JsonParser jp) throws IOException {
         // Sanity check: verify that we got "Json Object":
@@ -36,9 +39,12 @@ public class TParcelSection implements Serializable {
             } else if (fieldName.equals("name")) {
                 jp.nextToken();
                 result.name = jp.getText();
+            } else if (fieldName.equals("package")) {
+                jp.nextToken();
+                result.package = jp.getText();
             } else if (fieldName.equals("value")) {
                 jp.nextToken();
-                result.value = jp.getText();
+                result.value = jp.getLongValue();
             }
         }
         return result;
