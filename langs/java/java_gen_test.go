@@ -15,7 +15,7 @@ func TestGenerate(t *testing.T) {
 	// 2 generate & output
 	// 3 read generated files, compared with corresponding files in folder 'test'
 
-	casedir, _ := filepath.Abs("./cases")
+	casedir, _ := filepath.Abs("./../../example/java")
 
 	// create output dir
 	outdir, _ := filepath.Abs("./output")
@@ -23,7 +23,7 @@ func TestGenerate(t *testing.T) {
 	// 	t.Errorf("failed to create output directory %s", outdir)
 	// }
 
-	testdir, _ := filepath.Abs("./test")
+	testdir, _ := filepath.Abs("./../../example/java/ref")
 
 	gen := &JavaGen{}
 	p := &parser.Parser{}
