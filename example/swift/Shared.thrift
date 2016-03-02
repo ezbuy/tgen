@@ -3,8 +3,9 @@ namespace swift Basic
 
 struct TBasic {}
 
-service BasicService {
+service Basic {
   TBasic getStruct(1: i32 key, 2: i64 id),
-  string getServiceName(1: i64 id),
-  string getName()
+  list<TBasic> getObjects(1: i32 key, 2: i64 id),
+  list<i16> getAges(1: i64 id),
+  list<string> getNames()
 }

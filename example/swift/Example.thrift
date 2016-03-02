@@ -12,9 +12,11 @@ struct TExample {
     4:optional i32 pendingWithdrawAmount;
     5:optional i64 unpaidAmount;
     6:required list<TFoo> fooes;
+    7:required list<string> strs;
+    8:required list<i16> ints;
 }
 
-service Example extends Shared.BasicService {
+service Example extends Shared.Basic {
   void ping(1: string ip),
   i32 getPendingWithdrawAmount()
 }

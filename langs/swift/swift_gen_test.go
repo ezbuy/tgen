@@ -15,16 +15,15 @@ func TestGenerate(t *testing.T) {
 	// 2 generate & output
 	// 3 read generated files, compared with corresponding files in folder 'test'
 
-	casedir, _ := filepath.Abs(filepath.Dir("./cases/"))
+	casedir, _ := filepath.Abs("./../../example/swift")
 
 	// create output dir
-	outdir := filepath.Dir("./output/")
+	outdir, _ := filepath.Abs("./output")
 	if err := os.MkdirAll(outdir, 0755); err != nil {
 		t.Errorf("failed to create output directory %s", outdir)
 	}
 
-	outdir, _ = filepath.Abs(outdir)
-	testdir, _ := filepath.Abs("./test/")
+	testdir, _ := filepath.Abs("./../../example/swift/ref")
 
 	gen := &SwiftGen{}
 	p := &parser.Parser{}
@@ -41,28 +40,23 @@ func TestGenerate(t *testing.T) {
 
 		gen.Generate(outdir, parsedThrift)
 
-		for tp, thrift := range parsedThrift {
-			name := gen.filename(tp, thrift.Namespaces)
+		for _, thrift := range parsedThrift {
+			for _, m := range thrift.Structs {
+				name := m.Name + ".swift"
 
-			outfile := filepath.Join(outdir, name)
-			testfile := filepath.Join(testdir, name)
+				outfile := filepath.Join(outdir, name)
+				testfile := filepath.Join(testdir, name)
 
-			if !pathExists(outfile) {
-				t.Errorf("geenerate error: thrift [%s]\n", tp)
-			} else if !pathExists(testfile) {
-				t.Errorf("no test file found [%s]\n", testfile)
-			} else {
-				// compare the output file with the case
-				outdata, outerr := ioutil.ReadFile(outfile)
-				testdata, testerr := ioutil.ReadFile(testfile)
+				fileCompare(t, outfile, testfile)
+			}
 
-				if outerr != nil || testerr != nil {
-					t.Error("compare error [reading]")
-				} else if string(outdata) != string(testdata) {
-					t.Errorf("mismatch: [%s, %s]", testfile, outfile)
-				} else {
-					t.Log("PASS")
-				}
+			for _, s := range thrift.Services {
+				name := s.Name + "Service.swift"
+
+				outfile := filepath.Join(outdir, name)
+				testfile := filepath.Join(testdir, name)
+
+				fileCompare(t, outfile, testfile)
 			}
 		}
 
@@ -77,7 +71,27 @@ func TestGenerate(t *testing.T) {
 	os.RemoveAll(outdir)
 }
 
-func pathExists(path string) bool {
+func fileCompare(t *testing.T, src string, dest string) {
+	if !pathexists(src) {
+		t.Error("geenerate error\n")
+	} else if !pathexists(dest) {
+		t.Errorf("no test file found [%s]\n", dest)
+	} else {
+		// compare the output file with the case
+		srcdata, srcerr := ioutil.ReadFile(src)
+		destdata, desterr := ioutil.ReadFile(dest)
+
+		if srcerr != nil || desterr != nil {
+			t.Error("compare error [reading]")
+		} else if string(srcdata) != string(destdata) {
+			t.Errorf("mismatch: [%s, %s]", src, dest)
+		} else {
+			t.Log("PASS")
+		}
+	}
+}
+
+func pathexists(path string) bool {
 	_, err := os.Stat(path)
 	if err == nil {
 		return true
