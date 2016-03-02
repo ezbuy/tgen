@@ -15,12 +15,12 @@ class {{ .Service.Name }}Service: {{ if .Service.Extends }}{{ .Service.Extends |
 {{ else -}}
         let params = [String: AnyObject]()
         {{- end }}
-        let api = "{{ $ss.Service.Name }}Service.{{ .Name }}"
+        let api = "{{ $ss.Service.Name }}.{{ .Name }}"
 
-        debugPrint("api", " req: ", params)
+        debugPrint(api, " req: ", params)
 
         AreaService.current?.JSRONPRCClient.invokeMethod(api, withParameters: params, success: { (operation, responseObject) -> Void in
-            debugPrint(api, " resp: ", responseObject);
+            debugPrint(api, " resp: ", responseObject)
             {{ if .ReturnType }}
             {{- $t := .ReturnType | $ss.BaseSwift.PlainType -}}
             {{- if eq .ReturnType.Name "list" }}

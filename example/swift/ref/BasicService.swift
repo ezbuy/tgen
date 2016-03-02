@@ -11,12 +11,12 @@ class BasicService: NSObject {
         var params = [String: AnyObject]()
         params["id"] = NSNumber(longLong: id)
 
-        let api = "BasicService.getAges"
+        let api = "Basic.getAges"
 
-        debugPrint("api", " req: ", params)
+        debugPrint(api, " req: ", params)
 
         AreaService.current?.JSRONPRCClient.invokeMethod(api, withParameters: params, success: { (operation, responseObject) -> Void in
-            debugPrint(api, " resp: ", responseObject);
+            debugPrint(api, " resp: ", responseObject)
             
             success(jsonObject as? [Int] ?? [])
             }, failure: { (operation, error) -> Void in
@@ -26,12 +26,12 @@ class BasicService: NSObject {
 
     class func getNames(success: ([String]) -> Void, failure: ((NSError) -> Void)? = nil) {
         let params = [String: AnyObject]()
-        let api = "BasicService.getNames"
+        let api = "Basic.getNames"
 
-        debugPrint("api", " req: ", params)
+        debugPrint(api, " req: ", params)
 
         AreaService.current?.JSRONPRCClient.invokeMethod(api, withParameters: params, success: { (operation, responseObject) -> Void in
-            debugPrint(api, " resp: ", responseObject);
+            debugPrint(api, " resp: ", responseObject)
             
             success(jsonObject as? [String] ?? [])
             }, failure: { (operation, error) -> Void in
@@ -44,12 +44,12 @@ class BasicService: NSObject {
         params["key"] = key
         params["id"] = NSNumber(longLong: id)
 
-        let api = "BasicService.getObjects"
+        let api = "Basic.getObjects"
 
-        debugPrint("api", " req: ", params)
+        debugPrint(api, " req: ", params)
 
         AreaService.current?.JSRONPRCClient.invokeMethod(api, withParameters: params, success: { (operation, responseObject) -> Void in
-            debugPrint(api, " resp: ", responseObject);
+            debugPrint(api, " resp: ", responseObject)
             
             success([TBasic](jsonObject: responseObject) ?? [])
             }, failure: { (operation, error) -> Void in
@@ -62,12 +62,12 @@ class BasicService: NSObject {
         params["key"] = key
         params["id"] = NSNumber(longLong: id)
 
-        let api = "BasicService.getStruct"
+        let api = "Basic.getStruct"
 
-        debugPrint("api", " req: ", params)
+        debugPrint(api, " req: ", params)
 
         AreaService.current?.JSRONPRCClient.invokeMethod(api, withParameters: params, success: { (operation, responseObject) -> Void in
-            debugPrint(api, " resp: ", responseObject);
+            debugPrint(api, " resp: ", responseObject)
             
             success(TBasic(jsonObject: responseObject)!)
             }, failure: { (operation, error) -> Void in

@@ -9,12 +9,12 @@ class ExampleService: Basic {
 
     class func getPendingWithdrawAmount(success: (Int) -> Void, failure: ((NSError) -> Void)? = nil) {
         let params = [String: AnyObject]()
-        let api = "ExampleService.getPendingWithdrawAmount"
+        let api = "Example.getPendingWithdrawAmount"
 
-        debugPrint("api", " req: ", params)
+        debugPrint(api, " req: ", params)
 
         AreaService.current?.JSRONPRCClient.invokeMethod(api, withParameters: params, success: { (operation, responseObject) -> Void in
-            debugPrint(api, " resp: ", responseObject);
+            debugPrint(api, " resp: ", responseObject)
             
             success(responseObject as? Int ?? 0)
             }, failure: { (operation, error) -> Void in
@@ -26,12 +26,12 @@ class ExampleService: Basic {
         var params = [String: AnyObject]()
         params["ip"] = ip
 
-        let api = "ExampleService.ping"
+        let api = "Example.ping"
 
-        debugPrint("api", " req: ", params)
+        debugPrint(api, " req: ", params)
 
         AreaService.current?.JSRONPRCClient.invokeMethod(api, withParameters: params, success: { (operation, responseObject) -> Void in
-            debugPrint(api, " resp: ", responseObject);
+            debugPrint(api, " resp: ", responseObject)
             
             success()
             }, failure: { (operation, error) -> Void in
