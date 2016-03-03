@@ -58,7 +58,7 @@ func (this *BaseSwift) PlainType(t *parser.Type) string {
 	case langs.ThriftTypeMap:
 		return fmt.Sprintf("[%s: %s]", this.PlainType(t.KeyType), this.PlainType(t.ValueType))
 	default:
-		return n
+		return fmt.Sprintf("TR%s", n[1:])
 	}
 }
 
@@ -166,6 +166,10 @@ type swiftStruct struct {
 	*parser.Struct
 }
 
+func (this *swiftStruct) AssembleStructName(n string) string {
+	return fmt.Sprintf("TR%s", n[1:])
+}
+
 type swiftService struct {
 	*BaseSwift
 	*parser.Service
@@ -190,7 +194,7 @@ func (o *SwiftGen) Generate(output string, parsedThrift map[string]*parser.Thrif
 			}
 
 			// filename is the struct name
-			name := s.Name + ".swift"
+			name := fmt.Sprintf("%s.swift", s.Name)
 
 			path := filepath.Join(output, name)
 

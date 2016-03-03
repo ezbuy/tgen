@@ -5,7 +5,7 @@
 
 import Foundation
 
-class TBasic: EzObject {
+class TRBasic: EzObject {
     override var allKeys: Set<String> {
         return []
     }

@@ -5,7 +5,7 @@
 
 import Foundation
 {{ $ss := . }}
-class {{ .Struct.Name }}: EzObject {
+class {{ .AssembleStructName .Struct.Name }}: EzObject {
 {{- range .Struct.Fields }}
     var {{ .Name }}: {{ .Type | $ss.BaseSwift.TypecastWithDefaultValue }}
 {{end}}

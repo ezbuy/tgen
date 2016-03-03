@@ -1,6 +1,7 @@
 package swift
 
 import (
+	"fmt"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -41,8 +42,8 @@ func TestGenerate(t *testing.T) {
 		gen.Generate(outdir, parsedThrift)
 
 		for _, thrift := range parsedThrift {
-			for _, m := range thrift.Structs {
-				name := m.Name + ".swift"
+			for _, s := range thrift.Structs {
+				name := fmt.Sprintf("%s.swift", s.Name)
 
 				outfile := filepath.Join(outdir, name)
 				testfile := filepath.Join(testdir, name)

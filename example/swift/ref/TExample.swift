@@ -5,7 +5,7 @@
 
 import Foundation
 
-class TExample: EzObject {
+class TRExample: EzObject {
     var amountAvailable: Double = 0.0
 
     var rebateAmountAvailable: String?
@@ -16,7 +16,7 @@ class TExample: EzObject {
 
     var unpaidAmount: Int64 = 0
 
-    var fooes: [TFoo]?
+    var fooes: [TRFoo]?
 
     var strs: [String]?
 
@@ -35,7 +35,7 @@ class TExample: EzObject {
         amountPendingVerification = dict["amountPendingVerification"] as? Bool ?? false
         pendingWithdrawAmount = dict["pendingWithdrawAmount"] as? Int ?? 0
         unpaidAmount = dict["unpaidAmount"] as? Int64 ?? 0
-        fooes = [TFoo](jsonObject: dict["fooes"])
+        fooes = [TRFoo](jsonObject: dict["fooes"])
         strs = dict["strs"] as? [String]
         ints = dict["ints"] as? [Int]
 
