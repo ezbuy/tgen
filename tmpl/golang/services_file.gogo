@@ -4,6 +4,11 @@ package {{.Package}}
 {{- $includeCount := len .Includes -}}
 {{if ne $includeCount 0}}{{template "include" .Includes -}}
 {{end}}
+
+import "encoding/json"
+
+var _ json.Unmarshaler
+
 {{- range $service := .Services}}
 {{template "service" $service}}
 {{end}}
