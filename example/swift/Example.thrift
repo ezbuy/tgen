@@ -1,7 +1,7 @@
 include "Shared.thrift"
 
 namespace java com.ezbuy.example
-namespace swift Example
+namespace swift TRE
 
 struct TFoo {}
 
@@ -14,6 +14,7 @@ struct TExample {
     6:required list<TFoo> fooes;
     7:required list<string> strs;
     8:required list<i16> ints;
+    9:required list<Shared.TBasic> basics;
 }
 
 service Example extends Shared.Basic {

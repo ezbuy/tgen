@@ -7,7 +7,7 @@ import Foundation
 {{ $ss := . }}
 class {{ .AssembleStructName .Struct.Name }}: EzObject {
 {{- range .Struct.Fields }}
-    var {{ .Name }}: {{ .Type | $ss.BaseSwift.TypecastWithDefaultValue }}
+    var {{ $ss.FilterPropertory .Name }}: {{ .Type | $ss.BaseSwift.TypecastWithDefaultValue }}
 {{end}}
     override var allKeys: Set<String> {
         return [{{ range $i, $p := .Struct.Fields }}{{ if ne $i 0 }}, {{ end }}"{{ $p.Name }}"{{ end }}]
@@ -23,21 +23,21 @@ class {{ .AssembleStructName .Struct.Name }}: EzObject {
         {{- if eq .Type.Name "list" }}
         {{- $innertype := $ss.BaseSwift.GetInnerType .Type -}}
         {{- if $innertype | $ss.BaseSwift.IsBasicType }}
-        {{ .Name }} = dict["{{ .Name }}"] as? [{{ $innertype }}]
+        {{ $ss.FilterPropertory .Name }} = dict["{{ .Name }}"] as? [{{ $innertype }}]
         {{- else }}
-        {{ .Name }} = {{ $t }}(jsonObject: dict["{{ .Name }}"])
+        {{ $ss.FilterPropertory .Name }} = {{ $t }}(jsonObject: dict["{{ .Name }}"])
         {{- end }}
         {{- else }}
         {{- if eq $t "String" }}
-        {{ .Name }} = dict["{{ .Name }}"] as? {{ $t }}
+        {{ $ss.FilterPropertory .Name }} = dict["{{ .Name }}"] as? {{ $t }}
         {{- else if or (eq $t "Int") (eq $t "Int64") }}
-        {{ .Name }} = dict["{{ .Name }}"] as? {{ $t }} ?? 0
+        {{ $ss.FilterPropertory .Name }} = dict["{{ .Name }}"] as? {{ $t }} ?? 0
         {{- else if eq $t "Double" }}
-        {{ .Name }} = dict["{{ .Name }}"] as? {{ $t }} ?? 0.0
+        {{ $ss.FilterPropertory .Name }} = dict["{{ .Name }}"] as? {{ $t }} ?? 0.0
         {{- else if eq $t "Bool" }}
-        {{ .Name }} = dict["{{ .Name }}"] as? {{ $t }} ?? false
+        {{ $ss.FilterPropertory .Name }} = dict["{{ .Name }}"] as? {{ $t }} ?? false
         {{- else }}
-        {{ .Name }} = {{ $t }}(jsonObject: dict["{{ .Name }}"])
+        {{ $ss.FilterPropertory .Name }} = {{ $t }}(jsonObject: dict["{{ .Name }}"])
         {{- end }}
         {{- end }}
         {{- end }}

@@ -5,7 +5,7 @@
 
 import Foundation
 
-class ExampleService: Basic {
+class ExampleService: NSObject {
 
     class func getPendingWithdrawAmount(success: (Int) -> Void, failure: ((NSError) -> Void)? = nil) {
         let params = [String: AnyObject]()

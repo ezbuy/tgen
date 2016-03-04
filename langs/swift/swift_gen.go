@@ -43,10 +43,13 @@ type SwiftGen struct {
 	langs.BaseGen
 }
 
-type BaseSwift struct{}
+type BaseSwift struct {
+	Thrift  *parser.Thrift
+	Thrifts *map[string]*parser.Thrift
+}
 
 func (this *BaseSwift) PlainType(t *parser.Type) string {
-	n := this.LastComponentOfDotStr(t.Name)
+	n := t.Name
 
 	if t, ok := typemapping[n]; ok {
 		return t
@@ -58,7 +61,7 @@ func (this *BaseSwift) PlainType(t *parser.Type) string {
 	case langs.ThriftTypeMap:
 		return fmt.Sprintf("[%s: %s]", this.PlainType(t.KeyType), this.PlainType(t.ValueType))
 	default:
-		return fmt.Sprintf("TR%s", n[1:])
+		return this.AssembleCustomizedTypeName(t)
 	}
 }
 
@@ -79,13 +82,63 @@ func (this *BaseSwift) IsBasicType(t string) bool {
 	}
 }
 
-func (this *BaseSwift) LastComponentOfDotStr(str string) string {
-	if strings.Contains(str, ".") == false {
-		return str
+func (this *BaseSwift) AssembleCustomizedTypeName(t *parser.Type) string {
+	if t == nil {
+		return "Void"
 	}
 
-	strs := strings.Split(str, ".")
-	return strs[len(strs)-1]
+	names := strings.Split(t.Name, ".")
+
+	// if the type is in current thrift file
+	// get namespace
+	// else, iterator the included thrift files
+	// found the very first of thrift file
+	// get its namespace
+	// strip the first letter, insert the namespace at the head of the left
+
+	if len(names) == 1 {
+		// we have checked namespace earlier, so we assume it must have corresponding namespace
+		ns, _ := this.Thrift.Namespaces["swift"]
+
+		return fmt.Sprintf("%s%s", ns, t.Name[1:])
+	}
+
+	p := &parser.Parser{}
+
+	for name, path := range this.Thrift.Includes {
+		if name != names[0] {
+			continue
+		}
+
+		thrifts, _, _ := p.ParseFile(path)
+
+		for p, thrift := range thrifts {
+			n := strings.Split(filepath.Base(p), ".")[0]
+
+			if n == name {
+				ns, _ := thrift.Namespaces["swift"]
+				return fmt.Sprintf("%s%s", ns, names[1][1:])
+			}
+		}
+	}
+
+	panic(fmt.Sprintf("namespace of customized type '%s' not found\n", t.Name))
+}
+
+func (this *BaseSwift) AssembleStructName(n string) string {
+	ns, _ := this.Thrift.Namespaces["swift"]
+	return fmt.Sprintf("%s%s", ns, n[1:])
+}
+
+// if the property name is the keyword of swift, rename it
+// but encode/decode with its origin name
+func (this *BaseSwift) FilterPropertory(n string) string {
+	switch n {
+	case "description":
+		return "desc"
+	default:
+		return n
+	}
 }
 
 func (this *BaseSwift) ParamsJoinedByComma(args []*parser.Field) string {
@@ -109,9 +162,9 @@ func (this *BaseSwift) ParamsJoinedByComma(args []*parser.Field) string {
 func (this *BaseSwift) AssignToDict(f *parser.Field) string {
 	if f.Type.Name == "list" {
 		if this.IsBasicType(this.GetInnerType(f.Type)) {
-			return fmt.Sprintf("%s", f.Name)
+			return fmt.Sprintf("%s", this.FilterPropertory(f.Name))
 		} else {
-			return fmt.Sprintf("%s?.toJSON()", f.Name)
+			return fmt.Sprintf("%s?.toJSON()", this.FilterPropertory(f.Name))
 		}
 	}
 
@@ -119,11 +172,11 @@ func (this *BaseSwift) AssignToDict(f *parser.Field) string {
 	case langs.ThriftTypeI16, langs.ThriftTypeI32, langs.ThriftTypeByte, langs.ThriftTypeString,
 		langs.ThriftTypeBool, langs.ThriftTypeDouble,
 		langs.ThriftTypeMap:
-		return f.Name
+		return this.FilterPropertory(f.Name)
 	case langs.ThriftTypeI64:
-		return fmt.Sprintf("NSNumber(longLong: %s)", f.Name)
+		return fmt.Sprintf("NSNumber(longLong: %s)", this.FilterPropertory(f.Name))
 	default:
-		return fmt.Sprintf("%s?.toJSON()", f.Name)
+		return fmt.Sprintf("%s?.toJSON()", this.FilterPropertory(f.Name))
 	}
 }
 
@@ -166,10 +219,6 @@ type swiftStruct struct {
 	*parser.Struct
 }
 
-func (this *swiftStruct) AssembleStructName(n string) string {
-	return fmt.Sprintf("TR%s", n[1:])
-}
-
 type swiftService struct {
 	*BaseSwift
 	*parser.Service
@@ -186,8 +235,15 @@ func (o *SwiftGen) Generate(output string, parsedThrift map[string]*parser.Thrif
 	var structpl *template.Template
 	var servicetpl *template.Template
 
-	// tp is the absoule path of thrift file
-	for _, t := range parsedThrift {
+	// key is the absoule path of thrift file
+	for f, t := range parsedThrift {
+		// check namespace
+		if _, ok := t.Namespaces["swift"]; !ok {
+			fmt.Printf("namespace of swift in file '%s' is not found\n", f)
+
+			continue
+		}
+
 		for _, s := range t.Structs {
 			if structpl == nil {
 				structpl = initemplate(TPL_STRUCT, "tmpl/swift/struct.goswift")
@@ -198,7 +254,7 @@ func (o *SwiftGen) Generate(output string, parsedThrift map[string]*parser.Thrif
 
 			path := filepath.Join(output, name)
 
-			data := &swiftStruct{BaseSwift: &BaseSwift{}, Struct: s}
+			data := &swiftStruct{BaseSwift: &BaseSwift{Thrift: t, Thrifts: &parsedThrift}, Struct: s}
 
 			if err := outputfile(path, structpl, TPL_STRUCT, data); err != nil {
 				panic(fmt.Errorf("failed to write file %s. error: %v\n", path, err))
@@ -215,7 +271,7 @@ func (o *SwiftGen) Generate(output string, parsedThrift map[string]*parser.Thrif
 
 			path := filepath.Join(output, name)
 
-			data := &swiftService{BaseSwift: &BaseSwift{}, Service: s}
+			data := &swiftService{BaseSwift: &BaseSwift{Thrift: t, Thrifts: &parsedThrift}, Service: s}
 
 			if err := outputfile(path, servicetpl, TPL_SERVICE, data); err != nil {
 				panic(fmt.Errorf("failed to write file %s. error: %v\n", path, err))

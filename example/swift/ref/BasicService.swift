@@ -18,7 +18,7 @@ class BasicService: NSObject {
         AreaService.current?.JSRONPRCClient.invokeMethod(api, withParameters: params, success: { (operation, responseObject) -> Void in
             debugPrint(api, " resp: ", responseObject)
             
-            success(jsonObject as? [Int] ?? [])
+            success(responseObject as? [Int] ?? [])
             }, failure: { (operation, error) -> Void in
                 failure?(error)
         })
@@ -33,13 +33,13 @@ class BasicService: NSObject {
         AreaService.current?.JSRONPRCClient.invokeMethod(api, withParameters: params, success: { (operation, responseObject) -> Void in
             debugPrint(api, " resp: ", responseObject)
             
-            success(jsonObject as? [String] ?? [])
+            success(responseObject as? [String] ?? [])
             }, failure: { (operation, error) -> Void in
                 failure?(error)
         })
     }
 
-    class func getObjects(key: Int, id: Int64, success: ([TRBasic]) -> Void, failure: ((NSError) -> Void)? = nil) {
+    class func getObjects(key: Int, id: Int64, success: ([TRSBasic]) -> Void, failure: ((NSError) -> Void)? = nil) {
         var params = [String: AnyObject]()
         params["key"] = key
         params["id"] = NSNumber(longLong: id)
@@ -51,13 +51,13 @@ class BasicService: NSObject {
         AreaService.current?.JSRONPRCClient.invokeMethod(api, withParameters: params, success: { (operation, responseObject) -> Void in
             debugPrint(api, " resp: ", responseObject)
             
-            success([TRBasic](jsonObject: responseObject) ?? [])
+            success([TRSBasic](jsonObject: responseObject) ?? [])
             }, failure: { (operation, error) -> Void in
                 failure?(error)
         })
     }
 
-    class func getStruct(key: Int, id: Int64, success: (TRBasic) -> Void, failure: ((NSError) -> Void)? = nil) {
+    class func getStruct(key: Int, id: Int64, success: (TRSBasic) -> Void, failure: ((NSError) -> Void)? = nil) {
         var params = [String: AnyObject]()
         params["key"] = key
         params["id"] = NSNumber(longLong: id)
@@ -69,7 +69,7 @@ class BasicService: NSObject {
         AreaService.current?.JSRONPRCClient.invokeMethod(api, withParameters: params, success: { (operation, responseObject) -> Void in
             debugPrint(api, " resp: ", responseObject)
             
-            success(TRBasic(jsonObject: responseObject)!)
+            success(TRSBasic(jsonObject: responseObject)!)
             }, failure: { (operation, error) -> Void in
                 failure?(error)
         })

@@ -1,5 +1,5 @@
 namespace java com.ezbuy.basic
-namespace swift Basic
+namespace swift TRS
 
 struct TBasic {}
 

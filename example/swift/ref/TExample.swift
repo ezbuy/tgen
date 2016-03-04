@@ -5,7 +5,7 @@
 
 import Foundation
 
-class TRExample: EzObject {
+class TREExample: EzObject {
     var amountAvailable: Double = 0.0
 
     var rebateAmountAvailable: String?
@@ -16,14 +16,16 @@ class TRExample: EzObject {
 
     var unpaidAmount: Int64 = 0
 
-    var fooes: [TRFoo]?
+    var fooes: [TREFoo]?
 
     var strs: [String]?
 
     var ints: [Int]?
 
+    var basics: [TRSBasic]?
+
     override var allKeys: Set<String> {
-        return ["amountAvailable", "rebateAmountAvailable", "amountPendingVerification", "pendingWithdrawAmount", "unpaidAmount", "fooes", "strs", "ints"]
+        return ["amountAvailable", "rebateAmountAvailable", "amountPendingVerification", "pendingWithdrawAmount", "unpaidAmount", "fooes", "strs", "ints", "basics"]
     }
 
     override func fromJSON(jsonObject: AnyObject?) -> Bool {
@@ -35,9 +37,10 @@ class TRExample: EzObject {
         amountPendingVerification = dict["amountPendingVerification"] as? Bool ?? false
         pendingWithdrawAmount = dict["pendingWithdrawAmount"] as? Int ?? 0
         unpaidAmount = dict["unpaidAmount"] as? Int64 ?? 0
-        fooes = [TRFoo](jsonObject: dict["fooes"])
+        fooes = [TREFoo](jsonObject: dict["fooes"])
         strs = dict["strs"] as? [String]
         ints = dict["ints"] as? [Int]
+        basics = [TRSBasic](jsonObject: dict["basics"])
 
         return true
     }
@@ -52,6 +55,7 @@ class TRExample: EzObject {
         dict["fooes"] = fooes?.toJSON()
         dict["strs"] = strs
         dict["ints"] = ints
+        dict["basics"] = basics?.toJSON()
 
         return dict
     }
