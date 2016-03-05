@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"sync"
 	"text/template"
 
 	"github.com/ezbuy/tgen/langs"
@@ -115,7 +116,7 @@ func (this *BaseSwift) AssembleCustomizedTypeName(t *parser.Type) string {
 			continue
 		}
 
-		filename := strings.TrimSuffix(filepath.Base(path), filepath.Ext(path))
+		filename := strings.TrimSuffix(filepath.Base(path), filepath.Ext(path)) // or use slice
 		if filename != names[0] {
 			continue
 		}
@@ -244,6 +245,8 @@ func (o *SwiftGen) Generate(output string, parsedThrift map[string]*parser.Thrif
 	var structpl *template.Template
 	var servicetpl *template.Template
 
+	waitgroup := sync.WaitGroup{}
+
 	// key is the absoule path of thrift file
 	for f, t := range parsedThrift {
 		// check namespace
@@ -253,40 +256,54 @@ func (o *SwiftGen) Generate(output string, parsedThrift map[string]*parser.Thrif
 			continue
 		}
 
-		for _, s := range t.Structs {
-			if structpl == nil {
-				structpl = initemplate(TPL_STRUCT, "tmpl/swift/struct.goswift")
-			}
-
-			// filename is the struct name
-			name := fmt.Sprintf("%s.swift", s.Name)
-
-			path := filepath.Join(output, name)
-
-			data := &swiftStruct{BaseSwift: &BaseSwift{Filepath: f, Thrift: t, Thrifts: &parsedThrift}, Struct: s}
-
-			if err := outputfile(path, structpl, TPL_STRUCT, data); err != nil {
-				panic(fmt.Errorf("failed to write file %s. error: %v\n", path, err))
-			}
+		if structpl == nil {
+			structpl = initemplate(TPL_STRUCT, "tmpl/swift/struct.goswift")
 		}
 
-		for _, s := range t.Services {
-			if servicetpl == nil {
-				servicetpl = initemplate(TPL_SERVICE, "tmpl/swift/service.goswift")
+		waitgroup.Add(1)
+
+		go func(t *parser.Thrift) {
+			defer waitgroup.Done()
+
+			for _, s := range t.Structs {
+				// filename is the struct name
+				name := fmt.Sprintf("%s.swift", s.Name)
+
+				path := filepath.Join(output, name)
+
+				data := &swiftStruct{BaseSwift: &BaseSwift{Filepath: f, Thrift: t, Thrifts: &parsedThrift}, Struct: s}
+
+				if err := outputfile(path, structpl, TPL_STRUCT, data); err != nil {
+					panic(fmt.Errorf("failed to write file %s. error: %v\n", path, err))
+				}
 			}
+		}(t)
 
-			// filename is the service name plus 'Service'
-			name := s.Name + "Service.swift"
-
-			path := filepath.Join(output, name)
-
-			data := &swiftService{BaseSwift: &BaseSwift{Filepath: f, Thrift: t, Thrifts: &parsedThrift}, Service: s}
-
-			if err := outputfile(path, servicetpl, TPL_SERVICE, data); err != nil {
-				panic(fmt.Errorf("failed to write file %s. error: %v\n", path, err))
-			}
+		if servicetpl == nil {
+			servicetpl = initemplate(TPL_SERVICE, "tmpl/swift/service.goswift")
 		}
+
+		waitgroup.Add(1)
+
+		go func(t *parser.Thrift) {
+			defer waitgroup.Done()
+
+			for _, s := range t.Services {
+				// filename is the service name plus 'Service'
+				name := s.Name + "Service.swift"
+
+				path := filepath.Join(output, name)
+
+				data := &swiftService{BaseSwift: &BaseSwift{Filepath: f, Thrift: t, Thrifts: &parsedThrift}, Service: s}
+
+				if err := outputfile(path, servicetpl, TPL_SERVICE, data); err != nil {
+					panic(fmt.Errorf("failed to write file %s. error: %v\n", path, err))
+				}
+			}
+		}(t)
 	}
+
+	waitgroup.Wait()
 }
 
 func initemplate(n string, path string) *template.Template {
