@@ -22,7 +22,7 @@ class TREExample: EzObject {
 
     var ints: [Int]?
 
-    var basics: [TRSBasic]?
+    var basics: [TRSharedBasic]?
 
     override var allKeys: Set<String> {
         return ["amountAvailable", "rebateAmountAvailable", "amountPendingVerification", "pendingWithdrawAmount", "unpaidAmount", "fooes", "strs", "ints", "basics"]
@@ -40,7 +40,7 @@ class TREExample: EzObject {
         fooes = [TREFoo](jsonObject: dict["fooes"])
         strs = dict["strs"] as? [String]
         ints = dict["ints"] as? [Int]
-        basics = [TRSBasic](jsonObject: dict["basics"])
+        basics = [TRSharedBasic](jsonObject: dict["basics"])
 
         return true
     }

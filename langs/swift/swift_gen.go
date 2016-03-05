@@ -44,8 +44,9 @@ type SwiftGen struct {
 }
 
 type BaseSwift struct {
-	Thrift  *parser.Thrift
-	Thrifts *map[string]*parser.Thrift
+	Filepath string
+	Thrift   *parser.Thrift
+	Thrifts  *map[string]*parser.Thrift
 }
 
 func (this *BaseSwift) PlainType(t *parser.Type) string {
@@ -89,40 +90,48 @@ func (this *BaseSwift) AssembleCustomizedTypeName(t *parser.Type) string {
 
 	names := strings.Split(t.Name, ".")
 
-	// if the type is in current thrift file
-	// get namespace
-	// else, iterator the included thrift files
-	// found the very first of thrift file
-	// get its namespace
-	// strip the first letter, insert the namespace at the head of the left
+	// // if the type is in current thrift file
+	// // get namespace
+	// // else, iterator the included thrift files
+	// // found the very first of thrift file
+	// // get its namespace
+	// // strip the first letter, insert the namespace at the head of the left
 
 	if len(names) == 1 {
-		// we have checked namespace earlier, so we assume it must have corresponding namespace
-		ns, _ := this.Thrift.Namespaces["swift"]
+		for n, _ := range this.Thrift.Structs {
+			if n != t.Name {
+				continue
+			}
 
-		return fmt.Sprintf("%s%s", ns, t.Name[1:])
+			// we have checked namespace earlier, so we assume it must have corresponding namespace
+			ns, _ := this.Thrift.Namespaces["swift"]
+
+			return fmt.Sprintf("%s%s", ns, t.Name[1:])
+		}
 	}
 
-	p := &parser.Parser{}
-
-	for name, path := range this.Thrift.Includes {
-		if name != names[0] {
+	for path, thrift := range *this.Thrifts {
+		if thrift == this.Thrift {
 			continue
 		}
 
-		thrifts, _, _ := p.ParseFile(path)
+		filename := strings.TrimSuffix(filepath.Base(path), filepath.Ext(path))
+		if filename != names[0] {
+			continue
+		}
 
-		for p, thrift := range thrifts {
-			n := strings.Split(filepath.Base(p), ".")[0]
-
-			if n == name {
-				ns, _ := thrift.Namespaces["swift"]
-				return fmt.Sprintf("%s%s", ns, names[1][1:])
+		for n, _ := range thrift.Structs {
+			if n != names[1] {
+				continue
 			}
+
+			ns, _ := thrift.Namespaces["swift"]
+
+			return fmt.Sprintf("%s%s", ns, names[1][1:])
 		}
 	}
 
-	panic(fmt.Sprintf("namespace of customized type '%s' not found\n", t.Name))
+	panic(fmt.Sprintf("thrift file '%s': namespace of customized type '%s' if not found\n", this.Filepath, t.Name))
 }
 
 func (this *BaseSwift) AssembleStructName(n string) string {
@@ -254,7 +263,7 @@ func (o *SwiftGen) Generate(output string, parsedThrift map[string]*parser.Thrif
 
 			path := filepath.Join(output, name)
 
-			data := &swiftStruct{BaseSwift: &BaseSwift{Thrift: t, Thrifts: &parsedThrift}, Struct: s}
+			data := &swiftStruct{BaseSwift: &BaseSwift{Filepath: f, Thrift: t, Thrifts: &parsedThrift}, Struct: s}
 
 			if err := outputfile(path, structpl, TPL_STRUCT, data); err != nil {
 				panic(fmt.Errorf("failed to write file %s. error: %v\n", path, err))
@@ -271,7 +280,7 @@ func (o *SwiftGen) Generate(output string, parsedThrift map[string]*parser.Thrif
 
 			path := filepath.Join(output, name)
 
-			data := &swiftService{BaseSwift: &BaseSwift{Thrift: t, Thrifts: &parsedThrift}, Service: s}
+			data := &swiftService{BaseSwift: &BaseSwift{Filepath: f, Thrift: t, Thrifts: &parsedThrift}, Service: s}
 
 			if err := outputfile(path, servicetpl, TPL_SERVICE, data); err != nil {
 				panic(fmt.Errorf("failed to write file %s. error: %v\n", path, err))

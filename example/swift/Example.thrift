@@ -1,7 +1,7 @@
-include "Shared.thrift"
-
 namespace java com.ezbuy.example
 namespace swift TRE
+
+include "Shared.thrift"
 
 struct TFoo {}
 

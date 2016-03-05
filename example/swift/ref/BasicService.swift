@@ -7,69 +7,55 @@ import Foundation
 
 class BasicService: NSObject {
 
-    class func getAges(id: Int64, success: ([Int]) -> Void, failure: ((NSError) -> Void)? = nil) {
-        var params = [String: AnyObject]()
-        params["id"] = NSNumber(longLong: id)
-
-        let api = "Basic.getAges"
-
-        debugPrint(api, " req: ", params)
-
-        AreaService.current?.JSRONPRCClient.invokeMethod(api, withParameters: params, success: { (operation, responseObject) -> Void in
-            debugPrint(api, " resp: ", responseObject)
-            
-            success(responseObject as? [Int] ?? [])
-            }, failure: { (operation, error) -> Void in
-                failure?(error)
-        })
-    }
-
-    class func getNames(success: ([String]) -> Void, failure: ((NSError) -> Void)? = nil) {
-        let params = [String: AnyObject]()
-        let api = "Basic.getNames"
-
-        debugPrint(api, " req: ", params)
-
-        AreaService.current?.JSRONPRCClient.invokeMethod(api, withParameters: params, success: { (operation, responseObject) -> Void in
-            debugPrint(api, " resp: ", responseObject)
-            
-            success(responseObject as? [String] ?? [])
-            }, failure: { (operation, error) -> Void in
-                failure?(error)
-        })
-    }
-
-    class func getObjects(key: Int, id: Int64, success: ([TRSBasic]) -> Void, failure: ((NSError) -> Void)? = nil) {
+    class func getBasic(key: Int, id: Int64, success: (TRSharedBasic) -> Void, failure: ((NSError) -> Void)? = nil) {
         var params = [String: AnyObject]()
         params["key"] = key
         params["id"] = NSNumber(longLong: id)
 
-        let api = "Basic.getObjects"
+        let api = "Basic.getBasic"
 
         debugPrint(api, " req: ", params)
 
         AreaService.current?.JSRONPRCClient.invokeMethod(api, withParameters: params, success: { (operation, responseObject) -> Void in
             debugPrint(api, " resp: ", responseObject)
             
-            success([TRSBasic](jsonObject: responseObject) ?? [])
+            success(TRSharedBasic(jsonObject: responseObject)!)
             }, failure: { (operation, error) -> Void in
                 failure?(error)
         })
     }
 
-    class func getStruct(key: Int, id: Int64, success: (TRSBasic) -> Void, failure: ((NSError) -> Void)? = nil) {
+    class func getBasics(key: Int, id: Int64, success: ([TRSharedBasic]) -> Void, failure: ((NSError) -> Void)? = nil) {
         var params = [String: AnyObject]()
         params["key"] = key
         params["id"] = NSNumber(longLong: id)
 
-        let api = "Basic.getStruct"
+        let api = "Basic.getBasics"
 
         debugPrint(api, " req: ", params)
 
         AreaService.current?.JSRONPRCClient.invokeMethod(api, withParameters: params, success: { (operation, responseObject) -> Void in
             debugPrint(api, " resp: ", responseObject)
             
-            success(TRSBasic(jsonObject: responseObject)!)
+            success([TRSharedBasic](jsonObject: responseObject) ?? [])
+            }, failure: { (operation, error) -> Void in
+                failure?(error)
+        })
+    }
+
+    class func getCommons(key: Int, id: Int64, success: ([TRCommonCommon]) -> Void, failure: ((NSError) -> Void)? = nil) {
+        var params = [String: AnyObject]()
+        params["key"] = key
+        params["id"] = NSNumber(longLong: id)
+
+        let api = "Basic.getCommons"
+
+        debugPrint(api, " req: ", params)
+
+        AreaService.current?.JSRONPRCClient.invokeMethod(api, withParameters: params, success: { (operation, responseObject) -> Void in
+            debugPrint(api, " resp: ", responseObject)
+            
+            success([TRCommonCommon](jsonObject: responseObject) ?? [])
             }, failure: { (operation, error) -> Void in
                 failure?(error)
         })

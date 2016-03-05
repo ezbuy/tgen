@@ -1,11 +1,12 @@
 namespace java com.ezbuy.basic
-namespace swift TRS
+namespace swift TRShared
+
+include "Common.thrift"
 
 struct TBasic {}
 
 service Basic {
-  TBasic getStruct(1: i32 key, 2: i64 id),
-  list<TBasic> getObjects(1: i32 key, 2: i64 id),
-  list<i16> getAges(1: i64 id),
-  list<string> getNames()
+	TBasic getBasic(1: i32 key, 2: i64 id),
+  	list<TBasic> getBasics(1: i32 key, 2: i64 id),
+  	list<Common.TCommon> getCommons(1: i32 key, 2: i64 id)
 }
