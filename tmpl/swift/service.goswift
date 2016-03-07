@@ -5,7 +5,7 @@
 
 import Foundation
 {{ $ss := . }}
-class {{ .Service.Name }}Service: {{ if .Service.Extends }}{{ .Service.Extends | $ss.BaseSwift.LastComponentOfDotStr }}{{ else }}NSObject{{ end }} {
+class {{ .Service.Name }}Service: NSObject {
 {{ range .Service.Methods }}
     class func {{ .Name }}({{ if .Arguments }}{{ .Arguments | $ss.BaseSwift.ParamsJoinedByComma }}, {{ end }}success: ({{ if .ReturnType }}{{ .ReturnType | $ss.BaseSwift.PlainType }}{{ else }}Void{{ end }}) -> Void, failure: ((NSError) -> Void)? = nil) {
         {{ if .Arguments -}}
@@ -26,7 +26,7 @@ class {{ .Service.Name }}Service: {{ if .Service.Extends }}{{ .Service.Extends |
             {{- if eq .ReturnType.Name "list" }}
             {{- $innertype := $ss.BaseSwift.GetInnerType .ReturnType -}}
             {{- if $innertype | $ss.BaseSwift.IsBasicType }}
-            success(jsonObject as? {{ $t }} ?? [])
+            success(responseObject as? {{ $t }} ?? [])
             {{- else }}
             success({{ $t }}(jsonObject: responseObject) ?? [])
             {{- end }}

@@ -5,7 +5,7 @@
 
 import Foundation
 
-class TREFoo: EzObject {
+class TRCommonCommon: EzObject {
     override var allKeys: Set<String> {
         return []
     }

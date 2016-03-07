@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"sync"
 	"text/template"
 
 	"github.com/ezbuy/tgen/langs"
@@ -43,10 +44,14 @@ type SwiftGen struct {
 	langs.BaseGen
 }
 
-type BaseSwift struct{}
+type BaseSwift struct {
+	Filepath string
+	Thrift   *parser.Thrift
+	Thrifts  *map[string]*parser.Thrift
+}
 
 func (this *BaseSwift) PlainType(t *parser.Type) string {
-	n := this.LastComponentOfDotStr(t.Name)
+	n := t.Name
 
 	if t, ok := typemapping[n]; ok {
 		return t
@@ -58,7 +63,7 @@ func (this *BaseSwift) PlainType(t *parser.Type) string {
 	case langs.ThriftTypeMap:
 		return fmt.Sprintf("[%s: %s]", this.PlainType(t.KeyType), this.PlainType(t.ValueType))
 	default:
-		return fmt.Sprintf("TR%s", n[1:])
+		return this.AssembleCustomizedTypeName(t)
 	}
 }
 
@@ -79,13 +84,71 @@ func (this *BaseSwift) IsBasicType(t string) bool {
 	}
 }
 
-func (this *BaseSwift) LastComponentOfDotStr(str string) string {
-	if strings.Contains(str, ".") == false {
-		return str
+func (this *BaseSwift) AssembleCustomizedTypeName(t *parser.Type) string {
+	if t == nil {
+		return "Void"
 	}
 
-	strs := strings.Split(str, ".")
-	return strs[len(strs)-1]
+	names := strings.Split(t.Name, ".")
+
+	// // if the type is in current thrift file
+	// // get namespace
+	// // else, iterator the included thrift files
+	// // found the very first of thrift file
+	// // get its namespace
+	// // strip the first letter, insert the namespace at the head of the left
+
+	if len(names) == 1 {
+		for n, _ := range this.Thrift.Structs {
+			if n != t.Name {
+				continue
+			}
+
+			// we have checked namespace earlier, so we assume it must have corresponding namespace
+			ns, _ := this.Thrift.Namespaces["swift"]
+
+			return fmt.Sprintf("%s%s", ns, t.Name[1:])
+		}
+	}
+
+	for path, thrift := range *this.Thrifts {
+		if thrift == this.Thrift {
+			continue
+		}
+
+		filename := strings.TrimSuffix(filepath.Base(path), filepath.Ext(path)) // or use slice
+		if filename != names[0] {
+			continue
+		}
+
+		for n, _ := range thrift.Structs {
+			if n != names[1] {
+				continue
+			}
+
+			ns, _ := thrift.Namespaces["swift"]
+
+			return fmt.Sprintf("%s%s", ns, names[1][1:])
+		}
+	}
+
+	panic(fmt.Sprintf("thrift file '%s': namespace of customized type '%s' if not found\n", this.Filepath, t.Name))
+}
+
+func (this *BaseSwift) AssembleStructName(n string) string {
+	ns, _ := this.Thrift.Namespaces["swift"]
+	return fmt.Sprintf("%s%s", ns, n[1:])
+}
+
+// if the property name is the keyword of swift, rename it
+// but encode/decode with its origin name
+func (this *BaseSwift) FilterPropertory(n string) string {
+	switch n {
+	case "description":
+		return "desc"
+	default:
+		return n
+	}
 }
 
 func (this *BaseSwift) ParamsJoinedByComma(args []*parser.Field) string {
@@ -109,9 +172,9 @@ func (this *BaseSwift) ParamsJoinedByComma(args []*parser.Field) string {
 func (this *BaseSwift) AssignToDict(f *parser.Field) string {
 	if f.Type.Name == "list" {
 		if this.IsBasicType(this.GetInnerType(f.Type)) {
-			return fmt.Sprintf("%s", f.Name)
+			return fmt.Sprintf("%s", this.FilterPropertory(f.Name))
 		} else {
-			return fmt.Sprintf("%s?.toJSON()", f.Name)
+			return fmt.Sprintf("%s?.toJSON()", this.FilterPropertory(f.Name))
 		}
 	}
 
@@ -119,11 +182,11 @@ func (this *BaseSwift) AssignToDict(f *parser.Field) string {
 	case langs.ThriftTypeI16, langs.ThriftTypeI32, langs.ThriftTypeByte, langs.ThriftTypeString,
 		langs.ThriftTypeBool, langs.ThriftTypeDouble,
 		langs.ThriftTypeMap:
-		return f.Name
+		return this.FilterPropertory(f.Name)
 	case langs.ThriftTypeI64:
-		return fmt.Sprintf("NSNumber(longLong: %s)", f.Name)
+		return fmt.Sprintf("NSNumber(longLong: %s)", this.FilterPropertory(f.Name))
 	default:
-		return fmt.Sprintf("%s?.toJSON()", f.Name)
+		return fmt.Sprintf("%s?.toJSON()", this.FilterPropertory(f.Name))
 	}
 }
 
@@ -166,10 +229,6 @@ type swiftStruct struct {
 	*parser.Struct
 }
 
-func (this *swiftStruct) AssembleStructName(n string) string {
-	return fmt.Sprintf("TR%s", n[1:])
-}
-
 type swiftService struct {
 	*BaseSwift
 	*parser.Service
@@ -186,42 +245,65 @@ func (o *SwiftGen) Generate(output string, parsedThrift map[string]*parser.Thrif
 	var structpl *template.Template
 	var servicetpl *template.Template
 
-	// tp is the absoule path of thrift file
-	for _, t := range parsedThrift {
-		for _, s := range t.Structs {
-			if structpl == nil {
-				structpl = initemplate(TPL_STRUCT, "tmpl/swift/struct.goswift")
-			}
+	waitgroup := sync.WaitGroup{}
 
-			// filename is the struct name
-			name := fmt.Sprintf("%s.swift", s.Name)
+	// key is the absoule path of thrift file
+	for f, t := range parsedThrift {
+		// check namespace
+		if _, ok := t.Namespaces["swift"]; !ok {
+			fmt.Printf("namespace of swift in file '%s' is not found\n", f)
 
-			path := filepath.Join(output, name)
-
-			data := &swiftStruct{BaseSwift: &BaseSwift{}, Struct: s}
-
-			if err := outputfile(path, structpl, TPL_STRUCT, data); err != nil {
-				panic(fmt.Errorf("failed to write file %s. error: %v\n", path, err))
-			}
+			continue
 		}
 
-		for _, s := range t.Services {
-			if servicetpl == nil {
-				servicetpl = initemplate(TPL_SERVICE, "tmpl/swift/service.goswift")
-			}
-
-			// filename is the service name plus 'Service'
-			name := s.Name + "Service.swift"
-
-			path := filepath.Join(output, name)
-
-			data := &swiftService{BaseSwift: &BaseSwift{}, Service: s}
-
-			if err := outputfile(path, servicetpl, TPL_SERVICE, data); err != nil {
-				panic(fmt.Errorf("failed to write file %s. error: %v\n", path, err))
-			}
+		if structpl == nil {
+			structpl = initemplate(TPL_STRUCT, "tmpl/swift/struct.goswift")
 		}
+
+		waitgroup.Add(1)
+
+		go func(t *parser.Thrift) {
+			defer waitgroup.Done()
+
+			for _, s := range t.Structs {
+				// filename is the struct name
+				name := fmt.Sprintf("%s.swift", s.Name)
+
+				path := filepath.Join(output, name)
+
+				data := &swiftStruct{BaseSwift: &BaseSwift{Filepath: f, Thrift: t, Thrifts: &parsedThrift}, Struct: s}
+
+				if err := outputfile(path, structpl, TPL_STRUCT, data); err != nil {
+					panic(fmt.Errorf("failed to write file %s. error: %v\n", path, err))
+				}
+			}
+		}(t)
+
+		if servicetpl == nil {
+			servicetpl = initemplate(TPL_SERVICE, "tmpl/swift/service.goswift")
+		}
+
+		waitgroup.Add(1)
+
+		go func(t *parser.Thrift) {
+			defer waitgroup.Done()
+
+			for _, s := range t.Services {
+				// filename is the service name plus 'Service'
+				name := s.Name + "Service.swift"
+
+				path := filepath.Join(output, name)
+
+				data := &swiftService{BaseSwift: &BaseSwift{Filepath: f, Thrift: t, Thrifts: &parsedThrift}, Service: s}
+
+				if err := outputfile(path, servicetpl, TPL_SERVICE, data); err != nil {
+					panic(fmt.Errorf("failed to write file %s. error: %v\n", path, err))
+				}
+			}
+		}(t)
 	}
+
+	waitgroup.Wait()
 }
 
 func initemplate(n string, path string) *template.Template {
