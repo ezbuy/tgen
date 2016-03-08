@@ -24,8 +24,18 @@ class TREExample: EzObject {
 
     var basics: [TRSharedBasic]?
 
+    @nonobjc
+    var int64s:[Int64]? {
+        didSet {
+            objc_int64s = int64s?.map { value in NSNumber(longLong: value) }
+        }
+    }
+    
+    @objc(int64s)
+    var objc_int64s:[NSNumber]?
+
     override var allKeys: Set<String> {
-        return ["amountAvailable", "rebateAmountAvailable", "amountPendingVerification", "pendingWithdrawAmount", "unpaidAmount", "fooes", "strs", "ints", "basics"]
+        return ["amountAvailable", "rebateAmountAvailable", "amountPendingVerification", "pendingWithdrawAmount", "unpaidAmount", "fooes", "strs", "ints", "basics", "int64s"]
     }
 
     override func fromJSON(jsonObject: AnyObject?) -> Bool {
@@ -36,11 +46,12 @@ class TREExample: EzObject {
         rebateAmountAvailable = dict["rebateAmountAvailable"] as? String
         amountPendingVerification = dict["amountPendingVerification"] as? Bool ?? false
         pendingWithdrawAmount = dict["pendingWithdrawAmount"] as? Int ?? 0
-        unpaidAmount = dict["unpaidAmount"] as? Int64 ?? 0
+        unpaidAmount = (dict["unpaidAmount"] as? NSNumber ?? 0).longLongValue
         fooes = [TREFoo](jsonObject: dict["fooes"])
         strs = dict["strs"] as? [String]
         ints = dict["ints"] as? [Int]
         basics = [TRSharedBasic](jsonObject: dict["basics"])
+        int64s = (dict["int64s"] as? [NSNumber])?.map { value in value.longLongValue }
 
         return true
     }
@@ -56,6 +67,7 @@ class TREExample: EzObject {
         dict["strs"] = strs
         dict["ints"] = ints
         dict["basics"] = basics?.toJSON()
+        dict["int64s"] = int64s?.map { value in NSNumber(longLong: value) }
 
         return dict
     }

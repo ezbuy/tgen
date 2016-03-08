@@ -25,10 +25,11 @@ class BasicService: NSObject {
         })
     }
 
-    class func getBasics(key: Int, id: Int64, success: ([TRSharedBasic]) -> Void, failure: ((NSError) -> Void)? = nil) {
+    class func getBasics(key: Int, id: Int64, int64s: [Int64]?, success: ([TRSharedBasic]) -> Void, failure: ((NSError) -> Void)? = nil) {
         var params = [String: AnyObject]()
         params["key"] = key
         params["id"] = NSNumber(longLong: id)
+        params["int64s"] = int64s?.map { value in NSNumber(longLong: value) }
 
         let api = "Basic.getBasics"
 
@@ -56,6 +57,24 @@ class BasicService: NSObject {
             debugPrint(api, " resp: ", responseObject)
             
             success([TRCommonCommon](jsonObject: responseObject) ?? [])
+            }, failure: { (operation, error) -> Void in
+                failure?(error)
+        })
+    }
+
+    class func getInt64s(id: Int64, int64s: [Int64]?, success: ([Int64]) -> Void, failure: ((NSError) -> Void)? = nil) {
+        var params = [String: AnyObject]()
+        params["id"] = NSNumber(longLong: id)
+        params["int64s"] = int64s?.map { value in NSNumber(longLong: value) }
+
+        let api = "Basic.getInt64s"
+
+        debugPrint(api, " req: ", params)
+
+        AreaService.current?.JSRONPRCClient.invokeMethod(api, withParameters: params, success: { (operation, responseObject) -> Void in
+            debugPrint(api, " resp: ", responseObject)
+            
+            success((responseObject as? [NSNumber])?.map { value in value.longLongValue } ?? [])
             }, failure: { (operation, error) -> Void in
                 failure?(error)
         })

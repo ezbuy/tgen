@@ -15,6 +15,7 @@ struct TExample {
     7:required list<string> strs;
     8:required list<i16> ints;
     9:required list<Shared.TBasic> basics;
+    10:required list<i64> int64s;
 }
 
 service Example extends Shared.Basic {

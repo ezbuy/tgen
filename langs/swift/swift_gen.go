@@ -47,7 +47,7 @@ type SwiftGen struct {
 type BaseSwift struct {
 	Filepath string
 	Thrift   *parser.Thrift
-	Thrifts  *map[string]*parser.Thrift
+	Thrifts  *map[string]*parser.Thrift // use pointer to pass variable, so it doesn't need to copy
 }
 
 func (this *BaseSwift) PlainType(t *parser.Type) string {
@@ -91,12 +91,12 @@ func (this *BaseSwift) AssembleCustomizedTypeName(t *parser.Type) string {
 
 	names := strings.Split(t.Name, ".")
 
-	// // if the type is in current thrift file
-	// // get namespace
-	// // else, iterator the included thrift files
-	// // found the very first of thrift file
-	// // get its namespace
-	// // strip the first letter, insert the namespace at the head of the left
+	// if the type is in current thrift file
+	// get namespace
+	// else, iterator the included thrift files
+	// found the very first of thrift file
+	// get its namespace
+	// strip the first letter, insert the namespace at the head of the left
 
 	if len(names) == 1 {
 		for n, _ := range this.Thrift.Structs {
@@ -171,7 +171,11 @@ func (this *BaseSwift) ParamsJoinedByComma(args []*parser.Field) string {
 
 func (this *BaseSwift) AssignToDict(f *parser.Field) string {
 	if f.Type.Name == "list" {
-		if this.IsBasicType(this.GetInnerType(f.Type)) {
+		innertype := this.GetInnerType(f.Type)
+		if this.IsBasicType(innertype) {
+			if innertype == SwiftTypeInt64 {
+				return fmt.Sprintf("%s?.map { value in NSNumber(longLong: value) }", this.FilterPropertory(f.Name))
+			}
 			return fmt.Sprintf("%s", this.FilterPropertory(f.Name))
 		} else {
 			return fmt.Sprintf("%s?.toJSON()", this.FilterPropertory(f.Name))
@@ -245,7 +249,7 @@ func (o *SwiftGen) Generate(output string, parsedThrift map[string]*parser.Thrif
 	var structpl *template.Template
 	var servicetpl *template.Template
 
-	waitgroup := sync.WaitGroup{}
+	wg := sync.WaitGroup{}
 
 	// key is the absoule path of thrift file
 	for f, t := range parsedThrift {
@@ -256,14 +260,15 @@ func (o *SwiftGen) Generate(output string, parsedThrift map[string]*parser.Thrif
 			continue
 		}
 
+		// generate structs
 		if structpl == nil {
 			structpl = initemplate(TPL_STRUCT, "tmpl/swift/struct.goswift")
 		}
 
-		waitgroup.Add(1)
+		wg.Add(1)
 
 		go func(t *parser.Thrift) {
-			defer waitgroup.Done()
+			defer wg.Done()
 
 			for _, s := range t.Structs {
 				// filename is the struct name
@@ -279,14 +284,15 @@ func (o *SwiftGen) Generate(output string, parsedThrift map[string]*parser.Thrif
 			}
 		}(t)
 
+		// generate services
 		if servicetpl == nil {
 			servicetpl = initemplate(TPL_SERVICE, "tmpl/swift/service.goswift")
 		}
 
-		waitgroup.Add(1)
+		wg.Add(1)
 
 		go func(t *parser.Thrift) {
-			defer waitgroup.Done()
+			defer wg.Done()
 
 			for _, s := range t.Services {
 				// filename is the service name plus 'Service'
@@ -303,7 +309,7 @@ func (o *SwiftGen) Generate(output string, parsedThrift map[string]*parser.Thrif
 		}(t)
 	}
 
-	waitgroup.Wait()
+	wg.Wait()
 }
 
 func initemplate(n string, path string) *template.Template {
