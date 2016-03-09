@@ -1,14 +1,13 @@
 {{define "service"}}{{$utils := .TplUtils}}{{$serviceName := $utils.UpperHead .Name}}
 {{- range $method := .Methods}}
-{{$argCount := len $method.Arguments -}}
-{{if eq $argCount 1}}var _ json.Unmarshaler = &Request{{$serviceName}}Service{{$utils.UpperHead $method.Name}}Arguments{}{{end}}
+{{if $utils.IsSimpleArguments $method.Arguments}}var _ json.Unmarshaler = &Request{{$serviceName}}Service{{$utils.UpperHead $method.Name}}Arguments{}{{end}}
 
 type Request{{$serviceName}}Service{{$utils.UpperHead $method.Name}}Arguments struct {
     {{- range $arg := $method.Arguments}}
     {{$utils.UpperHead $arg.Name}} {{$utils.GenTypeString $arg.Name $arg.Type nil $arg.Optional}} `thrift:"{{$arg.ID}}{{if not $arg.Optional}},required{{end}}" json:"{{$arg.Name}}{{if $arg.Optional}},omitempty{{end}}"`
     {{- end}}
 }
-{{if eq $argCount 1}}{{$firstArg := index $method.Arguments 0}}
+{{if $utils.IsSimpleArguments $method.Arguments}}{{$firstArg := index $method.Arguments 0}}
 func (this *Request{{$serviceName}}Service{{$utils.UpperHead $method.Name}}Arguments) UnmarshalJSON(data []byte) error {
     if err := json.Unmarshal(data, &this.{{$utils.UpperHead $firstArg.Name}}); err == nil {
         return nil

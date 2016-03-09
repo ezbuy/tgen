@@ -197,3 +197,23 @@ func (this *TplUtils) GenWebApiServiceParams(fields []*parser.Field) string {
 
 	return str
 }
+
+func (this *TplUtils) IsSimpleArguments(args []*parser.Field) bool {
+	if len(args) != 1 {
+		return false
+	}
+
+	arg := args[0]
+
+	if arg == nil || arg.Type == nil {
+		return false
+	}
+
+	switch arg.Type.Name {
+	case TypeBool, TypeByte, TypeI16, TypeI32, TypeI64, TypeDouble, TypeBinary, TypeString, TypeList:
+		return true
+
+	default:
+		return false
+	}
+}
