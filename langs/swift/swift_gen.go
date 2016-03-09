@@ -271,12 +271,13 @@ func (o *SwiftGen) Generate(output string, parsedThrift map[string]*parser.Thrif
 			defer wg.Done()
 
 			for _, s := range t.Structs {
-				// filename is the struct name
-				name := fmt.Sprintf("%s.swift", s.Name)
+				baseSwift := &BaseSwift{Filepath: f, Thrift: t, Thrifts: &parsedThrift}
+
+				name := fmt.Sprintf("%s.swift", baseSwift.AssembleStructName(s.Name))
 
 				path := filepath.Join(output, name)
 
-				data := &swiftStruct{BaseSwift: &BaseSwift{Filepath: f, Thrift: t, Thrifts: &parsedThrift}, Struct: s}
+				data := &swiftStruct{BaseSwift: baseSwift, Struct: s}
 
 				if err := outputfile(path, structpl, TPL_STRUCT, data); err != nil {
 					panic(fmt.Errorf("failed to write file %s. error: %v\n", path, err))
