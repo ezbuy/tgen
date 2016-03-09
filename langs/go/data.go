@@ -8,7 +8,7 @@ import (
 	"github.com/samuel/go-thrift/parser"
 )
 
-type structsFileData struct {
+type definesFileData struct {
 	TplUtils
 
 	FilePath string
@@ -16,22 +16,18 @@ type structsFileData struct {
 	Package  string
 	Includes [][2]string
 	Structs  []*structData
+	Services []*serviceData
 }
 
-type structData struct {
-	TplUtils
-
-	Name   string
-	Fields []*parser.Field
-}
-
-func getStructsFileData(pkgName, pkgDir string, includes [][2]string, structs map[string]*parser.Struct) *structsFileData {
-	data := &structsFileData{
-		FilePath: filepath.Join(pkgDir, "gen_"+pkgName+"_structs.go"),
+func getDefinesFileData(pkgName, pkgDir string, includes [][2]string, parsed *parser.Thrift) *definesFileData {
+	data := &definesFileData{
+		FilePath: filepath.Join(pkgDir, "gen_"+pkgName+"_defines.go"),
 		Package:  pkgName,
 		Includes: includes,
 	}
 
+	// structs data
+	structs := parsed.Structs
 	structNames := make([]string, 0, len(structs))
 	for name, _ := range structs {
 		structNames = append(structNames, name)
@@ -48,33 +44,8 @@ func getStructsFileData(pkgName, pkgDir string, includes [][2]string, structs ma
 		})
 	}
 
-	return data
-}
-
-type servicesFileData struct {
-	TplUtils
-
-	FilePath string
-
-	Package  string
-	Includes [][2]string
-	Services []*serviceData
-}
-
-type serviceData struct {
-	TplUtils
-
-	Name    string
-	Methods []*parser.Method
-}
-
-func getServicesFileData(pkgName, pkgDir string, includes [][2]string, services map[string]*parser.Service) *servicesFileData {
-	data := &servicesFileData{
-		FilePath: filepath.Join(pkgDir, "gen_"+pkgName+"_services.go"),
-		Package:  pkgName,
-		Includes: includes,
-	}
-
+	// services data
+	services := parsed.Services
 	serviceNames := make([]string, 0, len(services))
 
 	for name, _ := range services {
@@ -106,7 +77,22 @@ func getServicesFileData(pkgName, pkgDir string, includes [][2]string, services 
 		data.Services = append(data.Services, sData)
 	}
 
+	// TODO: enum, const, typedef, exception, ...
 	return data
+}
+
+type structData struct {
+	TplUtils
+
+	Name   string
+	Fields []*parser.Field
+}
+
+type serviceData struct {
+	TplUtils
+
+	Name    string
+	Methods []*parser.Method
 }
 
 type echoFileData struct {

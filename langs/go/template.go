@@ -19,9 +19,8 @@ func init() {
 	files := []string{
 		"tmpl/golang/include.gogo",
 		"tmpl/golang/struct.gogo",
-		"tmpl/golang/structs_file.gogo",
 		"tmpl/golang/service.gogo",
-		"tmpl/golang/services_file.gogo",
+		"tmpl/golang/defines_file.gogo",
 		"tmpl/golang/echo_module.gogo",
 	}
 

@@ -41,28 +41,17 @@ func (this *GoGen) Generate(output string, parsedThrift map[string]*parser.Thrif
 
 		outputPackageDirs = append(outputPackageDirs, pkgDir)
 
-		// output struct file
-		if len(parsed.Structs) != 0 {
-			dataForStructsFile := getStructsFileData(pkgName, pkgDir, includes, parsed.Structs)
-
-			if err := outputFile(dataForStructsFile.FilePath, "structs_file", dataForStructsFile); err != nil {
-				panicWithErr("fail to write structs file %q : %s", dataForStructsFile.FilePath, err)
-			}
+		// output defines file
+		dataForDefinesFile := getDefinesFileData(pkgName, pkgDir, includes, parsed)
+		if err := outputFile(dataForDefinesFile.FilePath, "defines_file", dataForDefinesFile); err != nil {
+			panicWithErr("fail to write defines file %q : %s", dataForDefinesFile.FilePath, err)
 		}
 
-		// output service file
-		if len(parsed.Services) != 0 {
-			dataForServicesFile := getServicesFileData(pkgName, pkgDir, includes, parsed.Services)
-
-			if err := outputFile(dataForServicesFile.FilePath, "services_file", dataForServicesFile); err != nil {
-				panicWithErr("fail to write services file %q : %s", dataForServicesFile.FilePath, err)
-			}
-
-			for _, sData := range dataForServicesFile.Services {
-				dataForEchoModule := getEchoFileData(pkgName, pkgDir, sData)
-				if err := outputFile(dataForEchoModule.FilePath, "echo_module", dataForEchoModule); err != nil {
-					panicWithErr("fail to write web apis file %q : %s", dataForEchoModule.FilePath, err)
-				}
+		// output webapi file
+		for _, sData := range dataForDefinesFile.Services {
+			dataForEchoModule := getEchoFileData(pkgName, pkgDir, sData)
+			if err := outputFile(dataForEchoModule.FilePath, "echo_module", dataForEchoModule); err != nil {
+				panicWithErr("fail to write web apis file %q : %s", dataForEchoModule.FilePath, err)
 			}
 		}
 	}

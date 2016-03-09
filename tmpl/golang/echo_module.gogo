@@ -7,12 +7,6 @@ import (
     "github.com/labstack/echo"
 )
 
-type Echo{{$serviceName}}Service interface {
-    {{- range $method := .Service.Methods}}{{$methodName := $utils.UpperHead $method.Name}}
-    {{$methodName}}(c *echo.Context, resp *EchoResponse{{$serviceName}}Service{{$methodName}}, {{$utils.GenServiceMethodArguments $method.Arguments}}) error
-    {{- end}}
-}
-
 func Register{{$serviceName}}ServiceAPIModule(mux *echo.Group, service Echo{{$serviceName}}Service) {
     mod := &{{$serviceName}}ServiceAPIModule{
         service: service,
@@ -29,12 +23,6 @@ type {{$serviceName}}ServiceAPIModule struct {
 }
 
 {{range $method := .Service.Methods}}{{$methodName := $utils.UpperHead $method.Name}}{{$noReturn := $utils.IsNilType $method.ReturnType}}
-type EchoResponse{{$serviceName}}Service{{$methodName}} struct {
-    {{if not $noReturn}}Result {{$utils.GenTypeString "echo response result" $method.ReturnType nil false}}{{end}}
-    HTTPError *echo.HTTPError
-    // TODO Exception
-}
-
 func (this *{{$serviceName}}ServiceAPIModule) {{$methodName}}(c *echo.Context) error {
     {{- $argsCount := len $method.Arguments}}
     {{- if ne $argsCount 0}}
