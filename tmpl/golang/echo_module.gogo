@@ -7,7 +7,13 @@ import (
     "github.com/labstack/echo"
 )
 
-func Register{{$serviceName}}ServiceAPIModule(mux *echo.Group, service {{$serviceName}}Service) {
+type Echo{{$serviceName}}Service interface {
+    {{- range $method := .Service.Methods}}{{$methodName := $utils.UpperHead $method.Name}}
+    {{$methodName}}(c *echo.Context, resp *EchoResponse{{$serviceName}}Service{{$methodName}}, {{$utils.GenServiceMethodArguments $method.Arguments}}) error
+    {{- end}}
+}
+
+func Register{{$serviceName}}ServiceAPIModule(mux *echo.Group, service Echo{{$serviceName}}Service) {
     mod := &{{$serviceName}}ServiceAPIModule{
         service: service,
     }
@@ -19,10 +25,16 @@ func Register{{$serviceName}}ServiceAPIModule(mux *echo.Group, service {{$servic
 }
 
 type {{$serviceName}}ServiceAPIModule struct {
-    service {{$serviceName}}Service
+    service Echo{{$serviceName}}Service
 }
 
-{{range $method := .Service.Methods}}{{$methodName := $utils.UpperHead $method.Name}}
+{{range $method := .Service.Methods}}{{$methodName := $utils.UpperHead $method.Name}}{{$noReturn := $utils.IsNilType $method.ReturnType}}
+type EchoResponse{{$serviceName}}Service{{$methodName}} struct {
+    {{if not $noReturn}}Result {{$utils.GenTypeString "echo response result" $method.ReturnType nil false}}{{end}}
+    HTTPError *echo.HTTPError
+    // TODO Exception
+}
+
 func (this *{{$serviceName}}ServiceAPIModule) {{$methodName}}(c *echo.Context) error {
     {{- $argsCount := len $method.Arguments}}
     {{- if ne $argsCount 0}}
@@ -32,15 +44,19 @@ func (this *{{$serviceName}}ServiceAPIModule) {{$methodName}}(c *echo.Context) e
         return err
     }
     {{end}}
-    {{- $noReturn := $utils.IsNilType $method.ReturnType}}
-    {{if not $noReturn}}result, {{end}}err := this.service.{{$methodName}}({{$utils.GenWebApiServiceParams $method.Arguments}})
+    resp := &EchoResponse{{$serviceName}}Service{{$methodName}}{}
+    err := this.service.{{$methodName}}(c, resp, {{$utils.GenWebApiServiceParams $method.Arguments}})
     
     if err != nil {
         echoutils.RequestLogger(c).Infof("service error: %s", err)
         return echoutils.InternalError
     }
 
-    return c.JSON(http.StatusOK, {{if not $noReturn}}result{{else}}echoutils.OKMessage{{end}})
+    if resp.HTTPError != nil {
+        return resp.HTTPError
+    }
+
+    return c.JSON(http.StatusOK, {{if not $noReturn}}resp.Result{{else}}echoutils.OKMessage{{end}})
 }
 {{end}}
 {{end}}
