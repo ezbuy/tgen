@@ -4,7 +4,7 @@ package {{.Package}}
 import (
     "encoding/json"
 
-    "github.com/labstack/echo"
+    "gopkg.in/labstack/echo.v1"
 )
 
 {{- $includeCount := len .Includes -}}

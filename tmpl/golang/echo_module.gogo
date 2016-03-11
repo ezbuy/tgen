@@ -4,7 +4,7 @@ import (
     "net/http"
 
     "github.com/ezbuy/utils/httputils/echoutils"
-    "github.com/labstack/echo"
+    "gopkg.in/labstack/echo.v1"
 )
 
 func Register{{$serviceName}}ServiceAPIModule(mux *echo.Group, service Echo{{$serviceName}}Service) {
