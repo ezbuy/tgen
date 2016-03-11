@@ -5,40 +5,40 @@
 
 import Foundation
 
-class TREExample: EzObject {
-    var amountAvailable: Double = 0.0
+public final class TREExample: EzObject {
+    public var amountAvailable: Double = 0.0
 
-    var rebateAmountAvailable: String?
+    public var rebateAmountAvailable: String?
 
-    var amountPendingVerification: Bool = false
+    public var amountPendingVerification: Bool = false
 
-    var pendingWithdrawAmount: Int = 0
+    public var pendingWithdrawAmount: Int = 0
 
-    var unpaidAmount: Int64 = 0
+    public var unpaidAmount: Int64 = 0
 
-    var fooes: [TREFoo]?
+    public var fooes: [TREFoo]?
 
-    var strs: [String]?
+    public var strs: [String]?
 
-    var ints: [Int]?
+    public var ints: [Int]?
 
-    var basics: [TRSharedBasic]?
+    public var basics: [TRSharedBasic]?
 
     @nonobjc
-    var int64s:[Int64]? {
+    public var int64s:[Int64]? {
         didSet {
             objc_int64s = int64s?.map { value in NSNumber(longLong: value) }
         }
     }
     
     @objc(int64s)
-    var objc_int64s:[NSNumber]?
+    public var objc_int64s:[NSNumber]?
 
-    override var allKeys: Set<String> {
+    public override var allKeys: Set<String> {
         return ["amountAvailable", "rebateAmountAvailable", "amountPendingVerification", "pendingWithdrawAmount", "unpaidAmount", "fooes", "strs", "ints", "basics", "int64s"]
     }
 
-    override func fromJSON(jsonObject: AnyObject?) -> Bool {
+    public override func fromJSON(jsonObject: AnyObject?) -> Bool {
         guard super.fromJSON(jsonObject) else { return false }
 
         guard let dict = jsonObject as? [String: AnyObject] else { return false }
@@ -46,7 +46,7 @@ class TREExample: EzObject {
         rebateAmountAvailable = dict["rebateAmountAvailable"] as? String
         amountPendingVerification = dict["amountPendingVerification"] as? Bool ?? false
         pendingWithdrawAmount = dict["pendingWithdrawAmount"] as? Int ?? 0
-        unpaidAmount = (dict["unpaidAmount"] as? NSNumber ?? 0).longLongValue
+        unpaidAmount = (dict["unpaidAmount"] as? NSNumber)?.longLongValue ?? 0
         fooes = [TREFoo](jsonObject: dict["fooes"])
         strs = dict["strs"] as? [String]
         ints = dict["ints"] as? [Int]
@@ -56,7 +56,7 @@ class TREExample: EzObject {
         return true
     }
 
-    override func toJSON() -> AnyObject {
+    public override func toJSON() -> AnyObject {
         var dict = [String: AnyObject]()
         dict["amountAvailable"] = amountAvailable
         dict["rebateAmountAvailable"] = rebateAmountAvailable

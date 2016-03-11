@@ -5,27 +5,27 @@
 
 import Foundation
 {{ $ss := . }}
-class {{ .AssembleStructName .Struct.Name }}: EzObject {
+public final class {{ .AssembleStructName .Struct.Name }}: EzObject {
 {{- range .Struct.Fields }}
     {{- if and (eq .Type.Name "list") (eq ($ss.BaseSwift.GetInnerType .Type)  "Int64") }}
     @nonobjc
-    var {{ .Name }}:[Int64]? {
+    public var {{ .Name }}:[Int64]? {
         didSet {
             objc_{{ .Name }} = {{ .Name }}?.map { value in NSNumber(longLong: value) }
         }
     }
     
     @objc({{ .Name }})
-    var objc_{{ .Name }}:[NSNumber]?
+    public var objc_{{ .Name }}:[NSNumber]?
     {{- else }}
-    var {{ $ss.FilterPropertory .Name }}: {{ .Type | $ss.BaseSwift.TypecastWithDefaultValue }}
+    public var {{ $ss.FilterPropertory .Name }}: {{ .Type | $ss.BaseSwift.TypecastWithDefaultValue }}
     {{- end}}
 {{end}}
-    override var allKeys: Set<String> {
+    public override var allKeys: Set<String> {
         return [{{ range $i, $p := .Struct.Fields }}{{ if ne $i 0 }}, {{ end }}"{{ $p.Name }}"{{ end }}]
     }
 
-    override func fromJSON(jsonObject: AnyObject?) -> Bool {
+    public override func fromJSON(jsonObject: AnyObject?) -> Bool {
         guard super.fromJSON(jsonObject) else { return false }
 
         guard let dict = jsonObject as? [String: AnyObject] else { return false }
@@ -49,7 +49,7 @@ class {{ .AssembleStructName .Struct.Name }}: EzObject {
         {{- else if eq $t "Int" }}
         {{ $ss.FilterPropertory .Name }} = dict["{{ .Name }}"] as? {{ $t }} ?? 0
         {{- else if eq $t "Int64" }}
-        {{ $ss.FilterPropertory .Name }} = (dict["{{ .Name }}"] as? NSNumber ?? 0).longLongValue
+        {{ $ss.FilterPropertory .Name }} = (dict["{{ .Name }}"] as? NSNumber)?.longLongValue ?? 0
         {{- else if eq $t "Double" }}
         {{ $ss.FilterPropertory .Name }} = dict["{{ .Name }}"] as? {{ $t }} ?? 0.0
         {{- else if eq $t "Bool" }}
@@ -63,7 +63,7 @@ class {{ .AssembleStructName .Struct.Name }}: EzObject {
         return true
     }
 
-    override func toJSON() -> AnyObject {
+    public override func toJSON() -> AnyObject {
         var dict = [String: AnyObject]()
 {{- range .Struct.Fields}}
         dict["{{ .Name }}"] = {{ $ss.BaseSwift.AssignToDict . }}{{ end }}

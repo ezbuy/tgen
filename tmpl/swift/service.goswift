@@ -5,9 +5,9 @@
 
 import Foundation
 {{ $ss := . }}
-class {{ .Service.Name }}Service: NSObject {
+public final class {{ .Service.Name }}Service: NSObject {
 {{ range .Service.Methods }}
-    class func {{ .Name }}({{ if .Arguments }}{{ .Arguments | $ss.BaseSwift.ParamsJoinedByComma }}, {{ end }}success: ({{ if .ReturnType }}{{ .ReturnType | $ss.BaseSwift.PlainType }}{{ else }}Void{{ end }}) -> Void, failure: ((NSError) -> Void)? = nil) {
+    public class func {{ .Name }}({{ if .Arguments }}{{ .Arguments | $ss.BaseSwift.ParamsJoinedByComma }}, {{ end }}success: ({{ if .ReturnType }}{{ .ReturnType | $ss.BaseSwift.PlainType }}{{ else }}Void{{ end }}) -> Void, failure: ((NSError) -> Void)? = nil) {
         {{ if .Arguments -}}
         var params = [String: AnyObject]()
         {{- range .Arguments }}
