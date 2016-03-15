@@ -5,12 +5,12 @@
 
 import Foundation
 
-class TREFoo: EzObject {
-    override var allKeys: Set<String> {
+public final class TRSharedBasic: EzObject {
+    public override var allKeys: Set<String> {
         return []
     }
 
-    override func fromJSON(jsonObject: AnyObject?) -> Bool {
+    public override func fromJSON(jsonObject: AnyObject?) -> Bool {
         guard super.fromJSON(jsonObject) else { return false }
 
         guard let dict = jsonObject as? [String: AnyObject] else { return false }
@@ -18,7 +18,7 @@ class TREFoo: EzObject {
         return true
     }
 
-    override func toJSON() -> AnyObject {
+    public override func toJSON() -> AnyObject {
         var dict = [String: AnyObject]()
 
         return dict

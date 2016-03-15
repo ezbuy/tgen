@@ -5,9 +5,9 @@
 
 import Foundation
 
-class ExampleService: NSObject {
+public final class ExampleService: NSObject {
 
-    class func getPendingWithdrawAmount(success: (Int) -> Void, failure: ((NSError) -> Void)? = nil) {
+    public class func getPendingWithdrawAmount(success: (Int) -> Void, failure: ((NSError) -> Void)? = nil) {
         let params = [String: AnyObject]()
         let api = "Example.getPendingWithdrawAmount"
 
@@ -18,11 +18,12 @@ class ExampleService: NSObject {
             
             success(responseObject as? Int ?? 0)
             }, failure: { (operation, error) -> Void in
+                debugPrint(api, " error: ", error)
                 failure?(error)
         })
     }
 
-    class func ping(ip: String?, success: (Void) -> Void, failure: ((NSError) -> Void)? = nil) {
+    public class func ping(ip: String?, success: (Void) -> Void, failure: ((NSError) -> Void)? = nil) {
         var params = [String: AnyObject]()
         params["ip"] = ip
 
@@ -35,6 +36,7 @@ class ExampleService: NSObject {
             
             success()
             }, failure: { (operation, error) -> Void in
+                debugPrint(api, " error: ", error)
                 failure?(error)
         })
     }

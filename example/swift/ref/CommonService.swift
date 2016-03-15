@@ -5,9 +5,9 @@
 
 import Foundation
 
-class CommonService: NSObject {
+public final class CommonService: NSObject {
 
-    class func getAges(id: Int64, success: ([Int]) -> Void, failure: ((NSError) -> Void)? = nil) {
+    public class func getAges(id: Int64, success: ([Int]) -> Void, failure: ((NSError) -> Void)? = nil) {
         var params = [String: AnyObject]()
         params["id"] = NSNumber(longLong: id)
 
@@ -20,11 +20,12 @@ class CommonService: NSObject {
             
             success(responseObject as? [Int] ?? [])
             }, failure: { (operation, error) -> Void in
+                debugPrint(api, " error: ", error)
                 failure?(error)
         })
     }
 
-    class func getNames(success: ([String]) -> Void, failure: ((NSError) -> Void)? = nil) {
+    public class func getNames(success: ([String]) -> Void, failure: ((NSError) -> Void)? = nil) {
         let params = [String: AnyObject]()
         let api = "Common.getNames"
 
@@ -35,6 +36,7 @@ class CommonService: NSObject {
             
             success(responseObject as? [String] ?? [])
             }, failure: { (operation, error) -> Void in
+                debugPrint(api, " error: ", error)
                 failure?(error)
         })
     }

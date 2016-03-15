@@ -5,9 +5,9 @@
 
 import Foundation
 {{ $ss := . }}
-class {{ .Service.Name }}Service: NSObject {
+public final class {{ .Service.Name }}Service: NSObject {
 {{ range .Service.Methods }}
-    class func {{ .Name }}({{ if .Arguments }}{{ .Arguments | $ss.BaseSwift.ParamsJoinedByComma }}, {{ end }}success: ({{ if .ReturnType }}{{ .ReturnType | $ss.BaseSwift.PlainType }}{{ else }}Void{{ end }}) -> Void, failure: ((NSError) -> Void)? = nil) {
+    public class func {{ .Name }}({{ if .Arguments }}{{ .Arguments | $ss.BaseSwift.ParamsJoinedByComma }}, {{ end }}success: ({{ if .ReturnType }}{{ .ReturnType | $ss.BaseSwift.PlainType }}{{ else }}Void{{ end }}) -> Void, failure: ((NSError) -> Void)? = nil) {
         {{ if .Arguments -}}
         var params = [String: AnyObject]()
         {{- range .Arguments }}
@@ -26,15 +26,21 @@ class {{ .Service.Name }}Service: NSObject {
             {{- if eq .ReturnType.Name "list" }}
             {{- $innertype := $ss.BaseSwift.GetInnerType .ReturnType -}}
             {{- if $innertype | $ss.BaseSwift.IsBasicType }}
+            {{- if eq $innertype "Int64"}}
+            success((responseObject as? [NSNumber])?.map { value in value.longLongValue } ?? [])
+            {{- else }}
             success(responseObject as? {{ $t }} ?? [])
+            {{- end }}
             {{- else }}
             success({{ $t }}(jsonObject: responseObject) ?? [])
             {{- end }}
             {{- else }}
             {{- if eq $t "String" }}
             success(responseObject as? {{ $t }} ?? "")
-            {{- else if or (eq $t "Int") (eq $t "Int64") }}
+            {{- else if eq $t "Int" }}
             success(responseObject as? {{ $t }} ?? 0)
+            {{- else if eq $t "Int64" }}
+            success((responseObject as? NSNumber)?.longLongValue ?? 0)
             {{- else if eq $t "Double" }}
             success(responseObject as? {{ $t }} ?? 0.0)
             {{- else if eq $t "Bool" }}
@@ -47,6 +53,7 @@ class {{ .Service.Name }}Service: NSObject {
             success()
             {{- end }}
             }, failure: { (operation, error) -> Void in
+                debugPrint(api, " error: ", error)
                 failure?(error)
         })
     }
