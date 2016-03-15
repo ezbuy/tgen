@@ -41,9 +41,10 @@ func TestGenerate(t *testing.T) {
 
 		gen.Generate(outdir, parsedThrift)
 
-		for _, thrift := range parsedThrift {
+		for f, thrift := range parsedThrift {
 			for _, s := range thrift.Structs {
-				name := fmt.Sprintf("%s.swift", s.Name)
+				baseSwift := &BaseSwift{Filepath: f, Thrift: thrift}
+				name := fmt.Sprintf("%s.swift", baseSwift.AssembleStructName(s.Name))
 
 				outfile := filepath.Join(outdir, name)
 				testfile := filepath.Join(testdir, name)
@@ -74,7 +75,7 @@ func TestGenerate(t *testing.T) {
 
 func fileCompare(t *testing.T, src string, dest string) {
 	if !pathexists(src) {
-		t.Error("geenerate error\n")
+		t.Error("generate error\n")
 	} else if !pathexists(dest) {
 		t.Errorf("no test file found [%s]\n", dest)
 	} else {

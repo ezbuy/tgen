@@ -21,6 +21,7 @@ public final class BasicService: NSObject {
             
             success(TRSharedBasic(jsonObject: responseObject)!)
             }, failure: { (operation, error) -> Void in
+                debugPrint(api, " error: ", error)
                 failure?(error)
         })
     }
@@ -40,6 +41,7 @@ public final class BasicService: NSObject {
             
             success([TRSharedBasic](jsonObject: responseObject) ?? [])
             }, failure: { (operation, error) -> Void in
+                debugPrint(api, " error: ", error)
                 failure?(error)
         })
     }
@@ -58,6 +60,7 @@ public final class BasicService: NSObject {
             
             success([TRCommonCommon](jsonObject: responseObject) ?? [])
             }, failure: { (operation, error) -> Void in
+                debugPrint(api, " error: ", error)
                 failure?(error)
         })
     }
@@ -76,6 +79,7 @@ public final class BasicService: NSObject {
             
             success((responseObject as? [NSNumber])?.map { value in value.longLongValue } ?? [])
             }, failure: { (operation, error) -> Void in
+                debugPrint(api, " error: ", error)
                 failure?(error)
         })
     }

@@ -20,6 +20,7 @@ public final class CommonService: NSObject {
             
             success(responseObject as? [Int] ?? [])
             }, failure: { (operation, error) -> Void in
+                debugPrint(api, " error: ", error)
                 failure?(error)
         })
     }
@@ -35,6 +36,7 @@ public final class CommonService: NSObject {
             
             success(responseObject as? [String] ?? [])
             }, failure: { (operation, error) -> Void in
+                debugPrint(api, " error: ", error)
                 failure?(error)
         })
     }

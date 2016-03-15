@@ -18,6 +18,7 @@ public final class ExampleService: NSObject {
             
             success(responseObject as? Int ?? 0)
             }, failure: { (operation, error) -> Void in
+                debugPrint(api, " error: ", error)
                 failure?(error)
         })
     }
@@ -35,6 +36,7 @@ public final class ExampleService: NSObject {
             
             success()
             }, failure: { (operation, error) -> Void in
+                debugPrint(api, " error: ", error)
                 failure?(error)
         })
     }

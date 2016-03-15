@@ -53,6 +53,7 @@ public final class {{ .Service.Name }}Service: NSObject {
             success()
             {{- end }}
             }, failure: { (operation, error) -> Void in
+                debugPrint(api, " error: ", error)
                 failure?(error)
         })
     }
