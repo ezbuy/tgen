@@ -55,11 +55,11 @@ public class {{ .Service.Name}}Service {
                         {{- else if eq $method.ReturnType.Name "double" }}
                         result = BaseModule.fromJSON(response, Double.class);
                         {{- else if or (eq $method.ReturnType.Name "set") (eq $method.ReturnType.Name "list") }}
-                        result = BaseModule.fromJSONArray(response, new {{ $method.ReturnType | $js.BaseJava.GetInnerType }}.getTClass());
+                        result = BaseModule.fromJSONArray(response, {{ $method.ReturnType | $js.BaseJava.GetInnerType }}.class);
                         {{- else if eq $method.ReturnType.Name "map" }}
                         <!-- map is ignored -->
                         {{- else }}
-                        result = BaseModule.fromJSON(response, new {{ $method.ReturnType | $js.BaseJava.GetInnerType }}.getTClass());
+                        result = BaseModule.fromJSON(response, {{ $method.ReturnType | $js.BaseJava.GetInnerType }}.class);
                         {{- end }}
 
                         listener.onResponse(result);
@@ -72,7 +72,7 @@ public class {{ .Service.Name}}Service {
                     }
                     {{- else -}}
                     if (listener != null) {
-                        listener.onResponse(true);
+                        listener.onResponse(null);
                     }
                     {{- end }}
                 }
