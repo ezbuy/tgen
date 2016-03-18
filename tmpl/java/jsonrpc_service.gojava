@@ -12,7 +12,6 @@ import com.android.volley.Response;
 import com.android.volley.Response.Listener;
 import com.android.volley.VolleyError;
 import com.common.utils.JsonUtils;
-import com.daigou.sg.app.DgApplication;
 import com.daigou.sg.rpc.BaseModule;
 import com.daigou.sg.rpc.GsonUtils;
 import com.daigou.sg.rpc.RpcRequest;
@@ -101,6 +100,7 @@ public class {{ .Service.Name}}Service {
             }
         };
         TRpc.getQueue().add(req);
+        return req;
     }
 {{ end -}}
 }
