@@ -227,7 +227,7 @@ func dogenerate(output string, flag int16, parsedThrift map[string]*parser.Thrif
 			name := s.Name + ".java"
 
 			// fix java file path
-			pathfix := filepath.join(output, strings.Replace(namespace, ".", "/", -1));
+			pathfix := filepath.Join(output, strings.Replace(namespace, ".", "/", -1));
 			if err := os.MkdirAll(pathfix, 0755); err != nil {
 				panic(fmt.Errorf("failed to create output directory %s", pathfix))
 			}
@@ -254,7 +254,7 @@ func dogenerate(output string, flag int16, parsedThrift map[string]*parser.Thrif
 			name := s.Name + "Service.java"
 
 			// fix java file path
-			pathfix := filepath.join(output, strings.Replace(namespace, ".", "/", -1));
+			pathfix := filepath.Join(output, strings.Replace(namespace, ".", "/", -1));
 			if err := os.MkdirAll(pathfix, 0755); err != nil {
 				panic(fmt.Errorf("failed to create output directory %s", pathfix))
 			}
