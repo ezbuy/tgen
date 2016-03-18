@@ -15,7 +15,6 @@ import com.common.utils.JsonUtils;
 import com.daigou.sg.rpc.BaseModule;
 import com.daigou.sg.rpc.GsonUtils;
 import com.daigou.sg.rpc.RpcRequest;
-import com.daigou.sg.app.AppUrl;
 import com.google.gson.Gson;
 
 import java.io.IOException;

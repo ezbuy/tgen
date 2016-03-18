@@ -1,8 +1,6 @@
 package {{ .Namespace }};
 
 import com.daigou.sg.rpc.BaseModule;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonToken;
 {{- if .HasKeyword }}
 import com.google.gson.annotations.SerializedName;
 {{- end }}
