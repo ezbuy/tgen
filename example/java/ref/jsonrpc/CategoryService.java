@@ -23,7 +23,6 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
-
 public class CategoryService {
     private static final Gson gson = GsonUtils.getGsonInstance();
     private static int msgID = 1;
@@ -37,7 +36,7 @@ public class CategoryService {
         return Integer.toString(msgID);
     }
 
-    public static void GetAllProductCount(final int id, final String originCode, final Listener<Integer> listener) {
+    public RpcRequest GetAllProductCount(final int id, final String originCode, final Listener<Integer> listener) {
         RpcRequest req = new RpcRequest(Request.Method.POST, AppUrl.kJsonRpcCoreUrl,
             new Response.Listener<String>() {
                 @Override
@@ -76,7 +75,84 @@ public class CategoryService {
         DgApplication.getQueue().add(req);
     }
 
-    public static void GetPrimeProducts(final int id, final int offset, final int limit, final Listener<ArrayList<TProductSimple>> listener) {
+    public RpcRequest GetHomePageCategories(final int offset, final int limit, final String originCode, final Listener<ArrayList<TCategory>> listener) {
+        RpcRequest req = new RpcRequest(Request.Method.POST, AppUrl.kJsonRpcCoreUrl,
+            new Response.Listener<String>() {
+                @Override
+                public void onResponse(String response) {
+                    try {
+                        ArrayList<TCategory> result;
+                        result = BaseModule.fromJSONArray(response, new TCategory.getTClass());
+
+                        listener.onResponse(result);
+                    } catch (Exception ex) {
+                        Log.d("ex", ex.toString());
+                        Log.d("jsonObject", response);
+                        listener.onResponse(null);
+                    }
+                }
+            }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                listener.onResponse(null);
+            }
+        }) {
+            @Override
+            public byte[] getBody() {
+                final ArrayList<Object> params = new ArrayList<>();
+                params.add(offset);
+                params.add(limit);
+                params.add(originCode);
+
+                HashMap<String, Object> msg = new HashMap<>();
+                msg.put("id", getMsgID());
+                msg.put("method", "Category.GetHomePageCategories");
+                msg.put("params", params);
+
+                return gson.toJson(msg).getBytes(Charset.forName("UTF-8"));
+            }
+        };
+        DgApplication.getQueue().add(req);
+    }
+
+    public RpcRequest GetPrimeFloorCategories(final Listener<ArrayList<TFloorCategory>> listener) {
+        RpcRequest req = new RpcRequest(Request.Method.POST, AppUrl.kJsonRpcCoreUrl,
+            new Response.Listener<String>() {
+                @Override
+                public void onResponse(String response) {
+                    try {
+                        ArrayList<TFloorCategory> result;
+                        result = BaseModule.fromJSONArray(response, new TFloorCategory.getTClass());
+
+                        listener.onResponse(result);
+                    } catch (Exception ex) {
+                        Log.d("ex", ex.toString());
+                        Log.d("jsonObject", response);
+                        listener.onResponse(null);
+                    }
+                }
+            }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                listener.onResponse(null);
+            }
+        }) {
+            @Override
+            public byte[] getBody() {
+                final ArrayList<Object> params = new ArrayList<>();
+
+                HashMap<String, Object> msg = new HashMap<>();
+                msg.put("id", getMsgID());
+                msg.put("method", "Category.GetPrimeFloorCategories");
+                msg.put("params", params);
+
+                return gson.toJson(msg).getBytes(Charset.forName("UTF-8"));
+            }
+        };
+        DgApplication.getQueue().add(req);
+    }
+
+    public RpcRequest GetPrimeProducts(final int id, final int offset, final int limit, final Listener<ArrayList<TProductSimple>> listener) {
         RpcRequest req = new RpcRequest(Request.Method.POST, AppUrl.kJsonRpcCoreUrl,
             new Response.Listener<String>() {
                 @Override
@@ -116,7 +192,7 @@ public class CategoryService {
         DgApplication.getQueue().add(req);
     }
 
-    public static void GetPrimeSubCategories(final int categoryId, final Listener<ArrayList<TCategory>> listener) {
+    public RpcRequest GetPrimeSubCategories(final int categoryId, final Listener<ArrayList<TCategory>> listener) {
         RpcRequest req = new RpcRequest(Request.Method.POST, AppUrl.kJsonRpcCoreUrl,
             new Response.Listener<String>() {
                 @Override
@@ -154,7 +230,7 @@ public class CategoryService {
         DgApplication.getQueue().add(req);
     }
 
-    public static void GetPrimeTopLevelCategories(final Listener<ArrayList<TCategory>> listener) {
+    public RpcRequest GetPrimeTopLevelCategories(final Listener<ArrayList<TCategory>> listener) {
         RpcRequest req = new RpcRequest(Request.Method.POST, AppUrl.kJsonRpcCoreUrl,
             new Response.Listener<String>() {
                 @Override
@@ -191,7 +267,7 @@ public class CategoryService {
         DgApplication.getQueue().add(req);
     }
 
-    public static void GetProducts(final int id, final int offset, final int limit, final String originCode, final Listener<ArrayList<TProductSimple>> listener) {
+    public RpcRequest GetProducts(final int id, final int offset, final int limit, final String originCode, final Listener<ArrayList<TProductSimple>> listener) {
         RpcRequest req = new RpcRequest(Request.Method.POST, AppUrl.kJsonRpcCoreUrl,
             new Response.Listener<String>() {
                 @Override
@@ -232,7 +308,45 @@ public class CategoryService {
         DgApplication.getQueue().add(req);
     }
 
-    public static void GetTopLevelCategories(final String originCode, final Listener<ArrayList<TCategory>> listener) {
+    public RpcRequest GetSubCategories(final int categoryId, final Listener<ArrayList<TCategory>> listener) {
+        RpcRequest req = new RpcRequest(Request.Method.POST, AppUrl.kJsonRpcCoreUrl,
+            new Response.Listener<String>() {
+                @Override
+                public void onResponse(String response) {
+                    try {
+                        ArrayList<TCategory> result;
+                        result = BaseModule.fromJSONArray(response, new TCategory.getTClass());
+
+                        listener.onResponse(result);
+                    } catch (Exception ex) {
+                        Log.d("ex", ex.toString());
+                        Log.d("jsonObject", response);
+                        listener.onResponse(null);
+                    }
+                }
+            }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                listener.onResponse(null);
+            }
+        }) {
+            @Override
+            public byte[] getBody() {
+                final ArrayList<Object> params = new ArrayList<>();
+                params.add(categoryId);
+
+                HashMap<String, Object> msg = new HashMap<>();
+                msg.put("id", getMsgID());
+                msg.put("method", "Category.GetSubCategories");
+                msg.put("params", params);
+
+                return gson.toJson(msg).getBytes(Charset.forName("UTF-8"));
+            }
+        };
+        DgApplication.getQueue().add(req);
+    }
+
+    public RpcRequest GetTopLevelCategories(final String originCode, final Listener<ArrayList<TCategory>> listener) {
         RpcRequest req = new RpcRequest(Request.Method.POST, AppUrl.kJsonRpcCoreUrl,
             new Response.Listener<String>() {
                 @Override
@@ -270,7 +384,7 @@ public class CategoryService {
         DgApplication.getQueue().add(req);
     }
 
-    public static void SearchCategoryProducts(final String keyword, final int offset, final int limit, final int categoryId, final String originCode, final Listener<ArrayList<TProductSimple>> listener) {
+    public RpcRequest SearchCategoryProducts(final String keyword, final int offset, final int limit, final int categoryId, final String originCode, final Listener<ArrayList<TProductSimple>> listener) {
         RpcRequest req = new RpcRequest(Request.Method.POST, AppUrl.kJsonRpcCoreUrl,
             new Response.Listener<String>() {
                 @Override
@@ -312,7 +426,7 @@ public class CategoryService {
         DgApplication.getQueue().add(req);
     }
 
-    public static void UserGetRecentPrimePurchaseDetail(final int paymentBillId, final int offset, final int limit, final Listener<TRecentPrimePurchase> listener) {
+    public RpcRequest UserGetRecentPrimePurchaseDetail(final int paymentBillId, final int offset, final int limit, final Listener<TRecentPrimePurchase> listener) {
         RpcRequest req = new RpcRequest(Request.Method.POST, AppUrl.kJsonRpcCoreUrl,
             new Response.Listener<String>() {
                 @Override
@@ -344,6 +458,84 @@ public class CategoryService {
                 HashMap<String, Object> msg = new HashMap<>();
                 msg.put("id", getMsgID());
                 msg.put("method", "Category.UserGetRecentPrimePurchaseDetail");
+                msg.put("params", params);
+
+                return gson.toJson(msg).getBytes(Charset.forName("UTF-8"));
+            }
+        };
+        DgApplication.getQueue().add(req);
+    }
+
+    public RpcRequest UserGetRecentPrimePurchaseList(final int offset, final int limit, final Listener<ArrayList<TRecentPrimePurchase>> listener) {
+        RpcRequest req = new RpcRequest(Request.Method.POST, AppUrl.kJsonRpcCoreUrl,
+            new Response.Listener<String>() {
+                @Override
+                public void onResponse(String response) {
+                    try {
+                        ArrayList<TRecentPrimePurchase> result;
+                        result = BaseModule.fromJSONArray(response, new TRecentPrimePurchase.getTClass());
+
+                        listener.onResponse(result);
+                    } catch (Exception ex) {
+                        Log.d("ex", ex.toString());
+                        Log.d("jsonObject", response);
+                        listener.onResponse(null);
+                    }
+                }
+            }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                listener.onResponse(null);
+            }
+        }) {
+            @Override
+            public byte[] getBody() {
+                final ArrayList<Object> params = new ArrayList<>();
+                params.add(offset);
+                params.add(limit);
+
+                HashMap<String, Object> msg = new HashMap<>();
+                msg.put("id", getMsgID());
+                msg.put("method", "Category.UserGetRecentPrimePurchaseList");
+                msg.put("params", params);
+
+                return gson.toJson(msg).getBytes(Charset.forName("UTF-8"));
+            }
+        };
+        DgApplication.getQueue().add(req);
+    }
+
+    public RpcRequest UserGetRecentPrimePurchaseSummaryList(final int offset, final int limit, final Listener<ArrayList<TRecentPrimeCustomer>> listener) {
+        RpcRequest req = new RpcRequest(Request.Method.POST, AppUrl.kJsonRpcCoreUrl,
+            new Response.Listener<String>() {
+                @Override
+                public void onResponse(String response) {
+                    try {
+                        ArrayList<TRecentPrimeCustomer> result;
+                        result = BaseModule.fromJSONArray(response, new TRecentPrimeCustomer.getTClass());
+
+                        listener.onResponse(result);
+                    } catch (Exception ex) {
+                        Log.d("ex", ex.toString());
+                        Log.d("jsonObject", response);
+                        listener.onResponse(null);
+                    }
+                }
+            }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                listener.onResponse(null);
+            }
+        }) {
+            @Override
+            public byte[] getBody() {
+                final ArrayList<Object> params = new ArrayList<>();
+                params.add(offset);
+                params.add(limit);
+
+                HashMap<String, Object> msg = new HashMap<>();
+                msg.put("id", getMsgID());
+                msg.put("method", "Category.UserGetRecentPrimePurchaseSummaryList");
                 msg.put("params", params);
 
                 return gson.toJson(msg).getBytes(Charset.forName("UTF-8"));

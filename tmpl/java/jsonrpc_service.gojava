@@ -23,7 +23,6 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
-
 {{ $js := . -}}
 
 public class {{ .Service.Name}}Service {
@@ -39,7 +38,7 @@ public class {{ .Service.Name}}Service {
         return Integer.toString(msgID);
     }
 {{ range $k, $method := $.Service.Methods }}
-    public static void {{ $method.Name }}({{ $method | $js.BaseJava.AssembleParams }}) {
+    public RpcRequest {{ $method.Name }}({{ $method | $js.BaseJava.AssembleParams }}) {
         RpcRequest req = new RpcRequest(Request.Method.POST, AppUrl.kJsonRpcCoreUrl,
             new Response.Listener<String>() {
                 @Override
@@ -101,7 +100,7 @@ public class {{ .Service.Name}}Service {
                 return gson.toJson(msg).getBytes(Charset.forName("UTF-8"));
             }
         };
-        DgApplication.getQueue().add(req);
+        TRpc.getQueue().add(req);
     }
 {{ end -}}
 }
