@@ -226,7 +226,13 @@ func dogenerate(output string, flag int16, parsedThrift map[string]*parser.Thrif
 			// filename is the struct name
 			name := s.Name + ".java"
 
-			path := filepath.Join(output, name)
+			// fix java file path
+			pathfix := filepath.join(output, strings.Replace(namespace, ".", "/", -1));
+			if err := os.MkdirAll(pathfix, 0755); err != nil {
+				panic(fmt.Errorf("failed to create output directory %s", pathfix))
+			}
+
+			path := filepath.Join(pathfix, name)
 
 			data := &javaStruct{BaseJava: &BaseJava{}, Namespace: namespace, Struct: s}
 
@@ -247,7 +253,13 @@ func dogenerate(output string, flag int16, parsedThrift map[string]*parser.Thrif
 			// filename is the service name plus 'Service'
 			name := s.Name + "Service.java"
 
-			path := filepath.Join(output, name)
+			// fix java file path
+			pathfix := filepath.join(output, strings.Replace(namespace, ".", "/", -1));
+			if err := os.MkdirAll(pathfix, 0755); err != nil {
+				panic(fmt.Errorf("failed to create output directory %s", pathfix))
+			}
+
+			path := filepath.Join(pathfix, name)
 
 			data := &javaService{BaseJava: &BaseJava{}, Namespace: namespace, Service: s}
 
