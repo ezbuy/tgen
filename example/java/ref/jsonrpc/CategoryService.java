@@ -12,7 +12,6 @@ import com.android.volley.Response;
 import com.android.volley.Response.Listener;
 import com.android.volley.VolleyError;
 import com.common.utils.JsonUtils;
-import com.daigou.sg.app.DgApplication;
 import com.daigou.sg.rpc.BaseModule;
 import com.daigou.sg.rpc.GsonUtils;
 import com.daigou.sg.rpc.RpcRequest;
@@ -23,7 +22,6 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
-
 public class CategoryService {
     private static final Gson gson = GsonUtils.getGsonInstance();
     private static int msgID = 1;
@@ -37,7 +35,7 @@ public class CategoryService {
         return Integer.toString(msgID);
     }
 
-    public static void GetAllProductCount(final int id, final String originCode, final Listener<Integer> listener) {
+    public RpcRequest GetAllProductCount(final int id, final String originCode, final Listener<Integer> listener) {
         RpcRequest req = new RpcRequest(Request.Method.POST, AppUrl.kJsonRpcCoreUrl,
             new Response.Listener<String>() {
                 @Override
@@ -73,10 +71,10 @@ public class CategoryService {
                 return gson.toJson(msg).getBytes(Charset.forName("UTF-8"));
             }
         };
-        DgApplication.getQueue().add(req);
+        TRpc.getQueue().add(req);
     }
 
-    public static void GetPrimeProducts(final int id, final int offset, final int limit, final Listener<ArrayList<TProductSimple>> listener) {
+    public RpcRequest GetPrimeProducts(final int id, final int offset, final int limit, final Listener<ArrayList<TProductSimple>> listener) {
         RpcRequest req = new RpcRequest(Request.Method.POST, AppUrl.kJsonRpcCoreUrl,
             new Response.Listener<String>() {
                 @Override
@@ -113,10 +111,10 @@ public class CategoryService {
                 return gson.toJson(msg).getBytes(Charset.forName("UTF-8"));
             }
         };
-        DgApplication.getQueue().add(req);
+        TRpc.getQueue().add(req);
     }
 
-    public static void GetPrimeSubCategories(final int categoryId, final Listener<ArrayList<TCategory>> listener) {
+    public RpcRequest GetPrimeSubCategories(final int categoryId, final Listener<ArrayList<TCategory>> listener) {
         RpcRequest req = new RpcRequest(Request.Method.POST, AppUrl.kJsonRpcCoreUrl,
             new Response.Listener<String>() {
                 @Override
@@ -151,10 +149,10 @@ public class CategoryService {
                 return gson.toJson(msg).getBytes(Charset.forName("UTF-8"));
             }
         };
-        DgApplication.getQueue().add(req);
+        TRpc.getQueue().add(req);
     }
 
-    public static void GetPrimeTopLevelCategories(final Listener<ArrayList<TCategory>> listener) {
+    public RpcRequest GetPrimeTopLevelCategories(final Listener<ArrayList<TCategory>> listener) {
         RpcRequest req = new RpcRequest(Request.Method.POST, AppUrl.kJsonRpcCoreUrl,
             new Response.Listener<String>() {
                 @Override
@@ -188,10 +186,10 @@ public class CategoryService {
                 return gson.toJson(msg).getBytes(Charset.forName("UTF-8"));
             }
         };
-        DgApplication.getQueue().add(req);
+        TRpc.getQueue().add(req);
     }
 
-    public static void GetProducts(final int id, final int offset, final int limit, final String originCode, final Listener<ArrayList<TProductSimple>> listener) {
+    public RpcRequest GetProducts(final int id, final int offset, final int limit, final String originCode, final Listener<ArrayList<TProductSimple>> listener) {
         RpcRequest req = new RpcRequest(Request.Method.POST, AppUrl.kJsonRpcCoreUrl,
             new Response.Listener<String>() {
                 @Override
@@ -229,10 +227,10 @@ public class CategoryService {
                 return gson.toJson(msg).getBytes(Charset.forName("UTF-8"));
             }
         };
-        DgApplication.getQueue().add(req);
+        TRpc.getQueue().add(req);
     }
 
-    public static void GetTopLevelCategories(final String originCode, final Listener<ArrayList<TCategory>> listener) {
+    public RpcRequest GetTopLevelCategories(final String originCode, final Listener<ArrayList<TCategory>> listener) {
         RpcRequest req = new RpcRequest(Request.Method.POST, AppUrl.kJsonRpcCoreUrl,
             new Response.Listener<String>() {
                 @Override
@@ -267,10 +265,10 @@ public class CategoryService {
                 return gson.toJson(msg).getBytes(Charset.forName("UTF-8"));
             }
         };
-        DgApplication.getQueue().add(req);
+        TRpc.getQueue().add(req);
     }
 
-    public static void SearchCategoryProducts(final String keyword, final int offset, final int limit, final int categoryId, final String originCode, final Listener<ArrayList<TProductSimple>> listener) {
+    public RpcRequest SearchCategoryProducts(final String keyword, final int offset, final int limit, final int categoryId, final String originCode, final Listener<ArrayList<TProductSimple>> listener) {
         RpcRequest req = new RpcRequest(Request.Method.POST, AppUrl.kJsonRpcCoreUrl,
             new Response.Listener<String>() {
                 @Override
@@ -309,10 +307,10 @@ public class CategoryService {
                 return gson.toJson(msg).getBytes(Charset.forName("UTF-8"));
             }
         };
-        DgApplication.getQueue().add(req);
+        TRpc.getQueue().add(req);
     }
 
-    public static void UserGetRecentPrimePurchaseDetail(final int paymentBillId, final int offset, final int limit, final Listener<TRecentPrimePurchase> listener) {
+    public RpcRequest UserGetRecentPrimePurchaseDetail(final int paymentBillId, final int offset, final int limit, final Listener<TRecentPrimePurchase> listener) {
         RpcRequest req = new RpcRequest(Request.Method.POST, AppUrl.kJsonRpcCoreUrl,
             new Response.Listener<String>() {
                 @Override
@@ -349,6 +347,6 @@ public class CategoryService {
                 return gson.toJson(msg).getBytes(Charset.forName("UTF-8"));
             }
         };
-        DgApplication.getQueue().add(req);
+        TRpc.getQueue().add(req);
     }
 }

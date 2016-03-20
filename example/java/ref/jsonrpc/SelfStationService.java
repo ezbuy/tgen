@@ -12,7 +12,6 @@ import com.android.volley.Response;
 import com.android.volley.Response.Listener;
 import com.android.volley.VolleyError;
 import com.common.utils.JsonUtils;
-import com.daigou.sg.app.DgApplication;
 import com.daigou.sg.rpc.BaseModule;
 import com.daigou.sg.rpc.GsonUtils;
 import com.daigou.sg.rpc.RpcRequest;
@@ -23,7 +22,6 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
-
 public class SelfStationService {
     private static final Gson gson = GsonUtils.getGsonInstance();
     private static int msgID = 1;
@@ -37,7 +35,7 @@ public class SelfStationService {
         return Integer.toString(msgID);
     }
 
-    public static void Login(final String username, final String tPackage, final Listener<TLoginResult> listener) {
+    public RpcRequest Login(final String username, final String tPackage, final Listener<TLoginResult> listener) {
         RpcRequest req = new RpcRequest(Request.Method.POST, AppUrl.kJsonRpcCoreUrl,
             new Response.Listener<String>() {
                 @Override
@@ -73,10 +71,10 @@ public class SelfStationService {
                 return gson.toJson(msg).getBytes(Charset.forName("UTF-8"));
             }
         };
-        DgApplication.getQueue().add(req);
+        TRpc.getQueue().add(req);
     }
 
-    public static void UserFindParcel(final String stationName, final String date, final String userName, final String phone, final String parcelNumber, final int offset, final int limit, final Listener<ArrayList<TParcel>> listener) {
+    public RpcRequest UserFindParcel(final String stationName, final String date, final String userName, final String phone, final String parcelNumber, final int offset, final int limit, final Listener<ArrayList<TParcel>> listener) {
         RpcRequest req = new RpcRequest(Request.Method.POST, AppUrl.kJsonRpcCoreUrl,
             new Response.Listener<String>() {
                 @Override
@@ -117,10 +115,10 @@ public class SelfStationService {
                 return gson.toJson(msg).getBytes(Charset.forName("UTF-8"));
             }
         };
-        DgApplication.getQueue().add(req);
+        TRpc.getQueue().add(req);
     }
 
-    public static void UserGetParcel(final String parcelNumber, final Listener<TParcel> listener) {
+    public RpcRequest UserGetParcel(final String parcelNumber, final Listener<TParcel> listener) {
         RpcRequest req = new RpcRequest(Request.Method.POST, AppUrl.kJsonRpcCoreUrl,
             new Response.Listener<String>() {
                 @Override
@@ -155,10 +153,10 @@ public class SelfStationService {
                 return gson.toJson(msg).getBytes(Charset.forName("UTF-8"));
             }
         };
-        DgApplication.getQueue().add(req);
+        TRpc.getQueue().add(req);
     }
 
-    public static void UserGetShelfNumbers(final String stationName, final Listener<ArrayList<String>> listener) {
+    public RpcRequest UserGetShelfNumbers(final String stationName, final Listener<ArrayList<String>> listener) {
         RpcRequest req = new RpcRequest(Request.Method.POST, AppUrl.kJsonRpcCoreUrl,
             new Response.Listener<String>() {
                 @Override
@@ -193,10 +191,10 @@ public class SelfStationService {
                 return gson.toJson(msg).getBytes(Charset.forName("UTF-8"));
             }
         };
-        DgApplication.getQueue().add(req);
+        TRpc.getQueue().add(req);
     }
 
-    public static void UserGetUploadToken(final Listener<String> listener) {
+    public RpcRequest UserGetUploadToken(final Listener<String> listener) {
         RpcRequest req = new RpcRequest(Request.Method.POST, AppUrl.kJsonRpcCoreUrl,
             new Response.Listener<String>() {
                 @Override
@@ -230,10 +228,10 @@ public class SelfStationService {
                 return gson.toJson(msg).getBytes(Charset.forName("UTF-8"));
             }
         };
-        DgApplication.getQueue().add(req);
+        TRpc.getQueue().add(req);
     }
 
-    public static void UserListParcel(final String stationName, final String status, final int offset, final int limit, final Listener<ArrayList<TParcel>> listener) {
+    public RpcRequest UserListParcel(final String stationName, final String status, final int offset, final int limit, final Listener<ArrayList<TParcel>> listener) {
         RpcRequest req = new RpcRequest(Request.Method.POST, AppUrl.kJsonRpcCoreUrl,
             new Response.Listener<String>() {
                 @Override
@@ -271,10 +269,10 @@ public class SelfStationService {
                 return gson.toJson(msg).getBytes(Charset.forName("UTF-8"));
             }
         };
-        DgApplication.getQueue().add(req);
+        TRpc.getQueue().add(req);
     }
 
-    public static void UserModifyPassword(final String currentPassword, final String newPassword, final Listener<String> listener) {
+    public RpcRequest UserModifyPassword(final String currentPassword, final String newPassword, final Listener<String> listener) {
         RpcRequest req = new RpcRequest(Request.Method.POST, AppUrl.kJsonRpcCoreUrl,
             new Response.Listener<String>() {
                 @Override
@@ -310,10 +308,10 @@ public class SelfStationService {
                 return gson.toJson(msg).getBytes(Charset.forName("UTF-8"));
             }
         };
-        DgApplication.getQueue().add(req);
+        TRpc.getQueue().add(req);
     }
 
-    public static void UserPutParcelToShelf(final String shelfNumber, final String parcelNumber, final Listener<String> listener) {
+    public RpcRequest UserPutParcelToShelf(final String shelfNumber, final String parcelNumber, final Listener<String> listener) {
         RpcRequest req = new RpcRequest(Request.Method.POST, AppUrl.kJsonRpcCoreUrl,
             new Response.Listener<String>() {
                 @Override
@@ -349,10 +347,10 @@ public class SelfStationService {
                 return gson.toJson(msg).getBytes(Charset.forName("UTF-8"));
             }
         };
-        DgApplication.getQueue().add(req);
+        TRpc.getQueue().add(req);
     }
 
-    public static void UserSetParcelReceived(final String parcelNumber, final int rating, final String signatureImageKey, final Listener<String> listener) {
+    public RpcRequest UserSetParcelReceived(final String parcelNumber, final int rating, final String signatureImageKey, final Listener<String> listener) {
         RpcRequest req = new RpcRequest(Request.Method.POST, AppUrl.kJsonRpcCoreUrl,
             new Response.Listener<String>() {
                 @Override
@@ -389,6 +387,6 @@ public class SelfStationService {
                 return gson.toJson(msg).getBytes(Charset.forName("UTF-8"));
             }
         };
-        DgApplication.getQueue().add(req);
+        TRpc.getQueue().add(req);
     }
 }
