@@ -21,5 +21,5 @@ public class {{ .Struct.Name}} extends BaseModule<{{ .Struct.Name }}> implements
 	{{- if $js.IsKeyword .Name }}
 	@SerializedName("{{ .Name }}")
 	{{- end }}
-    public {{ .Type.Namespace }}.{{ $js.PlainTypecast .Type }} {{ $js.FilterVariableName .Name }};{{ end }}
+    public {{ $js.PlainTypecast .Type }} {{ $js.FilterVariableName .Name }};{{ end }}
 }

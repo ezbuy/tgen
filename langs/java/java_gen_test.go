@@ -41,18 +41,22 @@ func TestGenerate(t *testing.T) {
 		gen.Generate(outdir, parsedThrift)
 
 		for _, thrift := range parsedThrift {
+			ns := thrift.Namespaces["java"]
+			p := strings.Replace(ns, ".", "/", -1)
+
 			for _, m := range thrift.Structs {
 				name := m.Name + ".java"
 
 				// jsonrpc
-				outfile := filepath.Join(outdir, "jsonrpc", name)
-				testfile := filepath.Join(testdir, "jsonrpc", name)
+
+				outfile := filepath.Join(outdir, "jsonrpc", p, name)
+				testfile := filepath.Join(testdir, "jsonrpc", p, name)
 
 				fileCompare(t, outfile, testfile)
 
 				// rest
-				outfile = filepath.Join(outdir, "rest", name)
-				testfile = filepath.Join(testdir, "rest", name)
+				outfile = filepath.Join(outdir, "rest", p, name)
+				testfile = filepath.Join(testdir, "rest", p, name)
 
 				fileCompare(t, outfile, testfile)
 			}
@@ -61,14 +65,14 @@ func TestGenerate(t *testing.T) {
 				name := s.Name + "Service.java"
 
 				// jsonrpc
-				outfile := filepath.Join(outdir, "jsonrpc", name)
-				testfile := filepath.Join(testdir, "jsonrpc", name)
+				outfile := filepath.Join(outdir, "jsonrpc", p, name)
+				testfile := filepath.Join(testdir, "jsonrpc", p, name)
 
 				fileCompare(t, outfile, testfile)
 
 				// rest
-				outfile = filepath.Join(outdir, "rest", name)
-				testfile = filepath.Join(testdir, "rest", name)
+				outfile = filepath.Join(outdir, "rest", p, name)
+				testfile = filepath.Join(testdir, "rest", p, name)
 
 				fileCompare(t, outfile, testfile)
 			}
@@ -87,7 +91,7 @@ func TestGenerate(t *testing.T) {
 
 func fileCompare(t *testing.T, src string, dest string) {
 	if !pathexists(src) {
-		t.Error("geenerate error\n")
+		t.Error("generate error\n")
 	} else if !pathexists(dest) {
 		t.Errorf("no test file found [%s]\n", dest)
 	} else {
