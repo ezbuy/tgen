@@ -3,6 +3,7 @@ package java
 import (
 	"bytes"
 	"fmt"
+	"log"
 	"os"
 	"path/filepath"
 	"strings"
@@ -62,7 +63,11 @@ type JavaGen struct {
 	langs.BaseGen
 }
 
-type BaseJava struct{}
+type BaseJava struct {
+	Namespace string
+	t         *parser.Thrift
+	ts        *map[string]*parser.Thrift
+}
 
 func (this *BaseJava) FilterVariableName(n string) string {
 	if this.IsKeyword(n) {
@@ -119,7 +124,32 @@ func (this *BaseJava) typecast(t *parser.Type, isplain bool) string {
 	case langs.ThriftTypeMap:
 		return fmt.Sprintf("Map<%s, %s>", this.ObjectTypecast(t.KeyType), this.ObjectTypecast(t.ValueType))
 	default:
-		return t.Name
+		s := strings.Split(t.Name, ".")
+		if len(s) == 1 {
+			return s[0]
+		} else if len(s) == 2 {
+			pkg := ""
+			for k, v := range this.t.Includes {
+				if k == s[0] {
+
+					for p, t := range *this.ts {
+						if v == p {
+							pkg = t.Namespaces["java"]
+							break
+						}
+					}
+
+					break
+				}
+			}
+
+			if pkg == "" {
+				return s[1]
+			}
+			return fmt.Sprintf("%s.%s", pkg, s[1])
+		} else {
+			return t.Name
+		}
 	}
 }
 
@@ -160,7 +190,6 @@ func (this *BaseJava) GetInnerType(t *parser.Type) string {
 
 type javaStruct struct {
 	*BaseJava
-	Namespace string
 	*parser.Struct
 }
 
@@ -175,7 +204,6 @@ func (this *javaStruct) HasKeyword() bool {
 
 type javaService struct {
 	*BaseJava
-	Namespace string
 	*parser.Service
 }
 
@@ -208,11 +236,13 @@ func dogenerate(output string, flag int16, parsedThrift map[string]*parser.Thrif
 		// due to java's features,
 		// we generate the struct and service in seperate template file
 
-		namespace, ok := t.Namespaces["java"]
+		ns, ok := t.Namespaces["java"]
 		if !ok {
 			fmt.Fprintf(os.Stderr, "error: namespace not found in file[%s] of language[java]\n", tf)
 			return
 		}
+
+		log.Printf("## structs")
 
 		for _, s := range t.Structs {
 			if structpl == nil {
@@ -227,19 +257,24 @@ func dogenerate(output string, flag int16, parsedThrift map[string]*parser.Thrif
 			name := s.Name + ".java"
 
 			// fix java file path
-			pathfix := filepath.Join(output, strings.Replace(namespace, ".", "/", -1));
-			if err := os.MkdirAll(pathfix, 0755); err != nil {
-				panic(fmt.Errorf("failed to create output directory %s", pathfix))
+			p := filepath.Join(output, strings.Replace(ns, ".", "/", -1))
+			if err := os.MkdirAll(p, 0755); err != nil {
+				panic(fmt.Errorf("failed to create output directory %s", p))
 			}
 
-			path := filepath.Join(pathfix, name)
+			path := filepath.Join(p, name)
 
-			data := &javaStruct{BaseJava: &BaseJava{}, Namespace: namespace, Struct: s}
+			base := BaseJava{Namespace: ns, t: t, ts: &parsedThrift}
+			data := &javaStruct{BaseJava: &base, Struct: s}
 
 			if err := outputfile(path, structpl, TPL_STRUCT, data); err != nil {
 				panic(fmt.Errorf("failed to write file %s. error: %v\n", path, err))
 			}
+
+			log.Printf("%s", path)
 		}
+
+		log.Printf("## services")
 
 		for _, s := range t.Services {
 			if servicetpl == nil {
@@ -254,18 +289,21 @@ func dogenerate(output string, flag int16, parsedThrift map[string]*parser.Thrif
 			name := s.Name + "Service.java"
 
 			// fix java file path
-			pathfix := filepath.Join(output, strings.Replace(namespace, ".", "/", -1));
-			if err := os.MkdirAll(pathfix, 0755); err != nil {
-				panic(fmt.Errorf("failed to create output directory %s", pathfix))
+			p := filepath.Join(output, strings.Replace(ns, ".", "/", -1))
+			if err := os.MkdirAll(p, 0755); err != nil {
+				panic(fmt.Errorf("failed to create output directory %s", p))
 			}
 
-			path := filepath.Join(pathfix, name)
+			path := filepath.Join(p, name)
 
-			data := &javaService{BaseJava: &BaseJava{}, Namespace: namespace, Service: s}
+			base := BaseJava{Namespace: ns, t: t, ts: &parsedThrift}
+			data := &javaService{BaseJava: &base, Service: s}
 
 			if err := outputfile(path, servicetpl, TPL_SERVICE, data); err != nil {
 				panic(fmt.Errorf("failed to write file %s. error: %v\n", path, err))
 			}
+
+			log.Printf("%s", path)
 		}
 	}
 }

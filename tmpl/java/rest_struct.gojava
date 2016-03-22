@@ -1,4 +1,4 @@
-package {{ .Namespace }};
+package {{ .BaseJava.Namespace }};
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
