@@ -34,7 +34,7 @@ public class {{ .Service.Name}}Service {
         return Integer.toString(msgID);
     }
 {{ range $k, $method := $.Service.Methods }}
-    public RpcRequest {{ $method.Name }}({{ $method | $js.BaseJava.AssembleParams }}) {
+    public static RpcRequest {{ $method.Name }}({{ $method | $js.BaseJava.AssembleParams }}) {
         RpcRequest req = new RpcRequest(Request.Method.POST, TRpc.getJsonRpcUrl(),
             new Response.Listener<String>() {
                 @Override
