@@ -63,7 +63,12 @@ func getIncludes(parsedThrift map[string]*parser.Thrift, includes map[string]str
 }
 
 func genNamespace(namespace string) (string, string) {
-	path := strings.Replace(namespace, ".", "/", -1)
+	var path string
+	if strings.Index(namespace, "..") != -1 {
+		path = strings.Replace(namespace, "..", "/", -1)
+	} else {
+		path = strings.Replace(namespace, ".", "/", -1)
+	}
 	pkgName := filepath.Base(path)
 	return path, pkgName
 }
