@@ -1,4 +1,4 @@
-namespace go simpleArguments
+namespace go github.com..ezbuy..tgen..thriftgotest..simpleArguments
 namespace webapi api.SimpleArguments.sub1.sub2.sub3
 
 struct StructArg {

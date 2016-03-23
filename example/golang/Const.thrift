@@ -1,4 +1,4 @@
-namespace go constant
+namespace go github.com..ezbuy..tgen..thriftgotest..constant
 
 const i16 ConstI16 = 16
 const i32 ConstI32 = 32
