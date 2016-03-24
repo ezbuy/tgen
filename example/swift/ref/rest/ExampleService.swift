@@ -9,7 +9,7 @@ public final class ExampleService: NSObject {
 
     public class func getPendingWithdrawAmount(success: (Int) -> Void, failure: ((NSError) -> Void)? = nil) {
         let params = [String: AnyObject]()
-        let api = "Example.getPendingWithdrawAmount"
+        let api = "Example/getPendingWithdrawAmount"
 
         debugPrint(api, " req: ", params)
 
@@ -27,7 +27,7 @@ public final class ExampleService: NSObject {
         var params = [String: AnyObject]()
         params["ip"] = ip
 
-        let api = "Example.ping"
+        let api = "Example/ping"
 
         debugPrint(api, " req: ", params)
 

@@ -11,7 +11,7 @@ public final class CommonService: NSObject {
         var params = [String: AnyObject]()
         params["id"] = NSNumber(longLong: id)
 
-        let api = "Common/getAges"
+        let api = "Common.getAges"
 
         debugPrint(api, " req: ", params)
 
@@ -27,7 +27,7 @@ public final class CommonService: NSObject {
 
     public class func getNames(success: ([String]) -> Void, failure: ((NSError) -> Void)? = nil) {
         let params = [String: AnyObject]()
-        let api = "Common/getNames"
+        let api = "Common.getNames"
 
         debugPrint(api, " req: ", params)
 

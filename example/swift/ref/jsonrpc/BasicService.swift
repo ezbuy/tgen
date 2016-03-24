@@ -12,7 +12,7 @@ public final class BasicService: NSObject {
         params["key"] = key
         params["id"] = NSNumber(longLong: id)
 
-        let api = "Basic/getBasic"
+        let api = "Basic.getBasic"
 
         debugPrint(api, " req: ", params)
 
@@ -32,7 +32,7 @@ public final class BasicService: NSObject {
         params["id"] = NSNumber(longLong: id)
         params["int64s"] = int64s?.map { value in NSNumber(longLong: value) }
 
-        let api = "Basic/getBasics"
+        let api = "Basic.getBasics"
 
         debugPrint(api, " req: ", params)
 
@@ -51,7 +51,7 @@ public final class BasicService: NSObject {
         params["key"] = key
         params["id"] = NSNumber(longLong: id)
 
-        let api = "Basic/getCommons"
+        let api = "Basic.getCommons"
 
         debugPrint(api, " req: ", params)
 
@@ -70,7 +70,7 @@ public final class BasicService: NSObject {
         params["id"] = NSNumber(longLong: id)
         params["int64s"] = int64s?.map { value in NSNumber(longLong: value) }
 
-        let api = "Basic/getInt64s"
+        let api = "Basic.getInt64s"
 
         debugPrint(api, " req: ", params)
 

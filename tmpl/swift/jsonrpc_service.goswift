@@ -15,7 +15,7 @@ public final class {{ .Service.Name }}Service: NSObject {
 {{ else -}}
         let params = [String: AnyObject]()
         {{- end }}
-        let api = "{{ $ss.Service.Name }}/{{ .Name }}"
+        let api = "{{ $ss.Service.Name }}.{{ .Name }}"
 
         debugPrint(api, " req: ", params)
 
