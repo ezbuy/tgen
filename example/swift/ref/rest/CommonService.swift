@@ -15,11 +15,11 @@ public final class CommonService: NSObject {
 
         debugPrint(api, " req: ", params)
 
-        AreaService.current?.JSRONPRCClient.invokeMethod(api, withParameters: params, success: { (operation, responseObject) -> Void in
+        AreaService.current?.webAPIEngine.POST(api, parameters: params, success: { (task, responseObject) -> Void in
             debugPrint(api, " resp: ", responseObject)
             
             success(responseObject as? [Int] ?? [])
-            }, failure: { (operation, error) -> Void in
+            }, failure: { (task, error) -> Void in
                 debugPrint(api, " error: ", error)
                 failure?(error)
         })
@@ -31,11 +31,11 @@ public final class CommonService: NSObject {
 
         debugPrint(api, " req: ", params)
 
-        AreaService.current?.JSRONPRCClient.invokeMethod(api, withParameters: params, success: { (operation, responseObject) -> Void in
+        AreaService.current?.webAPIEngine.POST(api, parameters: params, success: { (task, responseObject) -> Void in
             debugPrint(api, " resp: ", responseObject)
             
             success(responseObject as? [String] ?? [])
-            }, failure: { (operation, error) -> Void in
+            }, failure: { (task, error) -> Void in
                 debugPrint(api, " error: ", error)
                 failure?(error)
         })

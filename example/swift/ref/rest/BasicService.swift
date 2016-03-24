@@ -16,11 +16,11 @@ public final class BasicService: NSObject {
 
         debugPrint(api, " req: ", params)
 
-        AreaService.current?.JSRONPRCClient.invokeMethod(api, withParameters: params, success: { (operation, responseObject) -> Void in
+        AreaService.current?.webAPIEngine.POST(api, parameters: params, success: { (task, responseObject) -> Void in
             debugPrint(api, " resp: ", responseObject)
             
             success(TRSharedBasic(jsonObject: responseObject)!)
-            }, failure: { (operation, error) -> Void in
+            }, failure: { (task, error) -> Void in
                 debugPrint(api, " error: ", error)
                 failure?(error)
         })
@@ -36,11 +36,11 @@ public final class BasicService: NSObject {
 
         debugPrint(api, " req: ", params)
 
-        AreaService.current?.JSRONPRCClient.invokeMethod(api, withParameters: params, success: { (operation, responseObject) -> Void in
+        AreaService.current?.webAPIEngine.POST(api, parameters: params, success: { (task, responseObject) -> Void in
             debugPrint(api, " resp: ", responseObject)
             
             success([TRSharedBasic](jsonObject: responseObject) ?? [])
-            }, failure: { (operation, error) -> Void in
+            }, failure: { (task, error) -> Void in
                 debugPrint(api, " error: ", error)
                 failure?(error)
         })
@@ -55,11 +55,11 @@ public final class BasicService: NSObject {
 
         debugPrint(api, " req: ", params)
 
-        AreaService.current?.JSRONPRCClient.invokeMethod(api, withParameters: params, success: { (operation, responseObject) -> Void in
+        AreaService.current?.webAPIEngine.POST(api, parameters: params, success: { (task, responseObject) -> Void in
             debugPrint(api, " resp: ", responseObject)
             
             success([TRCommonCommon](jsonObject: responseObject) ?? [])
-            }, failure: { (operation, error) -> Void in
+            }, failure: { (task, error) -> Void in
                 debugPrint(api, " error: ", error)
                 failure?(error)
         })
@@ -74,11 +74,11 @@ public final class BasicService: NSObject {
 
         debugPrint(api, " req: ", params)
 
-        AreaService.current?.JSRONPRCClient.invokeMethod(api, withParameters: params, success: { (operation, responseObject) -> Void in
+        AreaService.current?.webAPIEngine.POST(api, parameters: params, success: { (task, responseObject) -> Void in
             debugPrint(api, " resp: ", responseObject)
             
             success((responseObject as? [NSNumber])?.map { value in value.longLongValue } ?? [])
-            }, failure: { (operation, error) -> Void in
+            }, failure: { (task, error) -> Void in
                 debugPrint(api, " error: ", error)
                 failure?(error)
         })
