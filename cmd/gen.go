@@ -18,6 +18,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/ezbuy/tgen/global"
 	"github.com/ezbuy/tgen/langs"
 	_ "github.com/ezbuy/tgen/langs/go"
 	_ "github.com/ezbuy/tgen/langs/java"
@@ -42,6 +43,8 @@ var genCmd = &cobra.Command{
 			return
 		}
 
+		global.Mode = mode
+
 		p := &parser.Parser{}
 		parsedThrift, _, err := p.ParseFile(input)
 		if err != nil {
@@ -62,6 +65,7 @@ var genCmd = &cobra.Command{
 }
 
 var lang string
+var mode string
 var input string
 var output string
 
@@ -73,6 +77,7 @@ func init() {
 	// Cobra supports Persistent Flags which will work for this command
 	// and all subcommands, e.g.:
 	genCmd.PersistentFlags().StringVarP(&lang, "lang", "l", "", "language")
+	genCmd.PersistentFlags().StringVarP(&mode, "mode", "m", "", "mode: rest or jsonrpc")
 	genCmd.PersistentFlags().StringVarP(&input, "input", "i", "", "input file")
 	genCmd.PersistentFlags().StringVarP(&output, "output", "o", "", "output path")
 
