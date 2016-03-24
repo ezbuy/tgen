@@ -5,4 +5,8 @@ import (
     {{index $included 0}} "{{index $included 1}}"
     {{- end}}
 )
+
+{{- range $included := .}}
+var _ = {{index $included 0}}.GoUnusedProtection__
+{{- end}}
 {{- end}}
