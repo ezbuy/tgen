@@ -35,7 +35,7 @@ public class {{ .Service.Name}}Service {
     }
 {{ range $k, $method := $.Service.Methods }}
     public static RpcRequest {{ $method.Name }}({{ $method | $js.BaseJava.AssembleParams }}) {
-        RpcRequest req = new RpcRequest(Request.Method.POST, TRpc.getJsonRpcUrl() + "{{ $js.Service.Name }}/{{ $method.Name }}",
+        RpcRequest req = new RpcRequest(Request.Method.POST, TRpc.getWebApiUrl() + "{{ $js.Service.Name }}/{{ $method.Name }}",
             new Response.Listener<String>() {
                 @Override
                 public void onResponse(String response) {
