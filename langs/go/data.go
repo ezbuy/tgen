@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"path/filepath"
 	"sort"
+	"strings"
 
 	"github.com/samuel/go-thrift/parser"
 )
@@ -17,6 +18,17 @@ type definesFileData struct {
 	Includes [][2]string
 	Structs  []*structData
 	Services []*serviceData
+
+	thrift *parser.Thrift
+}
+
+func (this *definesFileData) GetWebApiPrefix() string {
+	webapiNamespace := strings.TrimSpace(this.thrift.Namespaces["webapi"])
+	if webapiNamespace != "" {
+		webapiNamespace = "/" + strings.Replace(webapiNamespace, ".", "/", -1)
+	}
+
+	return webapiNamespace
 }
 
 func getDefinesFileData(pkgName, pkgDir string, includes [][2]string, parsed *parser.Thrift) *definesFileData {
@@ -24,6 +36,7 @@ func getDefinesFileData(pkgName, pkgDir string, includes [][2]string, parsed *pa
 		FilePath: filepath.Join(pkgDir, "gen_"+pkgName+"_defines.go"),
 		Package:  pkgName,
 		Includes: includes,
+		thrift:   parsed,
 	}
 
 	// structs data
