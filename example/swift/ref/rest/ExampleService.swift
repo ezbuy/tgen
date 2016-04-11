@@ -14,7 +14,7 @@ public final class ExampleService: NSObject {
         debugPrint(api, " req: ", params)
 
         AreaService.current?.webAPIEngine.POST(api, parameters: params, success: { (task, responseObject) -> Void in
-            debugPrint(api, " resp: ", responseObject)
+            debugPrint(api, " resp: ", responseObject ?? "")
             
             success(responseObject as? Int ?? 0)
             }, failure: { (task, error) -> Void in
@@ -32,7 +32,7 @@ public final class ExampleService: NSObject {
         debugPrint(api, " req: ", params)
 
         AreaService.current?.webAPIEngine.POST(api, parameters: params, success: { (task, responseObject) -> Void in
-            debugPrint(api, " resp: ", responseObject)
+            debugPrint(api, " resp: ", responseObject ?? "")
             
             success()
             }, failure: { (task, error) -> Void in

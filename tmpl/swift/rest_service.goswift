@@ -20,7 +20,7 @@ public final class {{ .Service.Name }}Service: NSObject {
         debugPrint(api, " req: ", params)
 
         AreaService.current?.webAPIEngine.POST(api, parameters: params, success: { (task, responseObject) -> Void in
-            debugPrint(api, " resp: ", responseObject)
+            debugPrint(api, " resp: ", responseObject ?? "")
             {{ if .ReturnType }}
             {{- $t := .ReturnType | $ss.BaseSwift.PlainType -}}
             {{- if eq .ReturnType.Name "list" }}

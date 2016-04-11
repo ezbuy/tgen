@@ -17,7 +17,7 @@ public final class BasicService: NSObject {
         debugPrint(api, " req: ", params)
 
         AreaService.current?.webAPIEngine.POST(api, parameters: params, success: { (task, responseObject) -> Void in
-            debugPrint(api, " resp: ", responseObject)
+            debugPrint(api, " resp: ", responseObject ?? "")
             
             success(TRSharedBasic(jsonObject: responseObject)!)
             }, failure: { (task, error) -> Void in
@@ -37,7 +37,7 @@ public final class BasicService: NSObject {
         debugPrint(api, " req: ", params)
 
         AreaService.current?.webAPIEngine.POST(api, parameters: params, success: { (task, responseObject) -> Void in
-            debugPrint(api, " resp: ", responseObject)
+            debugPrint(api, " resp: ", responseObject ?? "")
             
             success([TRSharedBasic](jsonObject: responseObject) ?? [])
             }, failure: { (task, error) -> Void in
@@ -56,7 +56,7 @@ public final class BasicService: NSObject {
         debugPrint(api, " req: ", params)
 
         AreaService.current?.webAPIEngine.POST(api, parameters: params, success: { (task, responseObject) -> Void in
-            debugPrint(api, " resp: ", responseObject)
+            debugPrint(api, " resp: ", responseObject ?? "")
             
             success([TRCommonCommon](jsonObject: responseObject) ?? [])
             }, failure: { (task, error) -> Void in
@@ -75,7 +75,7 @@ public final class BasicService: NSObject {
         debugPrint(api, " req: ", params)
 
         AreaService.current?.webAPIEngine.POST(api, parameters: params, success: { (task, responseObject) -> Void in
-            debugPrint(api, " resp: ", responseObject)
+            debugPrint(api, " resp: ", responseObject ?? "")
             
             success((responseObject as? [NSNumber])?.map { value in value.longLongValue } ?? [])
             }, failure: { (task, error) -> Void in

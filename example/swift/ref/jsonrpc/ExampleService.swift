@@ -14,7 +14,7 @@ public final class ExampleService: NSObject {
         debugPrint(api, " req: ", params)
 
         AreaService.current?.JSRONPRCClient.invokeMethod(api, withParameters: params, success: { (operation, responseObject) -> Void in
-            debugPrint(api, " resp: ", responseObject)
+            debugPrint(api, " resp: ", responseObject ?? "")
             
             success(responseObject as? Int ?? 0)
             }, failure: { (operation, error) -> Void in
@@ -32,7 +32,7 @@ public final class ExampleService: NSObject {
         debugPrint(api, " req: ", params)
 
         AreaService.current?.JSRONPRCClient.invokeMethod(api, withParameters: params, success: { (operation, responseObject) -> Void in
-            debugPrint(api, " resp: ", responseObject)
+            debugPrint(api, " resp: ", responseObject ?? "")
             
             success()
             }, failure: { (operation, error) -> Void in

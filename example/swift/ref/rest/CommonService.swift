@@ -16,7 +16,7 @@ public final class CommonService: NSObject {
         debugPrint(api, " req: ", params)
 
         AreaService.current?.webAPIEngine.POST(api, parameters: params, success: { (task, responseObject) -> Void in
-            debugPrint(api, " resp: ", responseObject)
+            debugPrint(api, " resp: ", responseObject ?? "")
             
             success(responseObject as? [Int] ?? [])
             }, failure: { (task, error) -> Void in
@@ -32,7 +32,7 @@ public final class CommonService: NSObject {
         debugPrint(api, " req: ", params)
 
         AreaService.current?.webAPIEngine.POST(api, parameters: params, success: { (task, responseObject) -> Void in
-            debugPrint(api, " resp: ", responseObject)
+            debugPrint(api, " resp: ", responseObject ?? "")
             
             success(responseObject as? [String] ?? [])
             }, failure: { (task, error) -> Void in
