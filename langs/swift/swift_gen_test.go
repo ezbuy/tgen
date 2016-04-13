@@ -8,6 +8,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/ezbuy/tgen/global"
 	"github.com/samuel/go-thrift/parser"
 )
 
@@ -46,8 +47,15 @@ func TestGenerate(t *testing.T) {
 				baseSwift := &BaseSwift{Filepath: f, Thrift: thrift}
 				name := fmt.Sprintf("%s.swift", baseSwift.AssembleStructName(s.Name))
 
-				outfile := filepath.Join(outdir, name)
-				testfile := filepath.Join(testdir, name)
+				// jsonrpc
+				outfile := filepath.Join(outdir, global.MODE_JSONRPC, name)
+				testfile := filepath.Join(testdir, global.MODE_JSONRPC, name)
+
+				fileCompare(t, outfile, testfile)
+
+				// rest
+				outfile = filepath.Join(outdir, global.MODE_REST, name)
+				testfile = filepath.Join(testdir, global.MODE_REST, name)
 
 				fileCompare(t, outfile, testfile)
 			}
@@ -55,8 +63,15 @@ func TestGenerate(t *testing.T) {
 			for _, s := range thrift.Services {
 				name := s.Name + "Service.swift"
 
-				outfile := filepath.Join(outdir, name)
-				testfile := filepath.Join(testdir, name)
+				// jsonrpc
+				outfile := filepath.Join(outdir, global.MODE_JSONRPC, name)
+				testfile := filepath.Join(testdir, global.MODE_JSONRPC, name)
+
+				fileCompare(t, outfile, testfile)
+
+				// rest
+				outfile = filepath.Join(outdir, global.MODE_REST, name)
+				testfile = filepath.Join(testdir, global.MODE_REST, name)
 
 				fileCompare(t, outfile, testfile)
 			}

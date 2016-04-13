@@ -9,15 +9,15 @@ public final class ExampleService: NSObject {
 
     public class func getPendingWithdrawAmount(success: (Int) -> Void, failure: ((NSError) -> Void)? = nil) {
         let params = [String: AnyObject]()
-        let api = "Example.getPendingWithdrawAmount"
+        let api = "Example/getPendingWithdrawAmount"
 
         debugPrint(api, " req: ", params)
 
-        AreaService.current?.JSRONPRCClient.invokeMethod(api, withParameters: params, success: { (operation, responseObject) -> Void in
-            debugPrint(api, " resp: ", responseObject)
+        AreaService.current?.webAPIEngine.POST(api, parameters: params, success: { (task, responseObject) -> Void in
+            debugPrint(api, " resp: ", responseObject ?? "")
             
             success(responseObject as? Int ?? 0)
-            }, failure: { (operation, error) -> Void in
+            }, failure: { (task, error) -> Void in
                 debugPrint(api, " error: ", error)
                 failure?(error)
         })
@@ -27,15 +27,15 @@ public final class ExampleService: NSObject {
         var params = [String: AnyObject]()
         params["ip"] = ip
 
-        let api = "Example.ping"
+        let api = "Example/ping"
 
         debugPrint(api, " req: ", params)
 
-        AreaService.current?.JSRONPRCClient.invokeMethod(api, withParameters: params, success: { (operation, responseObject) -> Void in
-            debugPrint(api, " resp: ", responseObject)
+        AreaService.current?.webAPIEngine.POST(api, parameters: params, success: { (task, responseObject) -> Void in
+            debugPrint(api, " resp: ", responseObject ?? "")
             
             success()
-            }, failure: { (operation, error) -> Void in
+            }, failure: { (task, error) -> Void in
                 debugPrint(api, " error: ", error)
                 failure?(error)
         })

@@ -3,12 +3,14 @@ package swift
 import (
 	"bytes"
 	"fmt"
+	"log"
 	"os"
 	"path/filepath"
 	"strings"
 	"sync"
 	"text/template"
 
+	"github.com/ezbuy/tgen/global"
 	"github.com/ezbuy/tgen/langs"
 	"github.com/ezbuy/tgen/tmpl"
 	"github.com/samuel/go-thrift/parser"
@@ -238,16 +240,25 @@ type swiftService struct {
 	*parser.Service
 }
 
-func (o *SwiftGen) Generate(output string, parsedThrift map[string]*parser.Thrift) {
-	o.BaseGen.Init("swift", parsedThrift)
+func generateWithModel(gen *SwiftGen, m string, output string, parsedThrift map[string]*parser.Thrift) {
+	if m != global.MODE_REST && m != global.MODE_JSONRPC {
+		log.Fatalf("mode '%s' is invalid", m)
+	}
+
+	gen.BaseGen.Init("swift", parsedThrift)
 
 	if err := os.MkdirAll(output, 0755); err != nil {
 		panic(fmt.Errorf("failed to create output directory %s", output))
 	}
 
-	// templates
-	var structpl *template.Template
+	// init templates
+	structpl := initemplate(TPL_STRUCT, "tmpl/swift/struct.goswift")
 	var servicetpl *template.Template
+	if m == global.MODE_REST {
+		servicetpl = initemplate(TPL_SERVICE, "tmpl/swift/rest_service.goswift")
+	} else if m == global.MODE_JSONRPC {
+		servicetpl = initemplate(TPL_SERVICE, "tmpl/swift/jsonrpc_service.goswift")
+	}
 
 	wg := sync.WaitGroup{}
 
@@ -256,13 +267,7 @@ func (o *SwiftGen) Generate(output string, parsedThrift map[string]*parser.Thrif
 		// check namespace
 		if _, ok := t.Namespaces["swift"]; !ok {
 			fmt.Printf("namespace of swift in file '%s' is not found\n", f)
-
 			continue
-		}
-
-		// generate structs
-		if structpl == nil {
-			structpl = initemplate(TPL_STRUCT, "tmpl/swift/struct.goswift")
 		}
 
 		wg.Add(1)
@@ -285,11 +290,6 @@ func (o *SwiftGen) Generate(output string, parsedThrift map[string]*parser.Thrif
 			}
 		}(t)
 
-		// generate services
-		if servicetpl == nil {
-			servicetpl = initemplate(TPL_SERVICE, "tmpl/swift/service.goswift")
-		}
-
 		wg.Add(1)
 
 		go func(t *parser.Thrift) {
@@ -311,6 +311,19 @@ func (o *SwiftGen) Generate(output string, parsedThrift map[string]*parser.Thrif
 	}
 
 	wg.Wait()
+}
+
+func generateAll(gen *SwiftGen, output string, parsedThrift map[string]*parser.Thrift) {
+	generateWithModel(gen, global.MODE_REST, filepath.Join(output, global.MODE_REST), parsedThrift)
+	generateWithModel(gen, global.MODE_JSONRPC, filepath.Join(output, global.MODE_JSONRPC), parsedThrift)
+}
+
+func (this *SwiftGen) Generate(output string, parsedThrift map[string]*parser.Thrift) {
+	if global.Mode != "" {
+		generateWithModel(this, global.Mode, output, parsedThrift)
+	} else {
+		generateAll(this, output, parsedThrift)
+	}
 }
 
 func initemplate(n string, path string) *template.Template {
