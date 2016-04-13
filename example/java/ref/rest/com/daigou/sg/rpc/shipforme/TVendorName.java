@@ -1,7 +1,6 @@
 package com.daigou.sg.rpc.shipforme;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonToken;
+import com.daigou.sg.rpc.BaseModule;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -12,49 +11,7 @@ import java.util.ArrayList;
  * Don't change manually
  */
 
-public class TVendorName implements Serializable {
+public class TVendorName extends BaseModule<TVendorName> implements Serializable {
     public String shipmentTypeCode;
     public String shipmentTypeName;
-
-    static TVendorName fromJSON(JsonParser jp) throws IOException {
-        // Sanity check: verify that we got "Json Object":
-        if (jp.nextToken() != JsonToken.START_OBJECT) {
-            throw new IOException("Expected data to start with a TVendorName Object");
-        }
-
-        return doFromJSON(jp);
-    }
-
-    private static TVendorName doFromJSON(JsonParser jp) throws IOException {
-        TVendorName result = new TVendorName();
-
-        // Iterate over object fields:
-        while (jp.nextToken() != JsonToken.END_OBJECT) {
-            String fieldName = jp.getCurrentName();
-
-            if (false) {
-            } else if (fieldName.equals("shipmentTypeCode")) {
-                jp.nextToken();
-                result.shipmentTypeCode = jp.getText();
-            } else if (fieldName.equals("shipmentTypeName")) {
-                jp.nextToken();
-                result.shipmentTypeName = jp.getText();
-            }
-        }
-        return result;
-    }
-
-    static ArrayList<TVendorName> fromJSONArray(JsonParser jp) throws IOException {
-        if (jp.nextToken() != JsonToken.START_ARRAY) {
-            throw new IOException("Expected data to start with a TVendorName array");
-        }
-
-        ArrayList<TVendorName> result = new ArrayList<TVendorName>();
-
-        // Iterate over object fields:
-        while (jp.nextToken() != JsonToken.END_ARRAY) {
-            result.add(doFromJSON(jp));
-        }
-        return result;
-    }
 }

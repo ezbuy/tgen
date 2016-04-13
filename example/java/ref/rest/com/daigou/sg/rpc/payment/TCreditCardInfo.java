@@ -1,7 +1,6 @@
 package com.daigou.sg.rpc.payment;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonToken;
+import com.daigou.sg.rpc.BaseModule;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -12,65 +11,11 @@ import java.util.ArrayList;
  * Don't change manually
  */
 
-public class TCreditCardInfo implements Serializable {
+public class TCreditCardInfo extends BaseModule<TCreditCardInfo> implements Serializable {
     public boolean enableiPhoneCreditCard;
     public boolean enableAndroidCreditCard;
     public boolean enableMobileWebCreditCard;
     public String disableUOBMsg;
     public double creditCardFee;
     public String creditCardDesc;
-
-    static TCreditCardInfo fromJSON(JsonParser jp) throws IOException {
-        // Sanity check: verify that we got "Json Object":
-        if (jp.nextToken() != JsonToken.START_OBJECT) {
-            throw new IOException("Expected data to start with a TCreditCardInfo Object");
-        }
-
-        return doFromJSON(jp);
-    }
-
-    private static TCreditCardInfo doFromJSON(JsonParser jp) throws IOException {
-        TCreditCardInfo result = new TCreditCardInfo();
-
-        // Iterate over object fields:
-        while (jp.nextToken() != JsonToken.END_OBJECT) {
-            String fieldName = jp.getCurrentName();
-
-            if (false) {
-            } else if (fieldName.equals("enableiPhoneCreditCard")) {
-                jp.nextToken();
-                result.enableiPhoneCreditCard = jp.getBooleanValue();
-            } else if (fieldName.equals("enableAndroidCreditCard")) {
-                jp.nextToken();
-                result.enableAndroidCreditCard = jp.getBooleanValue();
-            } else if (fieldName.equals("enableMobileWebCreditCard")) {
-                jp.nextToken();
-                result.enableMobileWebCreditCard = jp.getBooleanValue();
-            } else if (fieldName.equals("disableUOBMsg")) {
-                jp.nextToken();
-                result.disableUOBMsg = jp.getText();
-            } else if (fieldName.equals("creditCardFee")) {
-                jp.nextToken();
-                result.creditCardFee = jp.getDoubleValue();
-            } else if (fieldName.equals("creditCardDesc")) {
-                jp.nextToken();
-                result.creditCardDesc = jp.getText();
-            }
-        }
-        return result;
-    }
-
-    static ArrayList<TCreditCardInfo> fromJSONArray(JsonParser jp) throws IOException {
-        if (jp.nextToken() != JsonToken.START_ARRAY) {
-            throw new IOException("Expected data to start with a TCreditCardInfo array");
-        }
-
-        ArrayList<TCreditCardInfo> result = new ArrayList<TCreditCardInfo>();
-
-        // Iterate over object fields:
-        while (jp.nextToken() != JsonToken.END_ARRAY) {
-            result.add(doFromJSON(jp));
-        }
-        return result;
-    }
 }

@@ -1,7 +1,6 @@
 package com.daigou.sg.rpc.tpackage;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonToken;
+import com.daigou.sg.rpc.BaseModule;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -12,7 +11,7 @@ import java.util.ArrayList;
  * Don't change manually
  */
 
-public class TPackage implements Serializable {
+public class TPackage extends BaseModule<TPackage> implements Serializable {
     public int id;
     public String purchaseType;
     public String packageNumber;
@@ -27,82 +26,4 @@ public class TPackage implements Serializable {
     public double totalFee;
     public double packageWeight;
     public String createDate;
-
-    static TPackage fromJSON(JsonParser jp) throws IOException {
-        // Sanity check: verify that we got "Json Object":
-        if (jp.nextToken() != JsonToken.START_OBJECT) {
-            throw new IOException("Expected data to start with a TPackage Object");
-        }
-
-        return doFromJSON(jp);
-    }
-
-    private static TPackage doFromJSON(JsonParser jp) throws IOException {
-        TPackage result = new TPackage();
-
-        // Iterate over object fields:
-        while (jp.nextToken() != JsonToken.END_OBJECT) {
-            String fieldName = jp.getCurrentName();
-
-            if (false) {
-            } else if (fieldName.equals("id")) {
-                jp.nextToken();
-                result.id = jp.getIntValue();
-            } else if (fieldName.equals("purchaseType")) {
-                jp.nextToken();
-                result.purchaseType = jp.getText();
-            } else if (fieldName.equals("packageNumber")) {
-                jp.nextToken();
-                result.packageNumber = jp.getText();
-            } else if (fieldName.equals("packageEtaDate")) {
-                jp.nextToken();
-                result.packageEtaDate = jp.getText();
-            } else if (fieldName.equals("chargeWeight")) {
-                jp.nextToken();
-                result.chargeWeight = jp.getText();
-            } else if (fieldName.equals("shipmentTypeCode")) {
-                jp.nextToken();
-                result.shipmentTypeCode = jp.getText();
-            } else if (fieldName.equals("altShipmentTypeName")) {
-                jp.nextToken();
-                result.altShipmentTypeName = jp.getText();
-            } else if (fieldName.equals("warehouseCode")) {
-                jp.nextToken();
-                result.warehouseCode = jp.getText();
-            } else if (fieldName.equals("arrivedDate")) {
-                jp.nextToken();
-                result.arrivedDate = jp.getText();
-            } else if (fieldName.equals("shippedDate")) {
-                jp.nextToken();
-                result.shippedDate = jp.getText();
-            } else if (fieldName.equals("collectionDate")) {
-                jp.nextToken();
-                result.collectionDate = jp.getText();
-            } else if (fieldName.equals("totalFee")) {
-                jp.nextToken();
-                result.totalFee = jp.getDoubleValue();
-            } else if (fieldName.equals("packageWeight")) {
-                jp.nextToken();
-                result.packageWeight = jp.getDoubleValue();
-            } else if (fieldName.equals("createDate")) {
-                jp.nextToken();
-                result.createDate = jp.getText();
-            }
-        }
-        return result;
-    }
-
-    static ArrayList<TPackage> fromJSONArray(JsonParser jp) throws IOException {
-        if (jp.nextToken() != JsonToken.START_ARRAY) {
-            throw new IOException("Expected data to start with a TPackage array");
-        }
-
-        ArrayList<TPackage> result = new ArrayList<TPackage>();
-
-        // Iterate over object fields:
-        while (jp.nextToken() != JsonToken.END_ARRAY) {
-            result.add(doFromJSON(jp));
-        }
-        return result;
-    }
 }

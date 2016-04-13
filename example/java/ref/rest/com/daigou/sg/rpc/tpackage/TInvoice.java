@@ -1,7 +1,6 @@
 package com.daigou.sg.rpc.tpackage;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonToken;
+import com.daigou.sg.rpc.BaseModule;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.IOException;
@@ -13,50 +12,8 @@ import java.util.ArrayList;
  * Don't change manually
  */
 
-public class TInvoice implements Serializable {
-    @SerializedName("package")
+public class TInvoice extends BaseModule<TInvoice> implements Serializable {
+	@SerializedName("package")
     public TPackage tPackage;
     public com.daigou.sg.rpc.payment.TPaymentBill paymentBill;
-
-    static TInvoice fromJSON(JsonParser jp) throws IOException {
-        // Sanity check: verify that we got "Json Object":
-        if (jp.nextToken() != JsonToken.START_OBJECT) {
-            throw new IOException("Expected data to start with a TInvoice Object");
-        }
-
-        return doFromJSON(jp);
-    }
-
-    private static TInvoice doFromJSON(JsonParser jp) throws IOException {
-        TInvoice result = new TInvoice();
-
-        // Iterate over object fields:
-        while (jp.nextToken() != JsonToken.END_OBJECT) {
-            String fieldName = jp.getCurrentName();
-
-            if (false) {
-            } else if (fieldName.equals("package")) {
-                result.package = TPackage.fromJSON(jp);
-                
-            } else if (fieldName.equals("paymentBill")) {
-                result.paymentBill = com.daigou.sg.rpc.payment.TPaymentBill.fromJSON(jp);
-                
-            }
-        }
-        return result;
-    }
-
-    static ArrayList<TInvoice> fromJSONArray(JsonParser jp) throws IOException {
-        if (jp.nextToken() != JsonToken.START_ARRAY) {
-            throw new IOException("Expected data to start with a TInvoice array");
-        }
-
-        ArrayList<TInvoice> result = new ArrayList<TInvoice>();
-
-        // Iterate over object fields:
-        while (jp.nextToken() != JsonToken.END_ARRAY) {
-            result.add(doFromJSON(jp));
-        }
-        return result;
-    }
 }

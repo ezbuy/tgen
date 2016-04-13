@@ -1,7 +1,6 @@
 package com.daigou.sg.rpc.order;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonToken;
+import com.daigou.sg.rpc.BaseModule;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -12,7 +11,7 @@ import java.util.ArrayList;
  * Don't change manually
  */
 
-public class TOrderRemark implements Serializable {
+public class TOrderRemark extends BaseModule<TOrderRemark> implements Serializable {
     public int id;
     public String remark;
     public boolean needReply;
@@ -20,61 +19,4 @@ public class TOrderRemark implements Serializable {
     public String createDate;
     public String creator;
     public int offsetId;
-
-    static TOrderRemark fromJSON(JsonParser jp) throws IOException {
-        // Sanity check: verify that we got "Json Object":
-        if (jp.nextToken() != JsonToken.START_OBJECT) {
-            throw new IOException("Expected data to start with a TOrderRemark Object");
-        }
-
-        return doFromJSON(jp);
-    }
-
-    private static TOrderRemark doFromJSON(JsonParser jp) throws IOException {
-        TOrderRemark result = new TOrderRemark();
-
-        // Iterate over object fields:
-        while (jp.nextToken() != JsonToken.END_OBJECT) {
-            String fieldName = jp.getCurrentName();
-
-            if (false) {
-            } else if (fieldName.equals("id")) {
-                jp.nextToken();
-                result.id = jp.getIntValue();
-            } else if (fieldName.equals("remark")) {
-                jp.nextToken();
-                result.remark = jp.getText();
-            } else if (fieldName.equals("needReply")) {
-                jp.nextToken();
-                result.needReply = jp.getBooleanValue();
-            } else if (fieldName.equals("attachments")) {
-                jp.nextToken();
-                result.attachments = jp.getText();
-            } else if (fieldName.equals("createDate")) {
-                jp.nextToken();
-                result.createDate = jp.getText();
-            } else if (fieldName.equals("creator")) {
-                jp.nextToken();
-                result.creator = jp.getText();
-            } else if (fieldName.equals("offsetId")) {
-                jp.nextToken();
-                result.offsetId = jp.getIntValue();
-            }
-        }
-        return result;
-    }
-
-    static ArrayList<TOrderRemark> fromJSONArray(JsonParser jp) throws IOException {
-        if (jp.nextToken() != JsonToken.START_ARRAY) {
-            throw new IOException("Expected data to start with a TOrderRemark array");
-        }
-
-        ArrayList<TOrderRemark> result = new ArrayList<TOrderRemark>();
-
-        // Iterate over object fields:
-        while (jp.nextToken() != JsonToken.END_ARRAY) {
-            result.add(doFromJSON(jp));
-        }
-        return result;
-    }
 }

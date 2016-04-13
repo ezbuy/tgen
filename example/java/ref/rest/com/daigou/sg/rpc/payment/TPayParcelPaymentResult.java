@@ -1,7 +1,6 @@
 package com.daigou.sg.rpc.payment;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonToken;
+import com.daigou.sg.rpc.BaseModule;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -12,57 +11,9 @@ import java.util.ArrayList;
  * Don't change manually
  */
 
-public class TPayParcelPaymentResult implements Serializable {
+public class TPayParcelPaymentResult extends BaseModule<TPayParcelPaymentResult> implements Serializable {
     public boolean Result;
     public String Message;
     public String PaymentType;
     public boolean NeedTopUp;
-
-    static TPayParcelPaymentResult fromJSON(JsonParser jp) throws IOException {
-        // Sanity check: verify that we got "Json Object":
-        if (jp.nextToken() != JsonToken.START_OBJECT) {
-            throw new IOException("Expected data to start with a TPayParcelPaymentResult Object");
-        }
-
-        return doFromJSON(jp);
-    }
-
-    private static TPayParcelPaymentResult doFromJSON(JsonParser jp) throws IOException {
-        TPayParcelPaymentResult result = new TPayParcelPaymentResult();
-
-        // Iterate over object fields:
-        while (jp.nextToken() != JsonToken.END_OBJECT) {
-            String fieldName = jp.getCurrentName();
-
-            if (false) {
-            } else if (fieldName.equals("Result")) {
-                jp.nextToken();
-                result.Result = jp.getBooleanValue();
-            } else if (fieldName.equals("Message")) {
-                jp.nextToken();
-                result.Message = jp.getText();
-            } else if (fieldName.equals("PaymentType")) {
-                jp.nextToken();
-                result.PaymentType = jp.getText();
-            } else if (fieldName.equals("NeedTopUp")) {
-                jp.nextToken();
-                result.NeedTopUp = jp.getBooleanValue();
-            }
-        }
-        return result;
-    }
-
-    static ArrayList<TPayParcelPaymentResult> fromJSONArray(JsonParser jp) throws IOException {
-        if (jp.nextToken() != JsonToken.START_ARRAY) {
-            throw new IOException("Expected data to start with a TPayParcelPaymentResult array");
-        }
-
-        ArrayList<TPayParcelPaymentResult> result = new ArrayList<TPayParcelPaymentResult>();
-
-        // Iterate over object fields:
-        while (jp.nextToken() != JsonToken.END_ARRAY) {
-            result.add(doFromJSON(jp));
-        }
-        return result;
-    }
 }

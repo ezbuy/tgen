@@ -1,7 +1,6 @@
 package com.daigou.sg.rpc.order;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonToken;
+import com.daigou.sg.rpc.BaseModule;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -12,7 +11,7 @@ import java.util.ArrayList;
  * Don't change manually
  */
 
-public class TOrderDetail implements Serializable {
+public class TOrderDetail extends BaseModule<TOrderDetail> implements Serializable {
     public int id;
     public String orderNumber;
     public String orderStatus;
@@ -36,106 +35,4 @@ public class TOrderDetail implements Serializable {
     public double totalPrice;
     public String originCode;
     public String productUrl;
-
-    static TOrderDetail fromJSON(JsonParser jp) throws IOException {
-        // Sanity check: verify that we got "Json Object":
-        if (jp.nextToken() != JsonToken.START_OBJECT) {
-            throw new IOException("Expected data to start with a TOrderDetail Object");
-        }
-
-        return doFromJSON(jp);
-    }
-
-    private static TOrderDetail doFromJSON(JsonParser jp) throws IOException {
-        TOrderDetail result = new TOrderDetail();
-
-        // Iterate over object fields:
-        while (jp.nextToken() != JsonToken.END_OBJECT) {
-            String fieldName = jp.getCurrentName();
-
-            if (false) {
-            } else if (fieldName.equals("id")) {
-                jp.nextToken();
-                result.id = jp.getIntValue();
-            } else if (fieldName.equals("orderNumber")) {
-                jp.nextToken();
-                result.orderNumber = jp.getText();
-            } else if (fieldName.equals("orderStatus")) {
-                jp.nextToken();
-                result.orderStatus = jp.getText();
-            } else if (fieldName.equals("productName")) {
-                jp.nextToken();
-                result.productName = jp.getText();
-            } else if (fieldName.equals("productImage")) {
-                jp.nextToken();
-                result.productImage = jp.getText();
-            } else if (fieldName.equals("unitPrice")) {
-                jp.nextToken();
-                result.unitPrice = jp.getText();
-            } else if (fieldName.equals("localUnitPrice")) {
-                jp.nextToken();
-                result.localUnitPrice = jp.getDoubleValue();
-            } else if (fieldName.equals("qty")) {
-                jp.nextToken();
-                result.qty = jp.getIntValue();
-            } else if (fieldName.equals("insured")) {
-                jp.nextToken();
-                result.insured = jp.getBooleanValue();
-            } else if (fieldName.equals("shipmentTypeId")) {
-                jp.nextToken();
-                result.shipmentTypeId = jp.getIntValue();
-            } else if (fieldName.equals("altShipmentTypeName")) {
-                jp.nextToken();
-                result.altShipmentTypeName = jp.getText();
-            } else if (fieldName.equals("shipmentTypeCode")) {
-                jp.nextToken();
-                result.shipmentTypeCode = jp.getText();
-            } else if (fieldName.equals("productRemark")) {
-                jp.nextToken();
-                result.productRemark = jp.getText();
-            } else if (fieldName.equals("canEdit")) {
-                jp.nextToken();
-                result.canEdit = jp.getBooleanValue();
-            } else if (fieldName.equals("warehouseCode")) {
-                jp.nextToken();
-                result.warehouseCode = jp.getText();
-            } else if (fieldName.equals("sellerDiscount")) {
-                jp.nextToken();
-                result.sellerDiscount = jp.getText();
-            } else if (fieldName.equals("orderBillDetails")) {
-                result.orderBillDetails = com.daigou.sg.rpc.payment.TPaymentBillCategory.fromJSONArray(jp);
-            } else if (fieldName.equals("orderRemarks")) {
-                result.orderRemarks = TOrderRemark.fromJSONArray(jp);
-            } else if (fieldName.equals("orderItems")) {
-                result.orderItems = TOrderItem.fromJSONArray(jp);
-            } else if (fieldName.equals("localInternalShipmentFee")) {
-                jp.nextToken();
-                result.localInternalShipmentFee = jp.getDoubleValue();
-            } else if (fieldName.equals("totalPrice")) {
-                jp.nextToken();
-                result.totalPrice = jp.getDoubleValue();
-            } else if (fieldName.equals("originCode")) {
-                jp.nextToken();
-                result.originCode = jp.getText();
-            } else if (fieldName.equals("productUrl")) {
-                jp.nextToken();
-                result.productUrl = jp.getText();
-            }
-        }
-        return result;
-    }
-
-    static ArrayList<TOrderDetail> fromJSONArray(JsonParser jp) throws IOException {
-        if (jp.nextToken() != JsonToken.START_ARRAY) {
-            throw new IOException("Expected data to start with a TOrderDetail array");
-        }
-
-        ArrayList<TOrderDetail> result = new ArrayList<TOrderDetail>();
-
-        // Iterate over object fields:
-        while (jp.nextToken() != JsonToken.END_ARRAY) {
-            result.add(doFromJSON(jp));
-        }
-        return result;
-    }
 }

@@ -1,7 +1,6 @@
 package com.daigou.sg.rpc.tpackage;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonToken;
+import com.daigou.sg.rpc.BaseModule;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -12,7 +11,7 @@ import java.util.ArrayList;
  * Don't change manually
  */
 
-public class TProductComment implements Serializable {
+public class TProductComment extends BaseModule<TProductComment> implements Serializable {
     public int id;
     public int agentProductId;
     public String originCode;
@@ -25,76 +24,4 @@ public class TProductComment implements Serializable {
     public String productName;
     public int orderId;
     public double subTotal;
-
-    static TProductComment fromJSON(JsonParser jp) throws IOException {
-        // Sanity check: verify that we got "Json Object":
-        if (jp.nextToken() != JsonToken.START_OBJECT) {
-            throw new IOException("Expected data to start with a TProductComment Object");
-        }
-
-        return doFromJSON(jp);
-    }
-
-    private static TProductComment doFromJSON(JsonParser jp) throws IOException {
-        TProductComment result = new TProductComment();
-
-        // Iterate over object fields:
-        while (jp.nextToken() != JsonToken.END_OBJECT) {
-            String fieldName = jp.getCurrentName();
-
-            if (false) {
-            } else if (fieldName.equals("id")) {
-                jp.nextToken();
-                result.id = jp.getIntValue();
-            } else if (fieldName.equals("agentProductId")) {
-                jp.nextToken();
-                result.agentProductId = jp.getIntValue();
-            } else if (fieldName.equals("originCode")) {
-                jp.nextToken();
-                result.originCode = jp.getText();
-            } else if (fieldName.equals("attachments")) {
-                jp.nextToken();
-                result.attachments = jp.getText();
-            } else if (fieldName.equals("comment")) {
-                jp.nextToken();
-                result.comment = jp.getText();
-            } else if (fieldName.equals("rating")) {
-                jp.nextToken();
-                result.rating = jp.getIntValue();
-            } else if (fieldName.equals("productUrl")) {
-                jp.nextToken();
-                result.productUrl = jp.getText();
-            } else if (fieldName.equals("productImage")) {
-                jp.nextToken();
-                result.productImage = jp.getText();
-            } else if (fieldName.equals("productSku")) {
-                jp.nextToken();
-                result.productSku = jp.getText();
-            } else if (fieldName.equals("productName")) {
-                jp.nextToken();
-                result.productName = jp.getText();
-            } else if (fieldName.equals("orderId")) {
-                jp.nextToken();
-                result.orderId = jp.getIntValue();
-            } else if (fieldName.equals("subTotal")) {
-                jp.nextToken();
-                result.subTotal = jp.getDoubleValue();
-            }
-        }
-        return result;
-    }
-
-    static ArrayList<TProductComment> fromJSONArray(JsonParser jp) throws IOException {
-        if (jp.nextToken() != JsonToken.START_ARRAY) {
-            throw new IOException("Expected data to start with a TProductComment array");
-        }
-
-        ArrayList<TProductComment> result = new ArrayList<TProductComment>();
-
-        // Iterate over object fields:
-        while (jp.nextToken() != JsonToken.END_ARRAY) {
-            result.add(doFromJSON(jp));
-        }
-        return result;
-    }
 }
