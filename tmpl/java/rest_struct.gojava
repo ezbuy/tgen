@@ -1,7 +1,6 @@
-package {{ .BaseJava.Namespace }};
+package {{ .Namespace }};
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonToken;
+import com.daigou.sg.rpc.BaseModule;
 {{- if .HasKeyword }}
 import com.google.gson.annotations.SerializedName;
 {{- end }}
@@ -17,79 +16,10 @@ import java.util.ArrayList;
 
 {{ $js := . -}}
 
-public class {{ .Struct.Name}} implements Serializable {
+public class {{ .Struct.Name}} extends BaseModule<{{ .Struct.Name }}> implements Serializable {
 {{- range .Struct.Fields }}
-    {{- if $js.IsKeyword .Name }}
-    @SerializedName("{{ .Name }}")
-    {{- end }}
+	{{- if $js.IsKeyword .Name }}
+	@SerializedName("{{ .Name }}")
+	{{- end }}
     public {{ $js.PlainTypecast .Type }} {{ $js.FilterVariableName .Name }};{{ end }}
-
-    static {{ .Struct.Name}} fromJSON(JsonParser jp) throws IOException {
-        // Sanity check: verify that we got "Json Object":
-        if (jp.nextToken() != JsonToken.START_OBJECT) {
-            throw new IOException("Expected data to start with a {{ .Struct.Name}} Object");
-        }
-
-        return doFromJSON(jp);
-    }
-
-    private static {{ .Struct.Name}} doFromJSON(JsonParser jp) throws IOException {
-        {{ .Struct.Name}} result = new {{ .Struct.Name}}();
-
-        // Iterate over object fields:
-        while (jp.nextToken() != JsonToken.END_OBJECT) {
-            String fieldName = jp.getCurrentName();
-
-            if (false) {
-            {{- range $f := .Struct.Fields }}
-            } else if (fieldName.equals("{{ $f.Name }}")) {
-            {{- if eq $f.Type.Name "list" }}
-                {{- $innertype := $js.GetInnerType $f.Type -}}
-                {{- if eq $innertype "String" }}
-                result.{{ $f.Name }} = JsonUtils.readStringList(jp);
-                {{- else if eq $innertype "Integer" }}
-                result.{{ $f.Name }} = JsonUtils.readIntegerList(jp);
-                {{- else }}
-                result.{{ $f.Name }} = {{ $innertype }}.fromJSONArray(jp);
-                {{- end }}
-            {{- else }}
-                {{- $type := $js.PlainTypecast $f.Type -}}
-                {{- if eq $type "String" }}
-                jp.nextToken();
-                result.{{ $f.Name }} = jp.getText();
-                {{- else if eq $type "int" }}
-                jp.nextToken();
-                result.{{ $f.Name }} = jp.getIntValue();
-                {{- else if eq $type "long" }}
-                jp.nextToken();
-                result.{{ $f.Name }} = jp.getLongValue();
-                {{- else if eq $type "double" }}
-                jp.nextToken();
-                result.{{ $f.Name }} = jp.getDoubleValue();
-                {{- else if eq $type "boolean" }}
-                jp.nextToken();
-                result.{{ $f.Name }} = jp.getBooleanValue();
-                {{- else }}
-                result.{{ $f.Name }} = {{ $js.ObjectTypecast $f.Type }}.fromJSON(jp);
-                {{ end }}
-            {{- end  }}
-            {{- end }}
-            }
-        }
-        return result;
-    }
-
-    static ArrayList<{{ .Struct.Name}}> fromJSONArray(JsonParser jp) throws IOException {
-        if (jp.nextToken() != JsonToken.START_ARRAY) {
-            throw new IOException("Expected data to start with a {{ .Struct.Name}} array");
-        }
-
-        ArrayList<{{ .Struct.Name}}> result = new ArrayList<{{ .Struct.Name}}>();
-
-        // Iterate over object fields:
-        while (jp.nextToken() != JsonToken.END_ARRAY) {
-            result.add(doFromJSON(jp));
-        }
-        return result;
-    }
 }
