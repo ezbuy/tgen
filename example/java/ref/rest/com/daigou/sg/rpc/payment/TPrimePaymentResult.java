@@ -1,7 +1,6 @@
 package com.daigou.sg.rpc.payment;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonToken;
+import com.daigou.sg.rpc.BaseModule;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -12,7 +11,7 @@ import java.util.ArrayList;
  * Don't change manually
  */
 
-public class TPrimePaymentResult implements Serializable {
+public class TPrimePaymentResult extends BaseModule<TPrimePaymentResult> implements Serializable {
     public boolean result;
     public String message;
     public String paymentType;
@@ -20,59 +19,4 @@ public class TPrimePaymentResult implements Serializable {
     public ArrayList<String> paymentNumber;
     public boolean hasOtherUnpaid;
     public ArrayList<Integer> paymentId;
-
-    static TPrimePaymentResult fromJSON(JsonParser jp) throws IOException {
-        // Sanity check: verify that we got "Json Object":
-        if (jp.nextToken() != JsonToken.START_OBJECT) {
-            throw new IOException("Expected data to start with a TPrimePaymentResult Object");
-        }
-
-        return doFromJSON(jp);
-    }
-
-    private static TPrimePaymentResult doFromJSON(JsonParser jp) throws IOException {
-        TPrimePaymentResult result = new TPrimePaymentResult();
-
-        // Iterate over object fields:
-        while (jp.nextToken() != JsonToken.END_OBJECT) {
-            String fieldName = jp.getCurrentName();
-
-            if (false) {
-            } else if (fieldName.equals("result")) {
-                jp.nextToken();
-                result.result = jp.getBooleanValue();
-            } else if (fieldName.equals("message")) {
-                jp.nextToken();
-                result.message = jp.getText();
-            } else if (fieldName.equals("paymentType")) {
-                jp.nextToken();
-                result.paymentType = jp.getText();
-            } else if (fieldName.equals("needTopUp")) {
-                jp.nextToken();
-                result.needTopUp = jp.getBooleanValue();
-            } else if (fieldName.equals("paymentNumber")) {
-                result.paymentNumber = JsonUtils.readStringList(jp);
-            } else if (fieldName.equals("hasOtherUnpaid")) {
-                jp.nextToken();
-                result.hasOtherUnpaid = jp.getBooleanValue();
-            } else if (fieldName.equals("paymentId")) {
-                result.paymentId = JsonUtils.readIntegerList(jp);
-            }
-        }
-        return result;
-    }
-
-    static ArrayList<TPrimePaymentResult> fromJSONArray(JsonParser jp) throws IOException {
-        if (jp.nextToken() != JsonToken.START_ARRAY) {
-            throw new IOException("Expected data to start with a TPrimePaymentResult array");
-        }
-
-        ArrayList<TPrimePaymentResult> result = new ArrayList<TPrimePaymentResult>();
-
-        // Iterate over object fields:
-        while (jp.nextToken() != JsonToken.END_ARRAY) {
-            result.add(doFromJSON(jp));
-        }
-        return result;
-    }
 }

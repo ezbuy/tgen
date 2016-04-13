@@ -20,17 +20,17 @@ debugTpl:
 genjava:
 	make buildTpl
 	go build
-	./tgen gen -l java -i example/java/Payment.thrift -o ./javaoutput
+	./tgen gen -l java -i example/java/ShipForMe.thrift -o ./javaoutput
 
 genjavajsonrpc:
 	make buildTpl
 	go build
-	./tgen gen -l java -m jsonrpc -i example/java/Payment.thrift -o ./javaoutputjsonrpc
+	./tgen gen -l java -m jsonrpc -i example/java/ShipForMe.thrift -o ./javaoutputjsonrpc
 
 genjavarest:
 	make buildTpl
 	go build
-	./tgen gen -l java -m rest -i example/java/Payment.thrift -o ./javaoutputrest
+	./tgen gen -l java -m rest -i example/java/ShipForMe.thrift -o ./javaoutputrest
 
 clean:
 	go clean

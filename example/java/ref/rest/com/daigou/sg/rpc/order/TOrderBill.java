@@ -1,7 +1,6 @@
 package com.daigou.sg.rpc.order;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonToken;
+import com.daigou.sg.rpc.BaseModule;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -12,7 +11,7 @@ import java.util.ArrayList;
  * Don't change manually
  */
 
-public class TOrderBill implements Serializable {
+public class TOrderBill extends BaseModule<TOrderBill> implements Serializable {
     public int id;
     public String orderNumber;
     public String productName;
@@ -23,69 +22,4 @@ public class TOrderBill implements Serializable {
     public boolean insured;
     public ArrayList<com.daigou.sg.rpc.payment.TPaymentBillCategory> orderBillDetails;
     public String total;
-
-    static TOrderBill fromJSON(JsonParser jp) throws IOException {
-        // Sanity check: verify that we got "Json Object":
-        if (jp.nextToken() != JsonToken.START_OBJECT) {
-            throw new IOException("Expected data to start with a TOrderBill Object");
-        }
-
-        return doFromJSON(jp);
-    }
-
-    private static TOrderBill doFromJSON(JsonParser jp) throws IOException {
-        TOrderBill result = new TOrderBill();
-
-        // Iterate over object fields:
-        while (jp.nextToken() != JsonToken.END_OBJECT) {
-            String fieldName = jp.getCurrentName();
-
-            if (false) {
-            } else if (fieldName.equals("id")) {
-                jp.nextToken();
-                result.id = jp.getIntValue();
-            } else if (fieldName.equals("orderNumber")) {
-                jp.nextToken();
-                result.orderNumber = jp.getText();
-            } else if (fieldName.equals("productName")) {
-                jp.nextToken();
-                result.productName = jp.getText();
-            } else if (fieldName.equals("productImage")) {
-                jp.nextToken();
-                result.productImage = jp.getText();
-            } else if (fieldName.equals("unitPrice")) {
-                jp.nextToken();
-                result.unitPrice = jp.getText();
-            } else if (fieldName.equals("localUnitPrice")) {
-                jp.nextToken();
-                result.localUnitPrice = jp.getText();
-            } else if (fieldName.equals("qty")) {
-                jp.nextToken();
-                result.qty = jp.getIntValue();
-            } else if (fieldName.equals("insured")) {
-                jp.nextToken();
-                result.insured = jp.getBooleanValue();
-            } else if (fieldName.equals("orderBillDetails")) {
-                result.orderBillDetails = com.daigou.sg.rpc.payment.TPaymentBillCategory.fromJSONArray(jp);
-            } else if (fieldName.equals("total")) {
-                jp.nextToken();
-                result.total = jp.getText();
-            }
-        }
-        return result;
-    }
-
-    static ArrayList<TOrderBill> fromJSONArray(JsonParser jp) throws IOException {
-        if (jp.nextToken() != JsonToken.START_ARRAY) {
-            throw new IOException("Expected data to start with a TOrderBill array");
-        }
-
-        ArrayList<TOrderBill> result = new ArrayList<TOrderBill>();
-
-        // Iterate over object fields:
-        while (jp.nextToken() != JsonToken.END_ARRAY) {
-            result.add(doFromJSON(jp));
-        }
-        return result;
-    }
 }

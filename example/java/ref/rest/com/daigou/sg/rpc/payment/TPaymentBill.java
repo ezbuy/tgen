@@ -1,7 +1,6 @@
 package com.daigou.sg.rpc.payment;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonToken;
+import com.daigou.sg.rpc.BaseModule;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -12,7 +11,7 @@ import java.util.ArrayList;
  * Don't change manually
  */
 
-public class TPaymentBill implements Serializable {
+public class TPaymentBill extends BaseModule<TPaymentBill> implements Serializable {
     public int id;
     public String paymentNumber;
     public String total;
@@ -22,66 +21,4 @@ public class TPaymentBill implements Serializable {
     public String paymentStatus;
     public String createDate;
     public String paymentType;
-
-    static TPaymentBill fromJSON(JsonParser jp) throws IOException {
-        // Sanity check: verify that we got "Json Object":
-        if (jp.nextToken() != JsonToken.START_OBJECT) {
-            throw new IOException("Expected data to start with a TPaymentBill Object");
-        }
-
-        return doFromJSON(jp);
-    }
-
-    private static TPaymentBill doFromJSON(JsonParser jp) throws IOException {
-        TPaymentBill result = new TPaymentBill();
-
-        // Iterate over object fields:
-        while (jp.nextToken() != JsonToken.END_OBJECT) {
-            String fieldName = jp.getCurrentName();
-
-            if (false) {
-            } else if (fieldName.equals("id")) {
-                jp.nextToken();
-                result.id = jp.getIntValue();
-            } else if (fieldName.equals("paymentNumber")) {
-                jp.nextToken();
-                result.paymentNumber = jp.getText();
-            } else if (fieldName.equals("total")) {
-                jp.nextToken();
-                result.total = jp.getText();
-            } else if (fieldName.equals("chargeWeight")) {
-                jp.nextToken();
-                result.chargeWeight = jp.getText();
-            } else if (fieldName.equals("packageWeight")) {
-                jp.nextToken();
-                result.packageWeight = jp.getText();
-            } else if (fieldName.equals("paymentBillDetails")) {
-                result.paymentBillDetails = TPaymentBillCategory.fromJSONArray(jp);
-            } else if (fieldName.equals("paymentStatus")) {
-                jp.nextToken();
-                result.paymentStatus = jp.getText();
-            } else if (fieldName.equals("createDate")) {
-                jp.nextToken();
-                result.createDate = jp.getText();
-            } else if (fieldName.equals("paymentType")) {
-                jp.nextToken();
-                result.paymentType = jp.getText();
-            }
-        }
-        return result;
-    }
-
-    static ArrayList<TPaymentBill> fromJSONArray(JsonParser jp) throws IOException {
-        if (jp.nextToken() != JsonToken.START_ARRAY) {
-            throw new IOException("Expected data to start with a TPaymentBill array");
-        }
-
-        ArrayList<TPaymentBill> result = new ArrayList<TPaymentBill>();
-
-        // Iterate over object fields:
-        while (jp.nextToken() != JsonToken.END_ARRAY) {
-            result.add(doFromJSON(jp));
-        }
-        return result;
-    }
 }

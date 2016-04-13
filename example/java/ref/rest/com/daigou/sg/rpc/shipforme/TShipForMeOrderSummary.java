@@ -1,7 +1,6 @@
 package com.daigou.sg.rpc.shipforme;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonToken;
+import com.daigou.sg.rpc.BaseModule;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -12,7 +11,7 @@ import java.util.ArrayList;
  * Don't change manually
  */
 
-public class TShipForMeOrderSummary implements Serializable {
+public class TShipForMeOrderSummary extends BaseModule<TShipForMeOrderSummary> implements Serializable {
     public int notReceivedCount;
     public int problemOrdersCount;
     public int notReplyProblemOrdersCount;
@@ -22,67 +21,4 @@ public class TShipForMeOrderSummary implements Serializable {
     public int readyToShipGZCount;
     public int readyToShipTWCount;
     public int readyToShipUSCount;
-
-    static TShipForMeOrderSummary fromJSON(JsonParser jp) throws IOException {
-        // Sanity check: verify that we got "Json Object":
-        if (jp.nextToken() != JsonToken.START_OBJECT) {
-            throw new IOException("Expected data to start with a TShipForMeOrderSummary Object");
-        }
-
-        return doFromJSON(jp);
-    }
-
-    private static TShipForMeOrderSummary doFromJSON(JsonParser jp) throws IOException {
-        TShipForMeOrderSummary result = new TShipForMeOrderSummary();
-
-        // Iterate over object fields:
-        while (jp.nextToken() != JsonToken.END_OBJECT) {
-            String fieldName = jp.getCurrentName();
-
-            if (false) {
-            } else if (fieldName.equals("notReceivedCount")) {
-                jp.nextToken();
-                result.notReceivedCount = jp.getIntValue();
-            } else if (fieldName.equals("problemOrdersCount")) {
-                jp.nextToken();
-                result.problemOrdersCount = jp.getIntValue();
-            } else if (fieldName.equals("notReplyProblemOrdersCount")) {
-                jp.nextToken();
-                result.notReplyProblemOrdersCount = jp.getIntValue();
-            } else if (fieldName.equals("orderInParcelCount")) {
-                jp.nextToken();
-                result.orderInParcelCount = jp.getIntValue();
-            } else if (fieldName.equals("historyCount")) {
-                jp.nextToken();
-                result.historyCount = jp.getIntValue();
-            } else if (fieldName.equals("readyToShipSHCount")) {
-                jp.nextToken();
-                result.readyToShipSHCount = jp.getIntValue();
-            } else if (fieldName.equals("readyToShipGZCount")) {
-                jp.nextToken();
-                result.readyToShipGZCount = jp.getIntValue();
-            } else if (fieldName.equals("readyToShipTWCount")) {
-                jp.nextToken();
-                result.readyToShipTWCount = jp.getIntValue();
-            } else if (fieldName.equals("readyToShipUSCount")) {
-                jp.nextToken();
-                result.readyToShipUSCount = jp.getIntValue();
-            }
-        }
-        return result;
-    }
-
-    static ArrayList<TShipForMeOrderSummary> fromJSONArray(JsonParser jp) throws IOException {
-        if (jp.nextToken() != JsonToken.START_ARRAY) {
-            throw new IOException("Expected data to start with a TShipForMeOrderSummary array");
-        }
-
-        ArrayList<TShipForMeOrderSummary> result = new ArrayList<TShipForMeOrderSummary>();
-
-        // Iterate over object fields:
-        while (jp.nextToken() != JsonToken.END_ARRAY) {
-            result.add(doFromJSON(jp));
-        }
-        return result;
-    }
 }

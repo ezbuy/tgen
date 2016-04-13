@@ -1,7 +1,6 @@
 package com.daigou.sg.rpc.order;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonToken;
+import com.daigou.sg.rpc.BaseModule;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -12,7 +11,7 @@ import java.util.ArrayList;
  * Don't change manually
  */
 
-public class TOrderSummary implements Serializable {
+public class TOrderSummary extends BaseModule<TOrderSummary> implements Serializable {
     public int pendingReplyCount;
     public int pendingPaymentCount;
     public int pendingToPurchaseCount;
@@ -25,76 +24,4 @@ public class TOrderSummary implements Serializable {
     public int completedCount;
     public int arrivedInTaiwanCount;
     public int arrivedInUSACount;
-
-    static TOrderSummary fromJSON(JsonParser jp) throws IOException {
-        // Sanity check: verify that we got "Json Object":
-        if (jp.nextToken() != JsonToken.START_OBJECT) {
-            throw new IOException("Expected data to start with a TOrderSummary Object");
-        }
-
-        return doFromJSON(jp);
-    }
-
-    private static TOrderSummary doFromJSON(JsonParser jp) throws IOException {
-        TOrderSummary result = new TOrderSummary();
-
-        // Iterate over object fields:
-        while (jp.nextToken() != JsonToken.END_OBJECT) {
-            String fieldName = jp.getCurrentName();
-
-            if (false) {
-            } else if (fieldName.equals("pendingReplyCount")) {
-                jp.nextToken();
-                result.pendingReplyCount = jp.getIntValue();
-            } else if (fieldName.equals("pendingPaymentCount")) {
-                jp.nextToken();
-                result.pendingPaymentCount = jp.getIntValue();
-            } else if (fieldName.equals("pendingToPurchaseCount")) {
-                jp.nextToken();
-                result.pendingToPurchaseCount = jp.getIntValue();
-            } else if (fieldName.equals("purchasingCount")) {
-                jp.nextToken();
-                result.purchasingCount = jp.getIntValue();
-            } else if (fieldName.equals("purchasedCount")) {
-                jp.nextToken();
-                result.purchasedCount = jp.getIntValue();
-            } else if (fieldName.equals("arrivedInShanghaiCount")) {
-                jp.nextToken();
-                result.arrivedInShanghaiCount = jp.getIntValue();
-            } else if (fieldName.equals("arrivedInGuangzhouCount")) {
-                jp.nextToken();
-                result.arrivedInGuangzhouCount = jp.getIntValue();
-            } else if (fieldName.equals("orderInParcelCount")) {
-                jp.nextToken();
-                result.orderInParcelCount = jp.getIntValue();
-            } else if (fieldName.equals("cancelledCount")) {
-                jp.nextToken();
-                result.cancelledCount = jp.getIntValue();
-            } else if (fieldName.equals("completedCount")) {
-                jp.nextToken();
-                result.completedCount = jp.getIntValue();
-            } else if (fieldName.equals("arrivedInTaiwanCount")) {
-                jp.nextToken();
-                result.arrivedInTaiwanCount = jp.getIntValue();
-            } else if (fieldName.equals("arrivedInUSACount")) {
-                jp.nextToken();
-                result.arrivedInUSACount = jp.getIntValue();
-            }
-        }
-        return result;
-    }
-
-    static ArrayList<TOrderSummary> fromJSONArray(JsonParser jp) throws IOException {
-        if (jp.nextToken() != JsonToken.START_ARRAY) {
-            throw new IOException("Expected data to start with a TOrderSummary array");
-        }
-
-        ArrayList<TOrderSummary> result = new ArrayList<TOrderSummary>();
-
-        // Iterate over object fields:
-        while (jp.nextToken() != JsonToken.END_ARRAY) {
-            result.add(doFromJSON(jp));
-        }
-        return result;
-    }
 }

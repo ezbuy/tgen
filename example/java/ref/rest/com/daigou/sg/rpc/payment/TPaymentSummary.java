@@ -1,7 +1,6 @@
 package com.daigou.sg.rpc.payment;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonToken;
+import com.daigou.sg.rpc.BaseModule;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -12,61 +11,10 @@ import java.util.ArrayList;
  * Don't change manually
  */
 
-public class TPaymentSummary implements Serializable {
+public class TPaymentSummary extends BaseModule<TPaymentSummary> implements Serializable {
     public double amountAvailable;
     public double rebateAmountAvailable;
     public double amountPendingVerification;
     public double pendingWithdrawAmount;
     public double unpaidAmount;
-
-    static TPaymentSummary fromJSON(JsonParser jp) throws IOException {
-        // Sanity check: verify that we got "Json Object":
-        if (jp.nextToken() != JsonToken.START_OBJECT) {
-            throw new IOException("Expected data to start with a TPaymentSummary Object");
-        }
-
-        return doFromJSON(jp);
-    }
-
-    private static TPaymentSummary doFromJSON(JsonParser jp) throws IOException {
-        TPaymentSummary result = new TPaymentSummary();
-
-        // Iterate over object fields:
-        while (jp.nextToken() != JsonToken.END_OBJECT) {
-            String fieldName = jp.getCurrentName();
-
-            if (false) {
-            } else if (fieldName.equals("amountAvailable")) {
-                jp.nextToken();
-                result.amountAvailable = jp.getDoubleValue();
-            } else if (fieldName.equals("rebateAmountAvailable")) {
-                jp.nextToken();
-                result.rebateAmountAvailable = jp.getDoubleValue();
-            } else if (fieldName.equals("amountPendingVerification")) {
-                jp.nextToken();
-                result.amountPendingVerification = jp.getDoubleValue();
-            } else if (fieldName.equals("pendingWithdrawAmount")) {
-                jp.nextToken();
-                result.pendingWithdrawAmount = jp.getDoubleValue();
-            } else if (fieldName.equals("unpaidAmount")) {
-                jp.nextToken();
-                result.unpaidAmount = jp.getDoubleValue();
-            }
-        }
-        return result;
-    }
-
-    static ArrayList<TPaymentSummary> fromJSONArray(JsonParser jp) throws IOException {
-        if (jp.nextToken() != JsonToken.START_ARRAY) {
-            throw new IOException("Expected data to start with a TPaymentSummary array");
-        }
-
-        ArrayList<TPaymentSummary> result = new ArrayList<TPaymentSummary>();
-
-        // Iterate over object fields:
-        while (jp.nextToken() != JsonToken.END_ARRAY) {
-            result.add(doFromJSON(jp));
-        }
-        return result;
-    }
 }

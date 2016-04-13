@@ -1,7 +1,6 @@
 package com.daigou.sg.rpc.payment;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonToken;
+import com.daigou.sg.rpc.BaseModule;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -12,51 +11,8 @@ import java.util.ArrayList;
  * Don't change manually
  */
 
-public class TPaymentBillDetail implements Serializable {
+public class TPaymentBillDetail extends BaseModule<TPaymentBillDetail> implements Serializable {
     public TPaymentBill paymentBill;
     public ArrayList<com.daigou.sg.rpc.tpackage.TPackageDetail> packageInfo;
     public ArrayList<com.daigou.sg.rpc.order.TOrderBill> orderInfo;
-
-    static TPaymentBillDetail fromJSON(JsonParser jp) throws IOException {
-        // Sanity check: verify that we got "Json Object":
-        if (jp.nextToken() != JsonToken.START_OBJECT) {
-            throw new IOException("Expected data to start with a TPaymentBillDetail Object");
-        }
-
-        return doFromJSON(jp);
-    }
-
-    private static TPaymentBillDetail doFromJSON(JsonParser jp) throws IOException {
-        TPaymentBillDetail result = new TPaymentBillDetail();
-
-        // Iterate over object fields:
-        while (jp.nextToken() != JsonToken.END_OBJECT) {
-            String fieldName = jp.getCurrentName();
-
-            if (false) {
-            } else if (fieldName.equals("paymentBill")) {
-                result.paymentBill = TPaymentBill.fromJSON(jp);
-                
-            } else if (fieldName.equals("packageInfo")) {
-                result.packageInfo = com.daigou.sg.rpc.tpackage.TPackageDetail.fromJSONArray(jp);
-            } else if (fieldName.equals("orderInfo")) {
-                result.orderInfo = com.daigou.sg.rpc.order.TOrderBill.fromJSONArray(jp);
-            }
-        }
-        return result;
-    }
-
-    static ArrayList<TPaymentBillDetail> fromJSONArray(JsonParser jp) throws IOException {
-        if (jp.nextToken() != JsonToken.START_ARRAY) {
-            throw new IOException("Expected data to start with a TPaymentBillDetail array");
-        }
-
-        ArrayList<TPaymentBillDetail> result = new ArrayList<TPaymentBillDetail>();
-
-        // Iterate over object fields:
-        while (jp.nextToken() != JsonToken.END_ARRAY) {
-            result.add(doFromJSON(jp));
-        }
-        return result;
-    }
 }
