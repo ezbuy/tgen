@@ -9,6 +9,7 @@ import (
 	"strings"
 	"text/template"
 
+	"github.com/ezbuy/tgen/global"
 	"github.com/ezbuy/tgen/langs"
 	"github.com/ezbuy/tgen/tmpl"
 	"github.com/samuel/go-thrift/parser"
@@ -207,29 +208,43 @@ type javaService struct {
 	*parser.Service
 }
 
-func (this *JavaGen) Generate(output string, parsedThrift map[string]*parser.Thrift) {
-	this.BaseGen.Init("java", parsedThrift)
-
-	generatejsonrpc(filepath.Join(output, "jsonrpc"), parsedThrift)
-	genraterest(filepath.Join(output, "rest"), parsedThrift)
+func generateAll(gen *JavaGen, output string, parsedThrift map[string]*parser.Thrift) {
+	generateWithModel(gen, global.MODE_REST, filepath.Join(output, global.MODE_REST), parsedThrift)
+	generateWithModel(gen, global.MODE_JSONRPC, filepath.Join(output, global.MODE_JSONRPC), parsedThrift)
 }
 
-func generatejsonrpc(output string, parsedThrift map[string]*parser.Thrift) {
-	dogenerate(output, 0, parsedThrift)
+func (g *JavaGen) Generate(output string, parsedThrift map[string]*parser.Thrift) {
+	if global.Mode != "" {
+		generateWithModel(g, global.Mode, output, parsedThrift)
+	} else {
+		generateAll(g, output, parsedThrift)
+	}
+
+	// generatejsonrpc(filepath.Join(output, "jsonrpc"), parsedThrift)
+	// genraterest(filepath.Join(output, "rest"), parsedThrift)
 }
 
-func genraterest(output string, parsedThrift map[string]*parser.Thrift) {
-	dogenerate(output, 1, parsedThrift)
-}
+func generateWithModel(gen *JavaGen, m string, output string, parsedThrift map[string]*parser.Thrift) {
+	if m != global.MODE_REST && m != global.MODE_JSONRPC {
+		log.Fatalf("mode '%s' is invalid", m)
+	}
 
-// flag: 0-jsonrpc, 1-rest
-func dogenerate(output string, flag int16, parsedThrift map[string]*parser.Thrift) {
+	gen.BaseGen.Init("java", parsedThrift)
+
 	if err := os.MkdirAll(output, 0755); err != nil {
 		panic(fmt.Errorf("failed to create output directory %s", output))
 	}
 
+	// init templates
 	var structpl *template.Template
 	var servicetpl *template.Template
+	if m == global.MODE_REST {
+		structpl = initemplate(TPL_STRUCT, "tmpl/java/rest_struct.gojava")
+		servicetpl = initemplate(TPL_SERVICE, "tmpl/java/rest_service.gojava")
+	} else if m == global.MODE_JSONRPC {
+		structpl = initemplate(TPL_STRUCT, "tmpl/java/jsonrpc_struct.gojava")
+		servicetpl = initemplate(TPL_SERVICE, "tmpl/java/jsonrpc_service.gojava")
+	}
 
 	// key is the absoule path of thrift file
 	for tf, t := range parsedThrift {
@@ -245,14 +260,6 @@ func dogenerate(output string, flag int16, parsedThrift map[string]*parser.Thrif
 		log.Printf("## structs")
 
 		for _, s := range t.Structs {
-			if structpl == nil {
-				if flag == 0 {
-					structpl = initemplate(TPL_STRUCT, "tmpl/java/jsonrpc_struct.gojava")
-				} else if flag == 1 {
-					structpl = initemplate(TPL_STRUCT, "tmpl/java/rest_struct.gojava")
-				}
-			}
-
 			// filename is the struct name
 			name := s.Name + ".java"
 
@@ -277,14 +284,6 @@ func dogenerate(output string, flag int16, parsedThrift map[string]*parser.Thrif
 		log.Printf("## services")
 
 		for _, s := range t.Services {
-			if servicetpl == nil {
-				if flag == 0 {
-					servicetpl = initemplate(TPL_SERVICE, "tmpl/java/jsonrpc_service.gojava")
-				} else if flag == 1 {
-					servicetpl = initemplate(TPL_SERVICE, "tmpl/java/rest_service.gojava")
-				}
-			}
-
 			// filename is the service name plus 'Service'
 			name := s.Name + "Service.java"
 

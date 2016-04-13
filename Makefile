@@ -16,3 +16,23 @@ buildTpl:
 
 debugTpl:
 	go-bindata -o tmpl/bindata.go -ignore bindata.go -pkg tmpl -debug tmpl/*
+
+genjava:
+	make buildTpl
+	go build
+	./tgen gen -l java -i example/java/Payment.thrift -o ./javaoutput
+
+genjavajsonrpc:
+	make buildTpl
+	go build
+	./tgen gen -l java -m jsonrpc -i example/java/Payment.thrift -o ./javaoutputjsonrpc
+
+genjavarest:
+	make buildTpl
+	go build
+	./tgen gen -l java -m rest -i example/java/Payment.thrift -o ./javaoutputrest
+
+clean:
+	go clean
+	rm -rf javaoutputrest
+	rm -rf javaoutputjsonrpc

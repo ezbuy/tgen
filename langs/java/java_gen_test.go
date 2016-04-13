@@ -7,6 +7,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/ezbuy/tgen/global"
 	"github.com/samuel/go-thrift/parser"
 )
 
@@ -49,14 +50,14 @@ func TestGenerate(t *testing.T) {
 
 				// jsonrpc
 
-				outfile := filepath.Join(outdir, "jsonrpc", p, name)
-				testfile := filepath.Join(testdir, "jsonrpc", p, name)
+				outfile := filepath.Join(outdir, global.MODE_JSONRPC, p, name)
+				testfile := filepath.Join(testdir, global.MODE_JSONRPC, p, name)
 
 				fileCompare(t, outfile, testfile)
 
 				// rest
-				outfile = filepath.Join(outdir, "rest", p, name)
-				testfile = filepath.Join(testdir, "rest", p, name)
+				outfile = filepath.Join(outdir, global.MODE_REST, p, name)
+				testfile = filepath.Join(testdir, global.MODE_REST, p, name)
 
 				fileCompare(t, outfile, testfile)
 			}
@@ -65,14 +66,14 @@ func TestGenerate(t *testing.T) {
 				name := s.Name + "Service.java"
 
 				// jsonrpc
-				outfile := filepath.Join(outdir, "jsonrpc", p, name)
-				testfile := filepath.Join(testdir, "jsonrpc", p, name)
+				outfile := filepath.Join(outdir, global.MODE_JSONRPC, p, name)
+				testfile := filepath.Join(testdir, global.MODE_JSONRPC, p, name)
 
 				fileCompare(t, outfile, testfile)
 
 				// rest
-				outfile = filepath.Join(outdir, "rest", p, name)
-				testfile = filepath.Join(testdir, "rest", p, name)
+				outfile = filepath.Join(outdir, global.MODE_REST, p, name)
+				testfile = filepath.Join(testdir, global.MODE_REST, p, name)
 
 				fileCompare(t, outfile, testfile)
 			}
