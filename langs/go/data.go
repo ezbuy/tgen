@@ -14,10 +14,11 @@ type definesFileData struct {
 
 	FilePath string
 
-	Package  string
-	Includes [][2]string
-	Structs  []*structData
-	Services []*serviceData
+	Package   string
+	Includes  [][2]string
+	Structs   []*structData
+	Services  []*serviceData
+	Constants []*parser.Constant
 
 	thrift *parser.Thrift
 }
@@ -90,7 +91,27 @@ func getDefinesFileData(pkgName, pkgDir string, includes [][2]string, parsed *pa
 		data.Services = append(data.Services, sData)
 	}
 
-	// TODO: enum, const, typedef, exception, ...
+	// constansts
+	constantNames := make([]string, 0, len(parsed.Constants))
+
+	for name, constant := range parsed.Constants {
+		if _, ok := constantValueFormat[constant.Type.Name]; !ok {
+			continue
+		}
+
+		constantNames = append(constantNames, name)
+	}
+
+	sort.Strings(constantNames)
+
+	constants := make([]*parser.Constant, 0, len(constantNames))
+	for _, constantName := range constantNames {
+		constants = append(constants, parsed.Constants[constantName])
+	}
+
+	data.Constants = constants
+
+	// TODO: enum, typedef, exception, ...
 	return data
 }
 
