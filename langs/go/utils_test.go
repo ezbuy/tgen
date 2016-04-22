@@ -646,6 +646,92 @@ func TestGenNamespace(t *testing.T) {
 	}
 }
 
+func TestGenConstant(t *testing.T) {
+	cases := []struct {
+		constant *parser.Constant
+		out      string
+	}{
+		{
+			constant: &parser.Constant{
+				Type: &parser.Type{
+					Name: TypeI16,
+				},
+				Name:  "ConstantI16",
+				Value: 16,
+			},
+			out: "ConstantI16 int16 = 16",
+		},
+		{
+			constant: &parser.Constant{
+				Type: &parser.Type{
+					Name: TypeI32,
+				},
+				Name:  "ConstantI32",
+				Value: 32,
+			},
+			out: "ConstantI32 int32 = 32",
+		},
+		{
+			constant: &parser.Constant{
+				Type: &parser.Type{
+					Name: TypeI64,
+				},
+				Name:  "ConstantI64",
+				Value: 64,
+			},
+			out: "ConstantI64 int64 = 64",
+		},
+		{
+			constant: &parser.Constant{
+				Type: &parser.Type{
+					Name: TypeDouble,
+				},
+				Name:  "ConstantDouble",
+				Value: 128.128,
+			},
+			out: "ConstantDouble float64 = 128.128000",
+		},
+		{
+			constant: &parser.Constant{
+				Type: &parser.Type{
+					Name: TypeBool,
+				},
+				Name:  "ConstantBool",
+				Value: parser.Identifier("false"),
+			},
+			out: "ConstantBool bool = false",
+		},
+		{
+			constant: &parser.Constant{
+				Type: &parser.Type{
+					Name: TypeByte,
+				},
+				Name:  "ConstantByte",
+				Value: 65,
+			},
+			out: "ConstantByte byte = 65",
+		},
+		{
+			constant: &parser.Constant{
+				Type: &parser.Type{
+					Name: TypeString,
+				},
+				Name:  "ConstantString",
+				Value: "this is string",
+			},
+			out: `ConstantString string = "this is string"`,
+		},
+	}
+
+	utils := TplUtils{}
+
+	for _, one := range cases {
+		if out := utils.GenConstants(one.constant); out != one.out {
+			t.Errorf("expected %q, got %q", one.out, out)
+		}
+	}
+}
+
 func getGenTypeStringPanic(fieldName string, testCase *genTypeStringPanicTestCase) {
 	defer func() {
 		testCase.recovered = recover()
