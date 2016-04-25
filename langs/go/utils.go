@@ -36,6 +36,16 @@ var typeStrs = map[string]string{
 	TypeString: "string",
 }
 
+var constantValueFormat = map[string]string{
+	TypeBool:   "%s", // parser.Identifier("true") and parser.Identifier("false")
+	TypeByte:   "%d",
+	TypeI16:    "%d",
+	TypeI32:    "%d",
+	TypeI64:    "%d",
+	TypeDouble: "%f",
+	TypeString: "%q",
+}
+
 func getNamespace(namespaces map[string]string) string {
 	if namespace, ok := namespaces[langName]; ok {
 		return namespace
@@ -221,4 +231,13 @@ func (this *TplUtils) IsSimpleArguments(args []*parser.Field) bool {
 	default:
 		return false
 	}
+}
+
+func (this *TplUtils) GenConstants(constant *parser.Constant) string {
+	format, ok := constantValueFormat[constant.Type.Name]
+	if !ok {
+		return ""
+	}
+
+	return fmt.Sprintf("%s %s = "+format, constant.Name, typeStrs[constant.Type.Name], constant.Value)
 }

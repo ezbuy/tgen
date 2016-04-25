@@ -11,6 +11,15 @@ import (
 {{if ne $includeCount 0}}{{template "include" .Includes -}}
 {{end}}
 
+{{- $constantCount := len .Constants -}}
+{{if ne $constantCount 0}}
+const (
+    {{range $constant := .Constants -}}
+    {{$utils.GenConstants $constant}}
+    {{end -}}
+)
+{{end}}
+
 var _ json.Unmarshaler
 var _ echo.Context
 var GoUnusedProtection__ int
