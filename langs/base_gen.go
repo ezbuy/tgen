@@ -1,16 +1,14 @@
 package langs
 
 import (
-	"fmt"
-	"os"
+	"log"
 
 	"github.com/samuel/go-thrift/parser"
 )
 
 type BaseGen struct {
-	Lang      string
-	Namespace string
-	Thrifts   map[string]*parser.Thrift
+	Lang    string
+	Thrifts map[string]*parser.Thrift
 }
 
 func (g *BaseGen) Init(lang string, parsedThrift map[string]*parser.Thrift) {
@@ -20,15 +18,9 @@ func (g *BaseGen) Init(lang string, parsedThrift map[string]*parser.Thrift) {
 }
 
 func (g *BaseGen) CheckNamespace() {
-	for _, thrift := range g.Thrifts {
-		for lang, namepace := range thrift.Namespaces {
-			if lang == g.Lang {
-				g.Namespace = namepace
-				return
-			}
+	for f, t := range g.Thrifts {
+		if _, ok := t.Namespaces[g.Lang]; !ok {
+			log.Fatalf("Namespace not found for language '%s' in file '%s'", g.Lang, f)
 		}
 	}
-
-	fmt.Fprintf(os.Stderr, "Namespace not found for: %s\n", g.Lang)
-	os.Exit(2)
 }
