@@ -101,7 +101,7 @@ func (this *BaseSwift) AssembleCustomizedTypeName(t *parser.Type) string {
 	// strip the first letter, insert the namespace at the head of the left
 
 	if len(names) == 1 {
-		for n, _ := range this.Thrift.Structs {
+		for n := range this.Thrift.Structs {
 			if n != t.Name {
 				continue
 			}
@@ -123,7 +123,7 @@ func (this *BaseSwift) AssembleCustomizedTypeName(t *parser.Type) string {
 			continue
 		}
 
-		for n, _ := range thrift.Structs {
+		for n := range thrift.Structs {
 			if n != names[1] {
 				continue
 			}
@@ -264,15 +264,13 @@ func generateWithModel(gen *SwiftGen, m string, output string, parsedThrift map[
 
 	// key is the absoule path of thrift file
 	for f, t := range parsedThrift {
-		// check namespace
-		if _, ok := t.Namespaces["swift"]; !ok {
-			fmt.Printf("namespace of swift in file '%s' is not found\n", f)
-			continue
+		if f != global.InputFile {
+			continue // ignore
 		}
 
 		wg.Add(1)
 
-		go func(t *parser.Thrift) {
+		go func(t *parser.Thrift, f string) {
 			defer wg.Done()
 
 			for _, s := range t.Structs {
@@ -288,11 +286,11 @@ func generateWithModel(gen *SwiftGen, m string, output string, parsedThrift map[
 					panic(fmt.Errorf("failed to write file %s. error: %v\n", path, err))
 				}
 			}
-		}(t)
+		}(t, f)
 
 		wg.Add(1)
 
-		go func(t *parser.Thrift) {
+		go func(t *parser.Thrift, f string) {
 			defer wg.Done()
 
 			for _, s := range t.Services {
@@ -307,7 +305,7 @@ func generateWithModel(gen *SwiftGen, m string, output string, parsedThrift map[
 					panic(fmt.Errorf("failed to write file %s. error: %v\n", path, err))
 				}
 			}
-		}(t)
+		}(t, f)
 	}
 
 	wg.Wait()
