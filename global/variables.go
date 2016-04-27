@@ -6,3 +6,4 @@ const (
 )
 
 var Mode string
+var InputFile string

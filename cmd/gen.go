@@ -16,7 +16,9 @@ package cmd
 
 import (
 	"fmt"
+	"log"
 	"os"
+	"path/filepath"
 
 	"github.com/ezbuy/tgen/global"
 	"github.com/ezbuy/tgen/langs"
@@ -43,6 +45,12 @@ var genCmd = &cobra.Command{
 			return
 		}
 
+		f, err := filepath.Abs(input)
+		if err != nil {
+			log.Fatalf("failed to get absoulte path of input idl file: %s", err.Error())
+		}
+
+		global.InputFile = f
 		global.Mode = mode
 
 		p := &parser.Parser{}
@@ -57,7 +65,8 @@ var genCmd = &cobra.Command{
 		} else {
 			fmt.Printf("lang %s is not supported\n", lang)
 			fmt.Println("Supported language options are:")
-			for key, _ := range langs.Langs {
+
+			for key := range langs.Langs {
 				fmt.Printf("\t%s\n", key)
 			}
 		}
