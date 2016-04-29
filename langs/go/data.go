@@ -154,13 +154,41 @@ func (this *Package) GenTypeString(fieldName string, typ, parent *parser.Type, o
 			panicWithErr("field %s without type name", fieldName)
 		}
 
-		// TODO check if is Enum, Const, TypeDef etc.
+		// 非必选的 field, 使用指针
+		usePtr := optional
+
+		include := ""
 		name := typ.Name
-		if dotIdx := strings.Index(name, "."); dotIdx != -1 {
-			name = typ.Name[:dotIdx+1] + this.UpperHead(typ.Name[dotIdx+1:])
+		pkg := this
+
+		// 形为 <include>.<typeName>
+		pieces := strings.Split(name, dot)
+
+		if len(pieces) > 1 {
+			name = pieces[1]
+
+			// 找到指定的 package
+			if pkg, _ = this.includes[pieces[0]]; pkg == nil {
+				panicWithErr("include package %q not found", include)
+			}
+
+			include = pkg.PkgName
 		}
 
-		str = "*" + name
+		// 对于实际是 Struct 的类型, 统一使用指针
+		if pkg.IsStructType(name) {
+			usePtr = true
+		}
+
+		if usePtr {
+			str += "*"
+		}
+
+		if include != "" {
+			str += include + "."
+		}
+
+		str += this.UpperHead(name)
 	}
 
 	return str
@@ -209,6 +237,23 @@ func (this *Package) GenConstants(constant *parser.Constant) string {
 	}
 
 	return fmt.Sprintf("%s %s = "+format, constant.Name, typeStrs[constant.Type.Name], constant.Value)
+}
+
+func (this *Package) IsStructType(name string) bool {
+	if _, ok := this.thrift.Structs[name]; ok {
+		return true
+	}
+
+	if _, ok := this.thrift.Exceptions[name]; ok {
+		return true
+	}
+
+	if _, ok := this.thrift.Unions[name]; ok {
+		return true
+	}
+
+	// TODO Typedefs
+	return false
 }
 
 func (this *Package) genOutputFilename(typ string) string {

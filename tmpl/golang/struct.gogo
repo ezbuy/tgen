@@ -3,7 +3,7 @@
 {{- range $oneStruct := .Structs}}
 type {{$data.UpperHead $oneStruct.Name}} struct {
     {{- range $field := $oneStruct.Fields}}
-    {{$data.UpperHead $field.Name}} {{.GenTypeString $field.Name $field.Type nil $field.Optional}} `thrift:"{{$data.FieldTagThrift $field}}" json:"{{$data.FieldTagJson $field}}"`
+    {{$data.UpperHead $field.Name}} {{$data.GenTypeString $field.Name $field.Type nil $field.Optional}} `thrift:"{{$data.FieldTagThrift $field}}" json:"{{$data.FieldTagJson $field}}"`
     {{- end}}
 }
 {{- end}}
