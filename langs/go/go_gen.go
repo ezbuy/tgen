@@ -9,7 +9,9 @@ import (
 	"github.com/samuel/go-thrift/parser"
 )
 
-const langName = "go"
+const (
+	langName = "go"
+)
 
 type GoGen struct {
 	langs.BaseGen
@@ -20,39 +22,43 @@ func (this *GoGen) Generate(output string, parsedThrift map[string]*parser.Thrif
 
 	outputPath, err := filepath.Abs(output)
 	if err != nil {
-		panicWithErr("fail to get absolute path for %q", output)
+		exitWithError("fail to get absolute path for %q", output)
 	}
 
 	outputPackageDirs := make([]string, 0, len(parsedThrift))
 
 	fmt.Println("##### Parsing:")
+
+	packages := map[string]*Package{}
+
+	// setup packages
 	for filename, parsed := range parsedThrift {
-		fmt.Printf("%s\n", filename)
+		pkg := newPackage(parsed)
+		packages[filename] = pkg
+	}
 
-		importPath, pkgName := genNamespace(getNamespace(parsed.Namespaces))
+	// setup includes
+	for _, pkg := range packages {
+		pkg.setupIncludes(packages)
+	}
 
-		includes := getIncludes(parsedThrift, parsed.Includes)
+	for filename, pkg := range packages {
+		fmt.Printf("##### Generating: %s\n", filename)
 
 		// make output dir
-		pkgDir := filepath.Join(outputPath, importPath)
+		pkgDir := filepath.Join(outputPath, pkg.ImportPath)
 		if err := os.MkdirAll(pkgDir, 0755); err != nil {
-			panicWithErr("fail to make package directory %s", pkgDir)
+			exitWithError("fail to make package directory %s\n", pkgDir)
 		}
 
 		outputPackageDirs = append(outputPackageDirs, pkgDir)
 
-		// output defines file
-		dataForDefinesFile := getDefinesFileData(pkgName, pkgDir, includes, parsed)
-		if err := outputFile(dataForDefinesFile.FilePath, "defines_file", dataForDefinesFile); err != nil {
-			panicWithErr("fail to write defines file %q : %s", dataForDefinesFile.FilePath, err)
+		if err := pkg.renderToFile(pkgDir, "defines", "defines_file"); err != nil {
+			exitWithError("fail to write defines file: %s\n", err)
 		}
 
-		// output webapi file
-		for _, sData := range dataForDefinesFile.Services {
-			dataForEchoModule := getEchoFileData(pkgName, pkgDir, dataForDefinesFile.Includes, sData)
-			if err := outputFile(dataForEchoModule.FilePath, "echo_module", dataForEchoModule); err != nil {
-				panicWithErr("fail to write web apis file %q : %s", dataForEchoModule.FilePath, err)
-			}
+		if err := pkg.renderToFile(pkgDir, "webapis", "echo_module"); err != nil {
+			exitWithError("fail to write webapis file: %s\n", err)
 		}
 	}
 

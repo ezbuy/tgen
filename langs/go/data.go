@@ -2,161 +2,234 @@ package gogen
 
 import (
 	"fmt"
+	"io"
+	"os"
 	"path/filepath"
-	"sort"
 	"strings"
 
 	"github.com/samuel/go-thrift/parser"
 )
 
-type definesFileData struct {
+type Package struct {
+	PkgName    string
+	ImportPath string
+
+	includes map[string]*Package
+	thrift   *parser.Thrift
+
 	TplUtils
-
-	FilePath string
-
-	Package string
-
-	// 一组 别名 与 import path 组成的二位数组
-	// 形如
-	// includes := [][2]string{
-	// 	[2]string{"Const", "github.com/ezbuy/tgen/thriftgotest/constant"},
-	// 	[2]string{"SimpleArguments", "github.com/ezbuy/tgen/thriftgotest/simpleArguments"},
-	// }
-	Includes [][2]string
-
-	Structs   []*structData
-	Services  []*serviceData
-	Constants []*parser.Constant
-
-	thrift *parser.Thrift
 }
 
-func (this *definesFileData) GetWebApiPrefix() string {
-	webapiNamespace := strings.TrimSpace(this.thrift.Namespaces["webapi"])
-	if webapiNamespace != "" {
-		webapiNamespace = "/" + strings.Replace(webapiNamespace, ".", "/", -1)
-	}
-
-	return webapiNamespace
+func newPackage(thrift *parser.Thrift) *Package {
+	pkg := &Package{}
+	pkg.setup(thrift)
+	return pkg
 }
 
-func getDefinesFileData(pkgName, pkgDir string, includes [][2]string, parsed *parser.Thrift) *definesFileData {
-	data := &definesFileData{
-		FilePath: filepath.Join(pkgDir, "gen_"+pkgName+"_defines.go"),
-		Package:  pkgName,
-		Includes: includes,
-		thrift:   parsed,
-	}
+func (this *Package) setup(thrift *parser.Thrift) {
+	namespace := thrift.Namespaces[langName]
+	this.PkgName, this.ImportPath = this.GenNamespace(namespace)
 
-	// structs data
-	structs := parsed.Structs
-	structNames := make([]string, 0, len(structs))
-	for name, _ := range structs {
-		structNames = append(structNames, name)
-	}
+	this.thrift = thrift
+}
 
-	sort.Strings(structNames)
+func (this *Package) setupIncludes(packages map[string]*Package) {
+	pkgMap := map[string]*Package{}
 
-	for _, structName := range structNames {
-		parsedStruct := structs[structName]
-
-		data.Structs = append(data.Structs, &structData{
-			Name:   structName,
-			Fields: parsedStruct.Fields,
-		})
-	}
-
-	// services data
-	services := parsed.Services
-	serviceNames := make([]string, 0, len(services))
-
-	for name, _ := range services {
-		serviceNames = append(serviceNames, name)
-	}
-
-	sort.Strings(serviceNames)
-
-	for _, serviceName := range serviceNames {
-		parsedService := services[serviceName]
-
-		sData := &serviceData{
-			Name: serviceName,
+	for includeName, filename := range this.thrift.Includes {
+		pkg, ok := packages[filename]
+		if !ok {
+			exitWithError("include thrift %q ( %s ) not found", includeName, filename)
 		}
 
-		// sort methods
-		methodNames := make([]string, 0, len(parsedService.Methods))
+		pkgMap[includeName] = pkg
+	}
 
-		for methodName, _ := range parsedService.Methods {
-			methodNames = append(methodNames, methodName)
+	this.includes = pkgMap
+}
+
+func (this *Package) Includes() map[string]*Package {
+	return this.includes
+}
+
+func (this *Package) Enums() map[string]*parser.Enum {
+	return this.thrift.Enums
+}
+
+func (this *Package) Structs() map[string]*parser.Struct {
+	return this.thrift.Structs
+}
+
+func (this *Package) Services() map[string]*parser.Service {
+	return this.thrift.Services
+}
+
+func (this *Package) Constants() map[string]*parser.Constant {
+	return this.thrift.Constants
+}
+
+func (this *Package) Typedefs() map[string]*parser.Typedef {
+	return this.thrift.Typedefs
+}
+
+func (this *Package) Exceptions() map[string]*parser.Struct {
+	return this.thrift.Exceptions
+}
+
+func (this *Package) Unions() map[string]*parser.Struct {
+	return this.thrift.Unions
+}
+
+func (this *Package) Namespaces() map[string]string {
+	return this.thrift.Namespaces
+}
+
+func (this *Package) Namespace() string {
+	return this.thrift.Namespaces[langName]
+}
+
+func (this *Package) WebApiPrefix() string {
+	namespace := this.thrift.Namespaces["webapi"]
+	if namespace != "" {
+		namespace = slash + strings.Replace(namespace, dot, slash, -1)
+	}
+
+	return namespace
+}
+
+func (this *Package) GenTypeString(fieldName string, typ, parent *parser.Type, optional bool) string {
+	if typ == nil {
+		panicWithErr("field %s with nil type", fieldName)
+	}
+
+	var str string
+
+	switch typ.Name {
+	case TypeBool, TypeByte, TypeI16, TypeI32, TypeI64, TypeDouble, TypeString:
+		if optional {
+			str = "*"
+		}
+		str += typeStrs[typ.Name]
+
+	case TypeBinary:
+		if parent != nil && typ == parent.KeyType {
+			panicWithErr("map field %s with binary key", fieldName)
+		}
+		str = typeStrs[TypeBinary]
+
+	case TypeList:
+		if parent != nil && typ == parent.KeyType {
+			panicWithErr("map field %s with list key", fieldName)
 		}
 
-		sort.Strings(methodNames)
-
-		for _, name := range methodNames {
-			sData.Methods = append(sData.Methods, parsedService.Methods[name])
+		if typ.ValueType == nil {
+			panicWithErr("list field %s with nil value type", fieldName)
 		}
 
-		data.Services = append(data.Services, sData)
-	}
+		str = fmt.Sprintf("[]%s", this.GenTypeString(fieldName, typ.ValueType, typ, false))
 
-	// constansts
-	constantNames := make([]string, 0, len(parsed.Constants))
-
-	for name, constant := range parsed.Constants {
-		if _, ok := constantValueFormat[constant.Type.Name]; !ok {
-			continue
+	case TypeMap:
+		if parent != nil && typ == parent.KeyType {
+			panicWithErr("map field %s with map key", fieldName)
 		}
 
-		constantNames = append(constantNames, name)
+		if typ.KeyType == nil {
+			panicWithErr("map field %s with nil key type", fieldName)
+		}
+
+		if typ.ValueType == nil {
+			panicWithErr("map field %s with nil value type", fieldName)
+		}
+
+		str = fmt.Sprintf("map[%s]%s",
+			this.GenTypeString(fieldName, typ.KeyType, typ, false),
+			this.GenTypeString(fieldName, typ.ValueType, typ, false),
+		)
+
+	case TypeSet:
+		// TODO: support set
+
+	default:
+		if typ.Name == "" {
+			panicWithErr("field %s without type name", fieldName)
+		}
+
+		// TODO check if is Enum, Const, TypeDef etc.
+		name := typ.Name
+		if dotIdx := strings.Index(name, "."); dotIdx != -1 {
+			name = typ.Name[:dotIdx+1] + this.UpperHead(typ.Name[dotIdx+1:])
+		}
+
+		str = "*" + name
 	}
 
-	sort.Strings(constantNames)
+	return str
+}
 
-	constants := make([]*parser.Constant, 0, len(constantNames))
-	for _, constantName := range constantNames {
-		constants = append(constants, parsed.Constants[constantName])
+func (this *Package) GenServiceMethodArguments(fields []*parser.Field) string {
+	var str string
+
+	maxIdx := len(fields) - 1
+	for idx, field := range fields {
+		str += fmt.Sprintf("%s %s", field.Name, this.GenTypeString(field.Name, field.Type, nil, field.Optional))
+		if idx != maxIdx {
+			str += ", "
+		}
 	}
 
-	data.Constants = constants
-
-	// TODO: enum, typedef, exception, ...
-	return data
+	return str
 }
 
-type structData struct {
-	TplUtils
-
-	Name   string
-	Fields []*parser.Field
-}
-
-type serviceData struct {
-	TplUtils
-
-	Name    string
-	Methods []*parser.Method
-}
-
-type echoFileData struct {
-	TplUtils
-
-	FilePath string
-
-	Includes [][2]string
-
-	Package string
-	Service *serviceData
-}
-
-func getEchoFileData(pkgName, pkgDir string, includes [][2]string, sData *serviceData) *echoFileData {
-	data := &echoFileData{
-		FilePath: filepath.Join(pkgDir, fmt.Sprintf("gen_%s_%s_web_apis.go", pkgName, sData.Name)),
-
-		Includes: includes,
-
-		Package: pkgName,
-		Service: sData,
+func (this *Package) GenServiceMethodReturn(method *parser.Method) string {
+	if method.ReturnType == nil {
+		return "error"
 	}
 
-	return data
+	return fmt.Sprintf("(%s, error)", this.GenTypeString("method return value", method.ReturnType, nil, false))
+}
+
+func (this *Package) GenWebApiServiceParams(fields []*parser.Field) string {
+	var str string
+
+	maxIdx := len(fields) - 1
+	for idx, field := range fields {
+		str += fmt.Sprintf("params.%s", this.UpperHead(field.Name))
+		if idx != maxIdx {
+			str += ", "
+		}
+	}
+
+	return str
+}
+
+func (this *Package) GenConstants(constant *parser.Constant) string {
+	format, ok := constantValueFormat[constant.Type.Name]
+	if !ok {
+		return ""
+	}
+
+	return fmt.Sprintf("%s %s = "+format, constant.Name, typeStrs[constant.Type.Name], constant.Value)
+}
+
+func (this *Package) genOutputFilename(typ string) string {
+	return fmt.Sprintf("gen_%s_%s.go", this.PkgName, typ)
+}
+
+func (this *Package) render(tplName string, wr io.Writer) error {
+	return tpl.ExecuteTemplate(wr, tplName, this)
+}
+
+func (this *Package) renderToFile(dir, typ, tplName string) error {
+	filename := this.genOutputFilename(typ)
+
+	path := filepath.Join(dir, filename)
+
+	file, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
+	if err != nil {
+		return err
+	}
+
+	defer file.Close()
+
+	return this.render(tplName, file)
 }

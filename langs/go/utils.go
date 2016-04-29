@@ -1,7 +1,9 @@
 package gogen
 
 import (
+	"bytes"
 	"fmt"
+	"io"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -9,6 +11,12 @@ import (
 
 	"github.com/ezbuy/tgen/langs"
 	"github.com/samuel/go-thrift/parser"
+)
+
+const (
+	doubleDot = ".."
+	dot       = "."
+	slash     = "/"
 )
 
 const (
@@ -46,61 +54,85 @@ var constantValueFormat = map[string]string{
 	TypeString: "%q",
 }
 
-func getNamespace(namespaces map[string]string) string {
-	if namespace, ok := namespaces[langName]; ok {
-		return namespace
-	}
+var invalidWords = map[string]bool{
+	"break":       true,
+	"case":        true,
+	"chan":        true,
+	"const":       true,
+	"continue":    true,
+	"default":     true,
+	"defer":       true,
+	"else":        true,
+	"fallthrough": true,
+	"for":         true,
+	"func":        true,
+	"go":          true,
+	"goto":        true,
+	"if":          true,
+	"import":      true,
+	"interface":   true,
+	"map":         true,
+	"package":     true,
+	"range":       true,
+	"return":      true,
+	"select":      true,
+	"struct":      true,
+	"switch":      true,
+	"type":        true,
+	"var":         true,
 
-	return ""
-}
+	"rune":    true,
+	"int":     true,
+	"int8":    true,
+	"int16":   true,
+	"int32":   true,
+	"int64":   true,
+	"uint":    true,
+	"uint8":   true,
+	"uint16":  true,
+	"uint32":  true,
+	"uint64":  true,
+	"float32": true,
+	"float64": true,
 
-func getIncludes(parsedThrift map[string]*parser.Thrift, includes map[string]string) [][2]string {
-	results := make([][2]string, 0, len(includes))
+	"close":   true,
+	"len":     true,
+	"cap":     true,
+	"new":     true,
+	"make":    true,
+	"append":  true,
+	"copy":    true,
+	"delete":  true,
+	"complex": true,
+	"real":    true,
+	"imag":    true,
+	"panic":   true,
+	"recover": true,
+	"print":   true,
+	"println": true,
 
-	// 理论上 经过 gofmt, 不会出现顺序不一致
-	for includeName, filename := range includes {
-		parsed, ok := parsedThrift[filename]
-		if !ok {
-			panicWithErr("include thrift %q not found %s", includeName, parsedThrift)
-		}
-
-		importPath, _ := genNamespace(getNamespace(parsed.Namespaces))
-
-		results = append(results, [2]string{includeName, importPath})
-	}
-
-	return results
-}
-
-func genNamespace(namespace string) (string, string) {
-	var path string
-	if strings.Index(namespace, "..") != -1 {
-		path = strings.Replace(namespace, "..", "/", -1)
-	} else {
-		path = strings.Replace(namespace, ".", "/", -1)
-	}
-	pkgName := filepath.Base(path)
-	return path, pkgName
-}
-
-func panicWithErr(format string, msg ...interface{}) {
-	panic(fmt.Errorf(format, msg...))
-}
-
-func gofmt(paths ...string) {
-	args := []string{"-l", "-w"}
-	args = append(args, paths...)
-
-	cmd := exec.Command("gofmt", args...)
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-
-	if err := cmd.Run(); err != nil {
-		fmt.Fprintf(os.Stderr, "fail to gofmt %s", err)
-	}
+	"init": true,
+	"main": true,
 }
 
 type TplUtils struct {
+}
+
+func (this *TplUtils) IsInvalidTypeName(str string) bool {
+	invalid, _ := invalidWords[str]
+	return invalid
+}
+
+func (this *TplUtils) GenNamespace(namespace string) (pkgName string, importPath string) {
+	if strings.Contains(namespace, doubleDot) {
+		importPath = strings.Replace(namespace, doubleDot, slash, -1)
+	} else {
+		importPath = strings.Replace(namespace, dot, slash, -1)
+	}
+
+	pkgName = filepath.Base(importPath)
+
+	return pkgName, importPath
 }
 
 func (this *TplUtils) UpperHead(name string) string {
@@ -110,107 +142,6 @@ func (this *TplUtils) UpperHead(name string) string {
 
 	head := name[0:1]
 	return strings.ToUpper(head) + name[1:]
-}
-
-func (this *TplUtils) GenTypeString(fieldName string, typ, parent *parser.Type, optional bool) string {
-	if typ == nil {
-		panicWithErr("field %s with nil type", fieldName)
-	}
-
-	var str string
-
-	switch typ.Name {
-	case TypeBool, TypeByte, TypeI16, TypeI32, TypeI64, TypeDouble, TypeString:
-		if optional {
-			str = "*"
-		}
-		str += typeStrs[typ.Name]
-
-	case TypeBinary:
-		if parent != nil && typ == parent.KeyType {
-			panicWithErr("map field %s with binary key", fieldName)
-		}
-		str = typeStrs[TypeBinary]
-
-	case TypeList:
-		if parent != nil && typ == parent.KeyType {
-			panicWithErr("map field %s with list key", fieldName)
-		}
-
-		if typ.ValueType == nil {
-			panicWithErr("list field %s with nil value type", fieldName)
-		}
-
-		str = fmt.Sprintf("[]%s", this.GenTypeString(fieldName, typ.ValueType, typ, false))
-
-	case TypeMap:
-		if parent != nil && typ == parent.KeyType {
-			panicWithErr("map field %s with map key", fieldName)
-		}
-
-		if typ.KeyType == nil {
-			panicWithErr("map field %s with nil key type", fieldName)
-		}
-
-		if typ.ValueType == nil {
-			panicWithErr("map field %s with nil value type", fieldName)
-		}
-
-		str = fmt.Sprintf("map[%s]%s",
-			this.GenTypeString(fieldName, typ.KeyType, typ, false),
-			this.GenTypeString(fieldName, typ.ValueType, typ, false),
-		)
-
-	case TypeSet:
-		// TODO: support set
-
-	default:
-		if typ.Name == "" {
-			panicWithErr("field %s without type name", fieldName)
-		}
-
-		// TODO check if is Enum, Const, TypeDef etc.
-		name := typ.Name
-		if dotIdx := strings.Index(name, "."); dotIdx != -1 {
-			name = typ.Name[:dotIdx+1] + this.UpperHead(typ.Name[dotIdx+1:])
-		}
-
-		str = "*" + name
-	}
-
-	return str
-}
-
-func (this *TplUtils) IsNilType(typ *parser.Type) bool {
-	return typ == nil
-}
-
-func (this *TplUtils) GenServiceMethodArguments(fields []*parser.Field) string {
-	var str string
-
-	maxIdx := len(fields) - 1
-	for idx, field := range fields {
-		str += fmt.Sprintf("%s %s", field.Name, this.GenTypeString(field.Name, field.Type, nil, field.Optional))
-		if idx != maxIdx {
-			str += ", "
-		}
-	}
-
-	return str
-}
-
-func (this *TplUtils) GenWebApiServiceParams(fields []*parser.Field) string {
-	var str string
-
-	maxIdx := len(fields) - 1
-	for idx, field := range fields {
-		str += fmt.Sprintf("params.%s", this.UpperHead(field.Name))
-		if idx != maxIdx {
-			str += ", "
-		}
-	}
-
-	return str
 }
 
 func (this *TplUtils) IsSimpleArguments(args []*parser.Field) bool {
@@ -233,11 +164,58 @@ func (this *TplUtils) IsSimpleArguments(args []*parser.Field) bool {
 	}
 }
 
-func (this *TplUtils) GenConstants(constant *parser.Constant) string {
-	format, ok := constantValueFormat[constant.Type.Name]
-	if !ok {
-		return ""
+func (this *TplUtils) IsNilType(typ *parser.Type) bool {
+	return typ == nil
+}
+
+func (this *TplUtils) FieldTagThrift(field *parser.Field) string {
+	str := fmt.Sprintf("%d", field.ID)
+
+	if field.Optional {
+		return str
 	}
 
-	return fmt.Sprintf("%s %s = "+format, constant.Name, typeStrs[constant.Type.Name], constant.Value)
+	return str + ",required"
+}
+
+func (this *TplUtils) FieldTagJson(field *parser.Field) string {
+	str := fmt.Sprintf("%s", field.Name)
+
+	if !field.Optional {
+		return str
+	}
+
+	return str + ",omitempty"
+}
+
+func gofmt(paths ...string) {
+	args := []string{"-l", "-w"}
+	args = append(args, paths...)
+
+	buf := new(bytes.Buffer)
+
+	cmd := exec.Command("gofmt", args...)
+	cmd.Stdout = buf
+	cmd.Stderr = buf
+
+	if err := cmd.Run(); err != nil {
+		fmt.Fprintf(os.Stderr, "fail to gofmt %s", err)
+		fmt.Fprintln(os.Stderr, "##### gofmt trace info #####")
+
+		if _, err := io.Copy(os.Stderr, buf); err != nil {
+			panic(err)
+		}
+
+		fmt.Fprintln(os.Stderr, "##### gofmt trace info end #####")
+		os.Exit(1)
+	}
+}
+
+func panicWithErr(format string, msg ...interface{}) {
+	panic(fmt.Errorf(format, msg...))
+}
+
+func exitWithError(format string, msg ...interface{}) {
+	fmt.Fprintf(os.Stderr, format, msg...)
+	os.Exit(1)
 }

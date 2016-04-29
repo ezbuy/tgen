@@ -1,35 +1,15 @@
-{{define "service"}}{{$utils := .TplUtils}}{{$serviceName := $utils.UpperHead .Name}}
-{{- range $method := .Methods}}
-{{if $utils.IsSimpleArguments $method.Arguments}}var _ json.Unmarshaler = &Request{{$serviceName}}Service{{$utils.UpperHead $method.Name}}Arguments{}{{end}}
+{{define "service"}}
+{{- $data := .}}
+{{- $serviceList := .Services }}
+{{- range $service := $serviceList }}
+{{- $serviceName := $data.UpperHead $service.Name}}
 
-type Request{{$serviceName}}Service{{$utils.UpperHead $method.Name}}Arguments struct {
-    {{- range $arg := $method.Arguments}}
-    {{$utils.UpperHead $arg.Name}} {{$utils.GenTypeString $arg.Name $arg.Type nil $arg.Optional}} `thrift:"{{$arg.ID}}{{if not $arg.Optional}},required{{end}}" json:"{{$arg.Name}}{{if $arg.Optional}},omitempty{{end}}"`
-    {{- end}}
-}
-{{if $utils.IsSimpleArguments $method.Arguments}}{{$firstArg := index $method.Arguments 0}}
-func (this *Request{{$serviceName}}Service{{$utils.UpperHead $method.Name}}Arguments) UnmarshalJSON(data []byte) error {
-    if err := json.Unmarshal(data, &this.{{$utils.UpperHead $firstArg.Name}}); err == nil {
-        return nil
-    }
-
-    result := struct {
-        {{$utils.UpperHead $firstArg.Name}} {{$utils.GenTypeString $firstArg.Name $firstArg.Type nil $firstArg.Optional}} `json:"{{$firstArg.Name}}{{if $firstArg.Optional}},omitempty{{end}}"`
-    }{}
-
-    err := json.Unmarshal(data, &result)
-    if err == nil {
-        this.{{$utils.UpperHead $firstArg.Name}} = result.{{$utils.UpperHead $firstArg.Name}}
-    }
-
-    return err
-}
-{{end}}
-
-{{end}}
 type {{$serviceName}}Service interface {
-    {{- range $method := .Methods}}
-    {{$utils.UpperHead $method.Name}}({{$utils.GenServiceMethodArguments $method.Arguments}}) {{if $utils.IsNilType $method.ReturnType}}error{{else}}({{$utils.GenTypeString "method return value" $method.ReturnType nil false}}, error){{end}}
+    {{- range $method := $service.Methods}}
+    {{$data.UpperHead $method.Name}}({{$data.GenServiceMethodArguments $method.Arguments}}) {{$data.GenServiceMethodReturn $method}}
     {{- end}}
 }
-{{end}}
+
+{{- end}}
+{{- end}}
+

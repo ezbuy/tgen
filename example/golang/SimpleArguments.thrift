@@ -18,3 +18,7 @@ service SimpleArguments {
     void MapArg(1: map<string, string> arg)
     void StructArg(1: StructArg arg)
 }
+
+service SimpleArguments2 {
+    void StructArg(1: StructArg arg)
+}

@@ -1,7 +1,10 @@
-{{define "struct" -}}{{$utils := .TplUtils}}
-type {{$utils.UpperHead .Name}} struct {
-    {{- range $field := .Fields}}
-    {{$utils.UpperHead $field.Name}} {{$utils.GenTypeString $field.Name $field.Type nil $field.Optional}} `thrift:"{{$field.ID}}{{if not $field.Optional}},required{{end}}" json:"{{$field.Name}}{{if $field.Optional}},omitempty{{end}}"`
+{{define "struct" -}}
+{{- $data := .}}
+{{- range $oneStruct := .Structs}}
+type {{$data.UpperHead $oneStruct.Name}} struct {
+    {{- range $field := $oneStruct.Fields}}
+    {{$data.UpperHead $field.Name}} {{.GenTypeString $field.Name $field.Type nil $field.Optional}} `thrift:"{{$data.FieldTagThrift $field}}" json:"{{$data.FieldTagJson $field}}"`
     {{- end}}
 }
 {{- end}}
+{{end}}

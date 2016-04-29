@@ -1,30 +1,74 @@
-{{define "echo_module"}}package {{.Package}}
-{{- $utils := .TplUtils}}
-{{- $service := .Service}}
-{{- $serviceName := $utils.UpperHead .Service.Name}}
+{{define "echo_module" -}}
+package {{.PkgName}}
+{{- $data := .}}
 
 import (
     "net/http"
+    "encoding/json"
 
     "github.com/ezbuy/utils/httputils/echoutils"
     "gopkg.in/labstack/echo.v1"
 )
 
-{{- $includeCount := len .Includes -}}
-{{if ne $includeCount 0}}{{template "include" .Includes -}}
-{{end}}
+{{template "include" . }}
 
-{{- range $method := $service.Methods}}{{$methodName := $utils.UpperHead $method.Name}}{{$noReturn := $utils.IsNilType $method.ReturnType}}
+var _ json.Unmarshaler
+var _ echo.Context
+var _ = http.StatusOK
+var _ = echoutils.OKMessage
+
+const WebApiPrefix = "{{.WebApiPrefix}}"
+
+{{- $serviceList := .Services }}
+{{- range $service := $serviceList }}
+{{- $serviceName := $data.UpperHead $service.Name }}
+
+{{- range $method := $service.Methods}}
+{{- $methodName := $data.UpperHead $method.Name }}
+
+{{- if $data.IsSimpleArguments $method.Arguments}}
+var _ json.Unmarshaler = &Request{{$serviceName}}Service{{$methodName}}Arguments{}
+{{- end}}
+
+type Request{{$serviceName}}Service{{$methodName}}Arguments struct {
+    {{- range $arg := $method.Arguments}}
+    {{$data.UpperHead $arg.Name}} {{$data.GenTypeString $arg.Name $arg.Type nil $arg.Optional}} `thrift:"{{$data.FieldTagThrift $arg}}" json:"{{$data.FieldTagJson $arg}}"`
+    {{- end}}
+}
+
+{{- if $data.IsSimpleArguments $method.Arguments}}
+{{- $firstArg := index $method.Arguments 0}}
+func (this *Request{{$serviceName}}Service{{$methodName}}Arguments) UnmarshalJSON(data []byte) error {
+    if err := json.Unmarshal(data, &this.{{$data.UpperHead $firstArg.Name}}); err == nil {
+        return nil
+    }
+
+    result := struct {
+        {{$data.UpperHead $firstArg.Name}} {{$data.GenTypeString $firstArg.Name $firstArg.Type nil $firstArg.Optional}} `json:"{{$data.FieldTagJson $firstArg}}"`
+    }{}
+
+    err := json.Unmarshal(data, &result)
+    if err == nil {
+        this.{{$data.UpperHead $firstArg.Name}} = result.{{$data.UpperHead $firstArg.Name}}
+    }
+
+    return err
+}
+{{- end}}
+
+{{- $noReturn := $data.IsNilType $method.ReturnType}}
 type EchoResponse{{$serviceName}}Service{{$methodName}} struct {
-    {{if not $noReturn}}Result {{$utils.GenTypeString "echo response result" $method.ReturnType nil false}}{{end}}
+    {{if not $noReturn}}Result {{$data.GenTypeString "echo response result" $method.ReturnType nil false}}{{end}}
     HTTPError *echo.HTTPError
     // TODO Exception
 }
-{{end}}
+
+{{- end}}
 
 type Echo{{$serviceName}}Service interface {
-    {{- range $method := $service.Methods}}{{$methodName := $utils.UpperHead $method.Name}}
-    {{$methodName}}(c *echo.Context, resp *EchoResponse{{$serviceName}}Service{{$methodName}}, {{$utils.GenServiceMethodArguments $method.Arguments}}) error
+    {{- range $method := $service.Methods}}
+    {{- $methodName := $data.UpperHead $method.Name}}
+    {{$methodName}}(c *echo.Context, resp *EchoResponse{{$serviceName}}Service{{$methodName}}, {{$data.GenServiceMethodArguments $method.Arguments}}) error
     {{- end}}
 }
 
@@ -34,8 +78,9 @@ func Register{{$serviceName}}ServiceAPIModule(mux *echo.Group, service Echo{{$se
     }
 
     group := mux.Group("/{{$serviceName}}")
-    {{- range $method := .Service.Methods}}
-    group.Post("/{{$utils.UpperHead $method.Name}}", mod.{{$utils.UpperHead $method.Name}})
+    {{- range $method := $service.Methods}}
+    {{- $methodName := $data.UpperHead $method.Name }}
+    group.Post("/{{$methodName}}", mod.{{$methodName}})
     {{- end}}
 }
 
@@ -43,7 +88,9 @@ type {{$serviceName}}ServiceAPIModule struct {
     service Echo{{$serviceName}}Service
 }
 
-{{range $method := .Service.Methods}}{{$methodName := $utils.UpperHead $method.Name}}{{$noReturn := $utils.IsNilType $method.ReturnType}}
+{{- range $method := $service.Methods}}
+{{- $methodName := $data.UpperHead $method.Name}}
+{{- $noReturn := $data.IsNilType $method.ReturnType}}
 func (this *{{$serviceName}}ServiceAPIModule) {{$methodName}}(c *echo.Context) error {
     {{- $argsCount := len $method.Arguments}}
     {{- if ne $argsCount 0}}
@@ -54,7 +101,7 @@ func (this *{{$serviceName}}ServiceAPIModule) {{$methodName}}(c *echo.Context) e
     }
     {{end}}
     resp := &EchoResponse{{$serviceName}}Service{{$methodName}}{}
-    err := this.service.{{$methodName}}(c, resp, {{$utils.GenWebApiServiceParams $method.Arguments}})
+    err := this.service.{{$methodName}}(c, resp, {{$data.GenWebApiServiceParams $method.Arguments}})
     
     if err != nil {
         echoutils.RequestLogger(c).Infof("service error: %s", err)
@@ -67,5 +114,6 @@ func (this *{{$serviceName}}ServiceAPIModule) {{$methodName}}(c *echo.Context) e
 
     return c.JSON(http.StatusOK, {{if not $noReturn}}resp.Result{{else}}echoutils.OKMessage{{end}})
 }
-{{end}}
-{{end}}
+{{- end}}
+{{- end}}
+{{- end}}
