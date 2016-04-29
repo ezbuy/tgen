@@ -32,7 +32,23 @@ genjavarest:
 	go build
 	./tgen gen -l java -m rest -i example/java/ShipForMe.thrift -o ./javaoutputrest
 
+gen-swift-rest: buildTpl
+	rm -rf output-swift-rest
+	go run main.go gen -l swift -m rest -i example/swift/Example.thrift -o ./output-swift-rest
+
+gen-swift-jsonrpc: buildTpl
+	rm -rf output-swift-jsonrpc
+	go run main.go gen -l swift -m jsonrpc -i example/swift/Example.thrift -o ./output-swift-jsonrpc
+
+gen-swift: gen-swift-rest gen-swift-jsonrpc
+
 clean:
 	go clean
+	rm -rf ./output-swift-rest
 	rm -rf javaoutputrest
 	rm -rf javaoutputjsonrpc
+
+build:
+	go clean
+	go build
+	open .
