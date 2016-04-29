@@ -35,6 +35,10 @@ func TestGenerate(t *testing.T) {
 			return nil
 		}
 
+		if !strings.HasSuffix(path, "Example.thrift") {
+			return nil
+		}
+
 		global.InputFile = path
 
 		parsedThrift, _, err := p.ParseFile(path)
