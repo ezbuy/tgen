@@ -35,6 +35,12 @@ func TestGenerate(t *testing.T) {
 			return nil
 		}
 
+		if !strings.HasSuffix(path, "Example.thrift") {
+			return nil
+		}
+
+		global.InputFile = path
+
 		parsedThrift, _, err := p.ParseFile(path)
 		if err != nil {
 			t.Errorf("parse error: %s\n", err.Error())
@@ -43,6 +49,10 @@ func TestGenerate(t *testing.T) {
 		gen.Generate(outdir, parsedThrift)
 
 		for f, thrift := range parsedThrift {
+			if f != global.InputFile {
+				continue
+			}
+
 			for _, s := range thrift.Structs {
 				baseSwift := &BaseSwift{Filepath: f, Thrift: thrift}
 				name := fmt.Sprintf("%s.swift", baseSwift.AssembleStructName(s.Name))

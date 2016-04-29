@@ -14,6 +14,8 @@ public final class TREExample: EzObject {
 
     public var pendingWithdrawAmount: Int = 0
 
+    public var serviceType: TREServiceType?
+
     public var unpaidAmount: Int64 = 0
 
     public var fooes: [TREFoo]?
@@ -30,12 +32,12 @@ public final class TREExample: EzObject {
             objc_int64s = int64s?.map { value in NSNumber(longLong: value) }
         }
     }
-    
+
     @objc(int64s)
     public var objc_int64s:[NSNumber]?
 
     public override var allKeys: Set<String> {
-        return ["amountAvailable", "rebateAmountAvailable", "amountPendingVerification", "pendingWithdrawAmount", "unpaidAmount", "fooes", "strs", "ints", "basics", "int64s"]
+        return ["amountAvailable", "rebateAmountAvailable", "amountPendingVerification", "pendingWithdrawAmount", "serviceType", "unpaidAmount", "fooes", "strs", "ints", "basics", "int64s"]
     }
 
     public override func fromJSON(jsonObject: AnyObject?) -> Bool {
@@ -46,6 +48,7 @@ public final class TREExample: EzObject {
         rebateAmountAvailable = dict["rebateAmountAvailable"] as? String
         amountPendingVerification = dict["amountPendingVerification"] as? Bool ?? false
         pendingWithdrawAmount = dict["pendingWithdrawAmount"] as? Int ?? 0
+        serviceType = TREServiceType(code: dict["serviceType"] as? Int)
         unpaidAmount = (dict["unpaidAmount"] as? NSNumber)?.longLongValue ?? 0
         fooes = [TREFoo](jsonObject: dict["fooes"])
         strs = dict["strs"] as? [String]
@@ -62,6 +65,7 @@ public final class TREExample: EzObject {
         dict["rebateAmountAvailable"] = rebateAmountAvailable
         dict["amountPendingVerification"] = amountPendingVerification
         dict["pendingWithdrawAmount"] = pendingWithdrawAmount
+        dict["serviceType"] = serviceType?.rawValue
         dict["unpaidAmount"] = NSNumber(longLong: unpaidAmount)
         dict["fooes"] = fooes?.toJSON()
         dict["strs"] = strs
