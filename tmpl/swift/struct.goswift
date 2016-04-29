@@ -14,7 +14,7 @@ public final class {{ .AssembleStructName .Struct.Name }}: EzObject {
             objc_{{ .Name }} = {{ .Name }}?.map { value in NSNumber(longLong: value) }
         }
     }
-    
+
     @objc({{ .Name }})
     public var objc_{{ .Name }}:[NSNumber]?
     {{- else }}
@@ -55,7 +55,11 @@ public final class {{ .AssembleStructName .Struct.Name }}: EzObject {
         {{- else if eq $t "Bool" }}
         {{ $ss.FilterPropertory .Name }} = dict["{{ .Name }}"] as? {{ $t }} ?? false
         {{- else }}
+        {{- if $ss.BaseSwift.IsEnum .Type}}
+        {{ $ss.FilterPropertory .Name }} = {{ $t }}(code: dict["{{ .Name }}"] as? Int)
+        {{- else}}
         {{ $ss.FilterPropertory .Name }} = {{ $t }}(jsonObject: dict["{{ .Name }}"])
+        {{- end}}
         {{- end }}
         {{- end }}
         {{- end }}

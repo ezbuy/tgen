@@ -46,7 +46,11 @@ public final class {{ .Service.Name }}Service: NSObject {
             {{- else if eq $t "Bool" }}
             success(responseObject as? {{ $t }} ?? false)
             {{- else }}
+            {{- if $ss.IsEnum .ReturnType}}
+            success({{ $t }}(code: responseObject as? Int)!)
+            {{- else}}
             success({{ $t }}(jsonObject: responseObject)!)
+            {{- end}}
             {{- end }}
             {{- end }}
             {{- else }}
