@@ -4,9 +4,13 @@ package {{.PkgName}}
 
 {{template "include" . }}
 
+var GoUnusedProtection__ int
+
+// generated constants 
 {{template "constant" . }}
 
-var GoUnusedProtection__ int
+// generated enums
+{{template "enum" . }}
 
 // generated structs 
 {{template "struct" . }}

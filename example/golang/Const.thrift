@@ -1,5 +1,7 @@
 namespace go github.com..ezbuy..tgen..thriftgotest..constant
 
+include "Enum.thrift";
+
 const i16 ConstI16 = 16
 const i32 ConstI32 = 32
 const i64 ConstI64 = 64

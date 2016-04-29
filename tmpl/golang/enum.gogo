@@ -1,0 +1,24 @@
+{{define "enum"}}
+{{- $data := .}}
+{{- $enumList := .Enums }}
+{{- range $enum := $enumList }}
+{{- $enumName := $data.UpperHead $enum.Name}}
+
+type {{$enumName}} int32
+
+type enum{{$enumName}}Values struct {
+    {{- range $enumVal := $enum.Values }}
+    {{- $enumValName := $data.UpperHead $enumVal.Name }}
+    {{$enumValName}} {{$enumName}}
+    {{- end}}
+}
+
+var Enum{{$enumName}}Values = enum{{$enumName}}Values {
+    {{- range $enumVal := $enum.Values }}
+    {{- $enumValName := $data.UpperHead $enumVal.Name }}
+    {{$enumValName}}: {{$enumVal.Value}},
+    {{- end}}
+}
+
+{{- end}}
+{{- end}}
