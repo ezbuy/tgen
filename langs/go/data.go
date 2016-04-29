@@ -134,13 +134,17 @@ type echoFileData struct {
 
 	FilePath string
 
+	Includes [][2]string
+
 	Package string
 	Service *serviceData
 }
 
-func getEchoFileData(pkgName, pkgDir string, sData *serviceData) *echoFileData {
+func getEchoFileData(pkgName, pkgDir string, includes [][2]string, sData *serviceData) *echoFileData {
 	data := &echoFileData{
 		FilePath: filepath.Join(pkgDir, fmt.Sprintf("gen_%s_%s_web_apis.go", pkgName, sData.Name)),
+
+		Includes: includes,
 
 		Package: pkgName,
 		Service: sData,

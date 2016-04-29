@@ -1,4 +1,7 @@
-{{define "echo_module"}}package {{.Package}}{{$utils := .TplUtils}}{{$serviceName := $utils.UpperHead .Service.Name}}
+{{define "echo_module"}}package {{.Package}}
+{{- $utils := .TplUtils}}
+{{- $service := .Service}}
+{{- $serviceName := $utils.UpperHead .Service.Name}}
 
 import (
     "net/http"
@@ -6,6 +9,24 @@ import (
     "github.com/ezbuy/utils/httputils/echoutils"
     "gopkg.in/labstack/echo.v1"
 )
+
+{{- $includeCount := len .Includes -}}
+{{if ne $includeCount 0}}{{template "include" .Includes -}}
+{{end}}
+
+{{- range $method := $service.Methods}}{{$methodName := $utils.UpperHead $method.Name}}{{$noReturn := $utils.IsNilType $method.ReturnType}}
+type EchoResponse{{$serviceName}}Service{{$methodName}} struct {
+    {{if not $noReturn}}Result {{$utils.GenTypeString "echo response result" $method.ReturnType nil false}}{{end}}
+    HTTPError *echo.HTTPError
+    // TODO Exception
+}
+{{end}}
+
+type Echo{{$serviceName}}Service interface {
+    {{- range $method := $service.Methods}}{{$methodName := $utils.UpperHead $method.Name}}
+    {{$methodName}}(c *echo.Context, resp *EchoResponse{{$serviceName}}Service{{$methodName}}, {{$utils.GenServiceMethodArguments $method.Arguments}}) error
+    {{- end}}
+}
 
 func Register{{$serviceName}}ServiceAPIModule(mux *echo.Group, service Echo{{$serviceName}}Service) {
     mod := &{{$serviceName}}ServiceAPIModule{
