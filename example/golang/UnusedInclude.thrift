@@ -3,6 +3,8 @@ namespace go github.com..ezbuy..tgen..thriftgotest..unusedInclude
 include "Const.thrift"
 include "SimpleArguments.thrift"
 include "IncludeEnum.thrift"
+include "Types.thrift"
+include "Service.thrift"
 
 service UnusedInclude {
     void Ping()

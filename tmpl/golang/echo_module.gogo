@@ -58,9 +58,11 @@ func (this *Request{{$serviceName}}Service{{$methodName}}Arguments) UnmarshalJSO
 
 {{- $noReturn := $data.IsNilType $method.ReturnType}}
 type EchoResponse{{$serviceName}}Service{{$methodName}} struct {
-    {{if not $noReturn}}Result {{$data.GenTypeString "echo response result" $method.ReturnType nil false}}{{end}}
-    HTTPError *echo.HTTPError
-    // TODO Exception
+    {{if not $noReturn}}Result {{$data.GenTypeString "echo response result" $method.ReturnType nil false}} `thrift:"0,required" json:"result"`{{end}}
+    {{- range $exception := $method.Exceptions}}
+    {{$data.UpperHead $exception.Name}} {{$data.GenTypeString $exception.Name $exception.Type nil $exception.Optional}} `thrift:"{{$data.FieldTagThrift $exception}}" json:"{{$data.FieldTagJson $exception}}"`
+    {{- end}}
+    HTTPError *echo.HTTPError `thrift:"-" json:"-"`
 }
 
 {{- end}}
@@ -104,8 +106,16 @@ func (this *{{$serviceName}}ServiceAPIModule) {{$methodName}}(c *echo.Context) e
     err := this.service.{{$methodName}}(c, resp, {{$data.GenWebApiServiceParams $method.Arguments}})
     
     if err != nil {
-        echoutils.RequestLogger(c).Infof("service error: %s", err)
-        return echoutils.InternalError
+        switch err := err.(type) {
+        {{- range $exception := $method.Exceptions}}
+        case {{$data.GenTypeString $exception.Name $exception.Type nil $exception.Optional}}:
+            return c.JSON(http.StatusOK, err)
+        {{end}}
+
+        default:
+            echoutils.RequestLogger(c).Infof("service error: %s", err)
+            return echoutils.InternalError
+        }
     }
 
     if resp.HTTPError != nil {
