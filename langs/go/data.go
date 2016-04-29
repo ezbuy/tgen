@@ -14,8 +14,16 @@ type definesFileData struct {
 
 	FilePath string
 
-	Package   string
-	Includes  [][2]string
+	Package string
+
+	// 一组 别名 与 import path 组成的二位数组
+	// 形如
+	// includes := [][2]string{
+	// 	[2]string{"Const", "github.com/ezbuy/tgen/thriftgotest/constant"},
+	// 	[2]string{"SimpleArguments", "github.com/ezbuy/tgen/thriftgotest/simpleArguments"},
+	// }
+	Includes [][2]string
+
 	Structs   []*structData
 	Services  []*serviceData
 	Constants []*parser.Constant
