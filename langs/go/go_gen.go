@@ -49,7 +49,7 @@ func (this *GoGen) Generate(output string, parsedThrift map[string]*parser.Thrif
 
 		// output webapi file
 		for _, sData := range dataForDefinesFile.Services {
-			dataForEchoModule := getEchoFileData(pkgName, pkgDir, sData)
+			dataForEchoModule := getEchoFileData(pkgName, pkgDir, dataForDefinesFile.Includes, sData)
 			if err := outputFile(dataForEchoModule.FilePath, "echo_module", dataForEchoModule); err != nil {
 				panicWithErr("fail to write web apis file %q : %s", dataForEchoModule.FilePath, err)
 			}
