@@ -64,9 +64,7 @@ type {{$serviceName}}Service interface {
 
 // 兼容 ezrpc
 type {{$serviceName}} interface {
-    {{- range $method := $service.Methods}}
-    {{$data.UpperHead $method.Name}}({{$data.GenServiceMethodArguments $method.Arguments}}) {{$data.GenServiceMethodReturn $method}}
-    {{- end}}
+    {{$serviceName}}Service
 }
 
 type {{$serviceName}}Server struct {
