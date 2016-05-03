@@ -256,6 +256,14 @@ func (this *Package) IsStructType(name string) bool {
 	return false
 }
 
+func (this *Package) MethodRequestName(service, method string) string {
+	return fmt.Sprintf("%s%sRequest", service, method)
+}
+
+func (this *Package) MethodResponseName(service, method string) string {
+	return fmt.Sprintf("%s%sResponse", service, method)
+}
+
 func (this *Package) genOutputFilename(typ string) string {
 	return fmt.Sprintf("gen_%s_%s.go", this.PkgName, typ)
 }

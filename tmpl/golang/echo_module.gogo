@@ -26,36 +26,6 @@ const WebApiPrefix = "{{.WebApiPrefix}}"
 {{- range $method := $service.Methods}}
 {{- $methodName := $data.UpperHead $method.Name }}
 
-{{- if $data.IsSimpleArguments $method.Arguments}}
-var _ json.Unmarshaler = &Request{{$serviceName}}Service{{$methodName}}Arguments{}
-{{- end}}
-
-type Request{{$serviceName}}Service{{$methodName}}Arguments struct {
-    {{- range $arg := $method.Arguments}}
-    {{$data.UpperHead $arg.Name}} {{$data.GenTypeString $arg.Name $arg.Type nil $arg.Optional}} `thrift:"{{$data.FieldTagThrift $arg}}" json:"{{$data.FieldTagJson $arg}}"`
-    {{- end}}
-}
-
-{{- if $data.IsSimpleArguments $method.Arguments}}
-{{- $firstArg := index $method.Arguments 0}}
-func (this *Request{{$serviceName}}Service{{$methodName}}Arguments) UnmarshalJSON(data []byte) error {
-    if err := json.Unmarshal(data, &this.{{$data.UpperHead $firstArg.Name}}); err == nil {
-        return nil
-    }
-
-    result := struct {
-        {{$data.UpperHead $firstArg.Name}} {{$data.GenTypeString $firstArg.Name $firstArg.Type nil $firstArg.Optional}} `json:"{{$data.FieldTagJson $firstArg}}"`
-    }{}
-
-    err := json.Unmarshal(data, &result)
-    if err == nil {
-        this.{{$data.UpperHead $firstArg.Name}} = result.{{$data.UpperHead $firstArg.Name}}
-    }
-
-    return err
-}
-{{- end}}
-
 {{- $noReturn := $data.IsNilType $method.ReturnType}}
 type EchoResponse{{$serviceName}}Service{{$methodName}} struct {
     {{if not $noReturn}}Result {{$data.GenTypeString "echo response result" $method.ReturnType nil false}} `thrift:"0,required" json:"result"`{{end}}
@@ -96,7 +66,7 @@ type {{$serviceName}}ServiceAPIModule struct {
 func (this *{{$serviceName}}ServiceAPIModule) {{$methodName}}(c *echo.Context) error {
     {{- $argsCount := len $method.Arguments}}
     {{- if ne $argsCount 0}}
-    params := &Request{{$serviceName}}Service{{$methodName}}Arguments{}
+    params := &{{$data.MethodRequestName $serviceName $methodName}}{}
 
     if err := echoutils.DecodeJSONInput(c, params); err != nil {
         return err

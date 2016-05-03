@@ -4,11 +4,103 @@
 {{- range $service := $serviceList }}
 {{- $serviceName := $data.UpperHead $service.Name}}
 
+{{- range $method := $service.Methods}}
+{{- $methodName := $data.UpperHead $method.Name}}
+
+{{- if $data.IsSimpleArguments $method.Arguments}}
+var _ json.Unmarshaler = &{{$data.MethodRequestName $serviceName $methodName}}{}
+{{- end}}
+
+type {{$data.MethodRequestName $serviceName $methodName}} struct {
+    {{- range $arg := $method.Arguments}}
+    {{$data.UpperHead $arg.Name}} {{$data.GenTypeString $arg.Name $arg.Type nil $arg.Optional}} `thrift:"{{$data.FieldTagThrift $arg}}" json:"{{$data.FieldTagJson $arg}}"`
+    {{- end}}
+}
+
+func (this *{{$data.MethodRequestName $serviceName $methodName}}) Oneway() bool {
+    return {{$method.Oneway}}
+}
+
+{{- if $data.IsSimpleArguments $method.Arguments}}
+{{- $firstArg := index $method.Arguments 0}}
+func (this *{{$data.MethodRequestName $serviceName $methodName}}) UnmarshalJSON(data []byte) error {
+    if err := json.Unmarshal(data, &this.{{$data.UpperHead $firstArg.Name}}); err == nil {
+        return nil
+    }
+
+    result := struct {
+        {{$data.UpperHead $firstArg.Name}} {{$data.GenTypeString $firstArg.Name $firstArg.Type nil $firstArg.Optional}} `json:"{{$data.FieldTagJson $firstArg}}"`
+    }{}
+
+    err := json.Unmarshal(data, &result)
+    if err == nil {
+        this.{{$data.UpperHead $firstArg.Name}} = result.{{$data.UpperHead $firstArg.Name}}
+    }
+
+    return err
+}
+{{- end}}
+
+{{- $noReturn := $data.IsNilType $method.ReturnType}}
+type {{$data.MethodResponseName $serviceName $methodName}} struct {
+    {{- if not $noReturn}}
+    Value {{$data.GenTypeString "method return" $method.ReturnType nil false}} `thrift:"0,required" json:"value"`
+    {{- end}}
+    {{- range $exception := $method.Exceptions}}
+    {{$data.UpperHead $exception.Name}} {{$data.GenTypeString $exception.Name $exception.Type nil $exception.Optional}} `thrift:"{{$data.FieldTagThrift $exception}}" json:"{{$data.FieldTagJson $exception}}"`
+    {{- end}}
+}
+
+{{- end}}
+
 type {{$serviceName}}Service interface {
     {{- range $method := $service.Methods}}
     {{$data.UpperHead $method.Name}}({{$data.GenServiceMethodArguments $method.Arguments}}) {{$data.GenServiceMethodReturn $method}}
     {{- end}}
 }
+
+// 兼容 ezrpc
+type {{$serviceName}} interface {
+    {{- range $method := $service.Methods}}
+    {{$data.UpperHead $method.Name}}({{$data.GenServiceMethodArguments $method.Arguments}}) {{$data.GenServiceMethodReturn $method}}
+    {{- end}}
+}
+
+type {{$serviceName}}Server struct {
+    Implementation {{$serviceName}}
+}
+
+{{- range $method := $service.Methods}}
+{{- $methodName := $data.UpperHead $method.Name}}
+{{- $noReturn := $data.IsNilType $method.ReturnType}}
+{{- $exceptionCount := len $method.Exceptions}}
+func (this *{{$serviceName}}Server) {{$methodName}} (params *{{$data.MethodRequestName $serviceName $methodName}}{{ if not $noReturn}}, res *{{$data.MethodResponseName $serviceName $methodName}}{{end}}) error {
+    {{if not $noReturn}}val, {{end}}err := this.Implementation.{{$methodName}}({{$data.GenWebApiServiceParams $method.Arguments}})
+
+    {{if ne $exceptionCount 0}}
+    if err != nil {
+        switch e := err.(type) {
+            {{- range $exception := $method.Exceptions}}
+            {{- $exceptionName := $data.UpperHead $exception.Name}}
+            case {{$data.GenTypeString $exception.Name $exception.Type nil $exception.Optional}}:
+                res.{{$exceptionName}} = e
+                err = nil
+            {{end}}
+
+            default:
+                return e
+        }
+    }
+    {{- end}}
+
+    {{if not $noReturn}}
+    if err == nil {
+        res.Value = val
+    }
+    {{- end}}
+    return err
+}
+{{- end}}
 
 {{- end}}
 {{- end}}
