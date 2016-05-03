@@ -7,6 +7,9 @@
 {{- range $method := $service.Methods}}
 {{- $methodName := $data.UpperHead $method.Name}}
 
+// 兼容旧代码
+type Request{{$serviceName}}Service{{$methodName}}Arguments {{$data.MethodRequestName $serviceName $methodName}}
+
 {{- if $data.IsSimpleArguments $method.Arguments}}
 var _ json.Unmarshaler = &{{$data.MethodRequestName $serviceName $methodName}}{}
 {{- end}}
