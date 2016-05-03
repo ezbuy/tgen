@@ -25,8 +25,6 @@ func (this *GoGen) Generate(output string, parsedThrift map[string]*parser.Thrif
 		exitWithError("fail to get absolute path for %q", output)
 	}
 
-	outputPackageDirs := make([]string, 0, len(parsedThrift))
-
 	fmt.Println("##### Parsing:")
 
 	packages := map[string]*Package{}
@@ -51,8 +49,6 @@ func (this *GoGen) Generate(output string, parsedThrift map[string]*parser.Thrif
 			exitWithError("fail to make package directory %s\n", pkgDir)
 		}
 
-		outputPackageDirs = append(outputPackageDirs, pkgDir)
-
 		if err := pkg.renderToFile(pkgDir, "defines", "defines_file"); err != nil {
 			exitWithError("fail to write defines file: %s\n", err)
 		}
@@ -61,9 +57,6 @@ func (this *GoGen) Generate(output string, parsedThrift map[string]*parser.Thrif
 			exitWithError("fail to write webapis file: %s\n", err)
 		}
 	}
-
-	fmt.Println("##### gofmt")
-	gofmt(outputPackageDirs...)
 }
 
 func init() {

@@ -1,11 +1,8 @@
 package gogen
 
 import (
-	"bytes"
 	"fmt"
-	"io"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"strings"
 
@@ -186,29 +183,6 @@ func (this *TplUtils) FieldTagJson(field *parser.Field) string {
 	}
 
 	return str + ",omitempty"
-}
-
-func gofmt(paths ...string) {
-	args := []string{"-l", "-w"}
-	args = append(args, paths...)
-
-	buf := new(bytes.Buffer)
-
-	cmd := exec.Command("gofmt", args...)
-	cmd.Stdout = buf
-	cmd.Stderr = buf
-
-	if err := cmd.Run(); err != nil {
-		fmt.Fprintf(os.Stderr, "fail to gofmt %s", err)
-		fmt.Fprintln(os.Stderr, "##### gofmt trace info #####")
-
-		if _, err := io.Copy(os.Stderr, buf); err != nil {
-			panic(err)
-		}
-
-		fmt.Fprintln(os.Stderr, "##### gofmt trace info end #####")
-		os.Exit(1)
-	}
 }
 
 func panicWithErr(format string, msg ...interface{}) {

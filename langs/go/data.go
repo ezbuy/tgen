@@ -1,7 +1,9 @@
 package gogen
 
 import (
+	"bytes"
 	"fmt"
+	"go/format"
 	"io"
 	"os"
 	"path/filepath"
@@ -269,7 +271,18 @@ func (this *Package) genOutputFilename(typ string) string {
 }
 
 func (this *Package) render(tplName string, wr io.Writer) error {
-	return tpl.ExecuteTemplate(wr, tplName, this)
+	buf := new(bytes.Buffer)
+	if err := tpl.ExecuteTemplate(buf, tplName, this); err != nil {
+		return err
+	}
+
+	formatted, err := format.Source(buf.Bytes())
+	if err != nil {
+		return err
+	}
+
+	_, err = io.Copy(wr, bytes.NewBuffer(formatted))
+	return err
 }
 
 func (this *Package) renderToFile(dir, typ, tplName string) error {
