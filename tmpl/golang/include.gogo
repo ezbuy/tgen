@@ -1,12 +1,15 @@
 {{define "include"}}
-
+{{- $includeList := .Includes }}
+{{- $includeCount := len $includeList -}}
+{{if ne $includeCount 0}}
 import (
-    {{- range $included := .}}
-    {{index $included 0}} "{{index $included 1}}"
+    {{- range $included := $includeList }}
+    {{$included.PkgName}} "{{$included.ImportPath}}"
     {{- end}}
 )
 
-{{- range $included := .}}
-var _ = {{index $included 0}}.GoUnusedProtection__
+{{- range $included := $includeList }}
+var _ = {{$included.PkgName}}.GoUnusedProtection__
+{{- end}}
 {{- end}}
 {{- end}}

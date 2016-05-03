@@ -1,30 +1,46 @@
-{{define "echo_module"}}package {{.Package}}
-{{- $utils := .TplUtils}}
-{{- $service := .Service}}
-{{- $serviceName := $utils.UpperHead .Service.Name}}
+{{define "echo_module" -}}
+package {{.PkgName}}
+{{- $data := .}}
 
 import (
     "net/http"
+    "encoding/json"
 
     "github.com/ezbuy/utils/httputils/echoutils"
     "gopkg.in/labstack/echo.v1"
 )
 
-{{- $includeCount := len .Includes -}}
-{{if ne $includeCount 0}}{{template "include" .Includes -}}
-{{end}}
+{{template "include" . }}
 
-{{- range $method := $service.Methods}}{{$methodName := $utils.UpperHead $method.Name}}{{$noReturn := $utils.IsNilType $method.ReturnType}}
+var _ json.Unmarshaler
+var _ echo.Context
+var _ = http.StatusOK
+var _ = echoutils.OKMessage
+
+const WebApiPrefix = "{{.WebApiPrefix}}"
+
+{{- $serviceList := .Services }}
+{{- range $service := $serviceList }}
+{{- $serviceName := $data.UpperHead $service.Name }}
+
+{{- range $method := $service.Methods}}
+{{- $methodName := $data.UpperHead $method.Name }}
+
+{{- $noReturn := $data.IsNilType $method.ReturnType}}
 type EchoResponse{{$serviceName}}Service{{$methodName}} struct {
-    {{if not $noReturn}}Result {{$utils.GenTypeString "echo response result" $method.ReturnType nil false}}{{end}}
-    HTTPError *echo.HTTPError
-    // TODO Exception
+    {{if not $noReturn}}Result {{$data.GenTypeString "echo response result" $method.ReturnType nil false}} `thrift:"0,required" json:"result"`{{end}}
+    {{- range $exception := $method.Exceptions}}
+    {{$data.UpperHead $exception.Name}} {{$data.GenTypeString $exception.Name $exception.Type nil $exception.Optional}} `thrift:"{{$data.FieldTagThrift $exception}}" json:"{{$data.FieldTagJson $exception}}"`
+    {{- end}}
+    HTTPError *echo.HTTPError `thrift:"-" json:"-"`
 }
-{{end}}
+
+{{- end}}
 
 type Echo{{$serviceName}}Service interface {
-    {{- range $method := $service.Methods}}{{$methodName := $utils.UpperHead $method.Name}}
-    {{$methodName}}(c *echo.Context, resp *EchoResponse{{$serviceName}}Service{{$methodName}}, {{$utils.GenServiceMethodArguments $method.Arguments}}) error
+    {{- range $method := $service.Methods}}
+    {{- $methodName := $data.UpperHead $method.Name}}
+    {{$methodName}}(c *echo.Context, resp *EchoResponse{{$serviceName}}Service{{$methodName}}, {{$data.GenServiceMethodArguments $method.Arguments}}) error
     {{- end}}
 }
 
@@ -34,8 +50,9 @@ func Register{{$serviceName}}ServiceAPIModule(mux *echo.Group, service Echo{{$se
     }
 
     group := mux.Group("/{{$serviceName}}")
-    {{- range $method := .Service.Methods}}
-    group.Post("/{{$utils.UpperHead $method.Name}}", mod.{{$utils.UpperHead $method.Name}})
+    {{- range $method := $service.Methods}}
+    {{- $methodName := $data.UpperHead $method.Name }}
+    group.Post("/{{$methodName}}", mod.{{$methodName}})
     {{- end}}
 }
 
@@ -43,22 +60,32 @@ type {{$serviceName}}ServiceAPIModule struct {
     service Echo{{$serviceName}}Service
 }
 
-{{range $method := .Service.Methods}}{{$methodName := $utils.UpperHead $method.Name}}{{$noReturn := $utils.IsNilType $method.ReturnType}}
+{{- range $method := $service.Methods}}
+{{- $methodName := $data.UpperHead $method.Name}}
+{{- $noReturn := $data.IsNilType $method.ReturnType}}
 func (this *{{$serviceName}}ServiceAPIModule) {{$methodName}}(c *echo.Context) error {
     {{- $argsCount := len $method.Arguments}}
     {{- if ne $argsCount 0}}
-    params := &Request{{$serviceName}}Service{{$methodName}}Arguments{}
+    params := &{{$data.MethodRequestName $serviceName $methodName}}{}
 
     if err := echoutils.DecodeJSONInput(c, params); err != nil {
         return err
     }
     {{end}}
     resp := &EchoResponse{{$serviceName}}Service{{$methodName}}{}
-    err := this.service.{{$methodName}}(c, resp, {{$utils.GenWebApiServiceParams $method.Arguments}})
+    err := this.service.{{$methodName}}(c, resp, {{$data.GenWebApiServiceParams $method.Arguments}})
     
     if err != nil {
-        echoutils.RequestLogger(c).Infof("service error: %s", err)
-        return echoutils.InternalError
+        switch err := err.(type) {
+        {{- range $exception := $method.Exceptions}}
+        case {{$data.GenTypeString $exception.Name $exception.Type nil $exception.Optional}}:
+            return c.JSON(http.StatusOK, err)
+        {{end}}
+
+        default:
+            echoutils.RequestLogger(c).Infof("service error: %s", err)
+            return echoutils.InternalError
+        }
     }
 
     if resp.HTTPError != nil {
@@ -67,5 +94,6 @@ func (this *{{$serviceName}}ServiceAPIModule) {{$methodName}}(c *echo.Context) e
 
     return c.JSON(http.StatusOK, {{if not $noReturn}}resp.Result{{else}}echoutils.OKMessage{{end}})
 }
-{{end}}
-{{end}}
+{{- end}}
+{{- end}}
+{{- end}}

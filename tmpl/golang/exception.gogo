@@ -1,0 +1,17 @@
+{{define "exception"}}
+{{- $data := .}}
+{{- range $exception := .Exceptions}}
+{{- $exceptionName := $data.UpperHead $exception.Name}}
+var _ error = &{{$exceptionName}}{}
+
+type {{$exceptionName}} struct {
+    {{- range $field := $exception.Fields}}
+    {{$data.UpperHead $field.Name}} {{$data.GenTypeString $field.Name $field.Type nil $field.Optional}} `thrift:"{{$data.FieldTagThrift $field}}" json:"{{$data.FieldTagJson $field}}"`
+    {{- end}}
+}
+
+func (this *{{$exceptionName}}) Error() string {
+    return fmt.Sprintf("%#v", this)
+}
+{{- end}}
+{{end}}

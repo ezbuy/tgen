@@ -20,6 +20,9 @@ func init() {
 		"tmpl/golang/include.gogo",
 		"tmpl/golang/struct.gogo",
 		"tmpl/golang/service.gogo",
+		"tmpl/golang/constant.gogo",
+		"tmpl/golang/enum.gogo",
+		"tmpl/golang/exception.gogo",
 		"tmpl/golang/defines_file.gogo",
 		"tmpl/golang/echo_module.gogo",
 	}

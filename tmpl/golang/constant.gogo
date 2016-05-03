@@ -1,0 +1,12 @@
+{{define "constant"}}
+{{- $data := .}}
+{{- $constantList := .Constants}}
+{{- $constantCount := len $constantList -}}
+{{if ne $constantCount 0}}
+const (
+    {{range $constant := $constantList -}}
+    {{$data.GenConstants $constant}}
+    {{end -}}
+)
+{{- end}}
+{{- end}}
