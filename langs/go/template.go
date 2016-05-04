@@ -23,6 +23,7 @@ func init() {
 		"tmpl/golang/constant.gogo",
 		"tmpl/golang/enum.gogo",
 		"tmpl/golang/exception.gogo",
+		"tmpl/golang/rpc_client.gogo",
 		"tmpl/golang/defines_file.gogo",
 		"tmpl/golang/echo_module.gogo",
 	}
