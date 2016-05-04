@@ -1,0 +1,55 @@
+{{- define "rpc_client"}}
+{{- $data := .}}
+type RPCClient interface {
+    Call(method string, request interface{}, response interface{}) error
+}
+
+{{- range $service := .Services }}
+{{- $serviceName := $data.UpperHead $service.Name}}
+type {{$serviceName}}Client struct {
+    Client RPCClient
+}
+
+{{- range $method := $service.Methods}}
+{{- $methodName := $data.UpperHead $method.Name}}
+{{- $noReturn := $data.IsNilType $method.ReturnType}}
+{{- $exceptionCount := len $method.Exceptions}}
+func (this *{{$serviceName}}Client) {{$methodName}}({{$data.GenServiceMethodArguments $method.Arguments}}) {{$data.GenServiceMethodReturn $method}} {
+    request := &{{$data.MethodRequestName $serviceName $methodName}}{
+        {{- range $arg := $method.Arguments}}
+        {{$data.UpperHead $arg.Name}}: {{$arg.Name}},
+        {{- end}}
+    }
+
+    var response interface{} = nil
+    {{if not $noReturn}}
+    resp := &{{$data.MethodResponseName $serviceName $methodName}}{}
+    if !request.Oneway() {
+        response = resp
+    }
+    {{- end}}
+
+    err := this.Client.Call("{{$methodName}}", request, response)
+    {{- if $noReturn}}
+    return err
+    {{- else}}
+    {{- if ne $exceptionCount 0}}
+    switch {
+    {{- range $exception := $method.Exceptions}}
+    {{- $exceptionName := $data.UpperHead $exception.Name}}
+    case resp.{{$exceptionName}} != nil:
+        err = resp.{{$exceptionName}}
+    {{end}}
+    }
+    {{- end}}
+
+    ret := resp.Value
+
+    return ret, err
+    {{- end}}
+}
+{{end}}
+
+{{- end}}
+
+{{- end}}
