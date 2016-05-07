@@ -118,7 +118,7 @@ func tmplGolangDefines_fileGogo() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "tmpl/golang/defines_file.gogo", size: 469, mode: os.FileMode(420), modTime: time.Unix(1462604523, 0)}
+	info := bindataFileInfo{name: "tmpl/golang/defines_file.gogo", size: 469, mode: os.FileMode(420), modTime: time.Unix(1462610709, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
