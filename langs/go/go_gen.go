@@ -5,6 +5,7 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/ezbuy/tgen/global"
 	"github.com/ezbuy/tgen/langs"
 	"github.com/samuel/go-thrift/parser"
 )
@@ -40,22 +41,25 @@ func (this *GoGen) Generate(output string, parsedThrift map[string]*parser.Thrif
 		pkg.setupIncludes(packages)
 	}
 
-	for filename, pkg := range packages {
-		fmt.Printf("##### Generating: %s\n", filename)
+	targetPkg, ok := packages[global.InputFile]
+	if !ok {
+		exitWithError("target package for %q not found in %#v", global.InputFile, packages)
+	}
 
-		// make output dir
-		pkgDir := filepath.Join(outputPath, pkg.ImportPath)
-		if err := os.MkdirAll(pkgDir, 0755); err != nil {
-			exitWithError("fail to make package directory %s\n", pkgDir)
-		}
+	fmt.Printf("##### Generating: %s\n", global.InputFile)
 
-		if err := pkg.renderToFile(pkgDir, "defines", "defines_file"); err != nil {
-			exitWithError("fail to write defines file: %s\n", err)
-		}
+	// make output dir
+	pkgDir := filepath.Join(outputPath, targetPkg.ImportPath)
+	if err := os.MkdirAll(pkgDir, 0755); err != nil {
+		exitWithError("fail to make package directory %s\n", pkgDir)
+	}
 
-		if err := pkg.renderToFile(pkgDir, "webapis", "echo_module"); err != nil {
-			exitWithError("fail to write webapis file: %s\n", err)
-		}
+	if err := targetPkg.renderToFile(pkgDir, "defines", "defines_file"); err != nil {
+		exitWithError("fail to write defines file: %s\n", err)
+	}
+
+	if err := targetPkg.renderToFile(pkgDir, "webapis", "echo_module"); err != nil {
+		exitWithError("fail to write webapis file: %s\n", err)
 	}
 }
 
