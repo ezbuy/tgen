@@ -4,7 +4,7 @@
 {{if ne $includeCount 0}}
 import (
     {{- range $included := $includeList }}
-    {{$included.PkgName}} "{{$included.ImportPath}}"
+    {{$included.PkgName}} "{{$included.FullImportPath}}"
     {{- end}}
 )
 

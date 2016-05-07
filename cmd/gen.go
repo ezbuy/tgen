@@ -52,6 +52,7 @@ var genCmd = &cobra.Command{
 
 		global.InputFile = f
 		global.Mode = mode
+		global.NamespacePrefix = namespacePrefix
 
 		p := &parser.Parser{}
 		parsedThrift, _, err := p.ParseFile(input)
@@ -74,6 +75,7 @@ var genCmd = &cobra.Command{
 }
 
 var lang string
+var namespacePrefix string
 var mode string
 var input string
 var output string
@@ -86,6 +88,7 @@ func init() {
 	// Cobra supports Persistent Flags which will work for this command
 	// and all subcommands, e.g.:
 	genCmd.PersistentFlags().StringVarP(&lang, "lang", "l", "", "language")
+	genCmd.PersistentFlags().StringVarP(&namespacePrefix, "prefix", "p", "", "namespace prefix")
 	genCmd.PersistentFlags().StringVarP(&mode, "mode", "m", "", "mode: rest or jsonrpc")
 	genCmd.PersistentFlags().StringVarP(&input, "input", "i", "", "input file")
 	genCmd.PersistentFlags().StringVarP(&output, "output", "o", "", "output path")

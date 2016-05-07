@@ -7,3 +7,4 @@ const (
 
 var Mode string
 var InputFile string
+var NamespacePrefix string

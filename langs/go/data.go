@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/ezbuy/tgen/global"
 	"github.com/samuel/go-thrift/parser"
 )
 
@@ -84,6 +85,13 @@ func (this *Package) Unions() map[string]*parser.Struct {
 
 func (this *Package) Namespaces() map[string]string {
 	return this.thrift.Namespaces
+}
+
+func (this *Package) FullImportPath() string {
+	if global.NamespacePrefix != "" {
+		return global.NamespacePrefix + "/" + this.ImportPath
+	}
+	return this.ImportPath
 }
 
 func (this *Package) Namespace() string {
