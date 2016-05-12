@@ -54,6 +54,7 @@ func Register{{$serviceName}}ServiceAPIModule(mux *echo.Group, service Echo{{$se
     {{- $methodName := $data.UpperHead $method.Name }}
     group.Post("/{{$methodName}}", mod.{{$methodName}})
     {{- end}}
+    group.Get("/health/ping", mod.healthPing)
 }
 
 type {{$serviceName}}ServiceAPIModule struct {
@@ -95,5 +96,10 @@ func (this *{{$serviceName}}ServiceAPIModule) {{$methodName}}(c *echo.Context) e
     return c.JSON(http.StatusOK, {{if not $noReturn}}resp.Result{{else}}echoutils.OKMessage{{end}})
 }
 {{- end}}
+
+func (this *{{$serviceName}}ServiceAPIModule) healthPing(c *echo.Context) error {
+    return c.JSON(http.StatusOK, "{{$serviceName}}")
+}
+
 {{- end}}
 {{- end}}
