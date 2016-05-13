@@ -58,8 +58,18 @@ func (this *GoGen) Generate(output string, parsedThrift map[string]*parser.Thrif
 		exitWithError("fail to write defines file: %s\n", err)
 	}
 
-	if err := targetPkg.renderToFile(pkgDir, "webapis", "echo_module"); err != nil {
-		exitWithError("fail to write webapis file: %s\n", err)
+	if global.GenRpcClient {
+		fmt.Printf("##### Generating Rpc Client File")
+		if err := targetPkg.renderToFile(pkgDir, "rpc_client", "rpc_client"); err != nil {
+			exitWithError("fail to write rpcclient file: %s\n", err)
+		}
+	}
+
+	if global.GenWebApi {
+		fmt.Printf("##### Generating Rpc WebApis File")
+		if err := targetPkg.renderToFile(pkgDir, "webapis", "echo_module"); err != nil {
+			exitWithError("fail to write webapis file: %s\n", err)
+		}
 	}
 }
 

@@ -75,7 +75,7 @@ type {{$serviceName}}Server struct {
 {{- $methodName := $data.UpperHead $method.Name}}
 {{- $noReturn := $data.IsNilType $method.ReturnType}}
 {{- $exceptionCount := len $method.Exceptions}}
-func (this *{{$serviceName}}Server) {{$methodName}} (params *{{$data.MethodRequestName $serviceName $methodName}}{{ if not $noReturn}}, res *{{$data.MethodResponseName $serviceName $methodName}}{{end}}) error {
+func (this *{{$serviceName}}Server) {{$methodName}} (params *{{$data.MethodRequestName $serviceName $methodName}}, res *{{$data.MethodResponseName $serviceName $methodName}}) error {
     {{if not $noReturn}}val, {{end}}err := this.Implementation.{{$methodName}}({{$data.GenWebApiServiceParams $method.Arguments}})
 
     {{if ne $exceptionCount 0}}

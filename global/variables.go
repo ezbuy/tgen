@@ -8,3 +8,5 @@ const (
 var Mode string
 var InputFile string
 var NamespacePrefix string
+var GenWebApi bool
+var GenRpcClient bool

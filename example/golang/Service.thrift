@@ -9,4 +9,5 @@ service TestService {
     bool ThrowException2(1:i32 arg) throws (1:Types.ExceptionsTest1 failure1, 2:Types.ExceptionsTest2 failure2)
     oneway void OneWayRequest()
     oneway void OneWayRequestWithArg(1:i32 arg)
+    oneway i32 OneWayRequestWithReturn()
 }
