@@ -1,4 +1,8 @@
 {{- define "rpc_client"}}
+package {{.PkgName}}
+
+{{template "include" . }}
+
 {{- $data := .}}
 type RPCClient interface {
     Call(method string, request interface{}, response interface{}) error

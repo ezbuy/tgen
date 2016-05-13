@@ -53,6 +53,8 @@ var genCmd = &cobra.Command{
 		global.InputFile = f
 		global.Mode = mode
 		global.NamespacePrefix = namespacePrefix
+		global.GenWebApi = genWebApi
+		global.GenRpcClient = genRpcCli
 
 		p := &parser.Parser{}
 		parsedThrift, _, err := p.ParseFile(input)
@@ -77,6 +79,8 @@ var genCmd = &cobra.Command{
 var lang string
 var namespacePrefix string
 var mode string
+var genWebApi bool
+var genRpcCli bool
 var input string
 var output string
 
@@ -90,6 +94,8 @@ func init() {
 	genCmd.PersistentFlags().StringVarP(&lang, "lang", "l", "", "language")
 	genCmd.PersistentFlags().StringVarP(&namespacePrefix, "prefix", "p", "", "namespace prefix")
 	genCmd.PersistentFlags().StringVarP(&mode, "mode", "m", "", "mode: rest or jsonrpc")
+	genCmd.PersistentFlags().BoolVarP(&genWebApi, "webapi", "w", true, "generate webapi file(default true)")
+	genCmd.PersistentFlags().BoolVarP(&genRpcCli, "rpccli", "r", false, "generate rpc client file(default false)")
 	genCmd.PersistentFlags().StringVarP(&input, "input", "i", "", "input file")
 	genCmd.PersistentFlags().StringVarP(&output, "output", "o", "", "output path")
 

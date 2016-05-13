@@ -27,8 +27,5 @@ var _ json.Unmarshaler
 // generated exceptions
 {{template "exception" . }}
 
-// generated client
-{{template "rpc_client" . }}
-
 {{end}}
 

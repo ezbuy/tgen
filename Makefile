@@ -19,9 +19,9 @@ test-go-gen:
 	./tgen gen -l go -i example/golang/Const.thrift -o ../../../
 	./tgen gen -l go -i example/golang/IncludeEnum.thrift -o ../../../
 	./tgen gen -l go -i example/golang/Types.thrift -o ../../../
-	./tgen gen -l go -i example/golang/Service.thrift -o ../../../
+	./tgen gen -l go -r -i example/golang/Service.thrift -o ../../../
 	./tgen gen -l go -i example/golang/SimpleArguments.thrift -o ../../../
-	./tgen gen -l go -i example/golang/UnusedInclude.thrift -o ../../../
+	./tgen gen -l go -w=false -i example/golang/UnusedInclude.thrift -o ../../../
 	go install github.com/ezbuy/tgen/thriftgotest/...
 
 buildTpl:
