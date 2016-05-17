@@ -219,7 +219,7 @@ func tmplGolangRpc_clientGogo() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "tmpl/golang/rpc_client.gogo", size: 1557, mode: os.FileMode(420), modTime: time.Unix(1463127702, 0)}
+	info := bindataFileInfo{name: "tmpl/golang/rpc_client.gogo", size: 1557, mode: os.FileMode(420), modTime: time.Unix(1463202985, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -239,7 +239,7 @@ func tmplGolangServiceGogo() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "tmpl/golang/service.gogo", size: 3712, mode: os.FileMode(420), modTime: time.Unix(1463126853, 0)}
+	info := bindataFileInfo{name: "tmpl/golang/service.gogo", size: 3712, mode: os.FileMode(420), modTime: time.Unix(1463202985, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
