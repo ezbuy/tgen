@@ -24,6 +24,10 @@ test-go-gen:
 	./tgen gen -l go -w=false -i example/golang/UnusedInclude.thrift -o ../../../
 	go install github.com/ezbuy/tgen/thriftgotest/...
 
+test-go-ezrpc: test-go-gen
+	ezrpc gen -l go -i example/golang/Service.thrift -o ../../../
+	go install github.com/ezbuy/tgen/thriftgotest/...
+
 buildTpl:
 	go-bindata -o tmpl/bindata.go -ignore bindata.go -pkg tmpl tmpl/*
 
