@@ -1,6 +1,5 @@
 tgen
 */gen_*.go
-thriftgotest/*
 .DS_Store
 *.sublime-project
 *.sublime-workspace
