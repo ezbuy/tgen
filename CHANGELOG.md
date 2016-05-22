@@ -1,5 +1,9 @@
 ### tgen 更新记录
 
+#### v0.0.6
+##### 增加
+-   [issue50](https://github.com/ezbuy/tgen/issues/50)
+
 #### v0.0.5
 ##### 修复
 -   定义为 Oneway 的方法, 不需要 res 参数
