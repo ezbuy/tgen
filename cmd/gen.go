@@ -55,6 +55,7 @@ var genCmd = &cobra.Command{
 		global.NamespacePrefix = namespacePrefix
 		global.GenWebApi = genWebApi
 		global.GenRpcClient = genRpcCli
+		global.ValidateParams = validateParams
 
 		p := &parser.Parser{}
 		parsedThrift, _, err := p.ParseFile(input)
@@ -83,6 +84,7 @@ var genWebApi bool
 var genRpcCli bool
 var input string
 var output string
+var validateParams bool
 
 func init() {
 	RootCmd.AddCommand(genCmd)
@@ -98,6 +100,7 @@ func init() {
 	genCmd.PersistentFlags().BoolVarP(&genRpcCli, "rpccli", "r", false, "generate rpc client file(default false)")
 	genCmd.PersistentFlags().StringVarP(&input, "input", "i", "", "input file")
 	genCmd.PersistentFlags().StringVarP(&output, "output", "o", "", "output path")
+	genCmd.PersistentFlags().BoolVarP(&validateParams, "validate", "", false, "validate service method params (default false)")
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:

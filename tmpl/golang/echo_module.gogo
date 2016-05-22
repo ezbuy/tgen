@@ -72,7 +72,18 @@ func (this *{{$serviceName}}ServiceAPIModule) {{$methodName}}(c *echo.Context) e
     if err := echoutils.DecodeJSONInput(c, params); err != nil {
         return err
     }
+
+    {{- if $data.ValidateParams}}
+    {{- range $arg := $method.Arguments}}
+    {{if $data.IsStruct $arg.Type}}
+    if valid := params.{{$data.UpperHead $arg.Name}}.Valid(); valid == false {
+        return echo.NewHTTPError(http.StatusBadRequest, "one or more required fields in {{$arg.Name}} not found")
+    }
+    {{- end}}
+    {{- end}}
+    {{- end}}
     {{end}}
+
     resp := &EchoResponse{{$serviceName}}Service{{$methodName}}{}
     err := this.service.{{$methodName}}(c, resp, {{$data.GenWebApiServiceParams $method.Arguments}})
     

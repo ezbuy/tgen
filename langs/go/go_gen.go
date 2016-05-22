@@ -66,7 +66,7 @@ func (this *GoGen) Generate(output string, parsedThrift map[string]*parser.Thrif
 	}
 
 	if global.GenWebApi {
-		fmt.Println("##### Generating Rpc WebApis File")
+		fmt.Println("##### Generating WebApis File")
 		if err := targetPkg.renderToFile(pkgDir, "webapis", "echo_module"); err != nil {
 			exitWithError("fail to write webapis file: %s\n", err)
 		}
