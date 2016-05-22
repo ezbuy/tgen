@@ -281,9 +281,11 @@ func (this *Package) IsStruct(typ *parser.Type) bool {
 		name = pieces[1]
 
 		// 找到指定的 package
-		if pkg, _ = this.includes[pieces[0]]; pkg == nil {
-			return false
-		}
+		pkg, _ = this.includes[pieces[0]]
+	}
+
+	if pkg == nil {
+		return false
 	}
 
 	return pkg.isStructType(name)
