@@ -22,3 +22,7 @@ service TestService2 {
     bool DirectSomeMethod()
     oneway void DirectOnSomeMethod2()
 }
+
+service TestServiceValid {
+    bool IsValid(1:Types.NestedArg arg1, 2:Types.NestedArg arg2)
+}

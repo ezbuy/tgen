@@ -1,10 +1,27 @@
 {{define "struct" -}}
 {{- $data := .}}
 {{- range $oneStruct := .Structs}}
-type {{$data.UpperHead $oneStruct.Name}} struct {
+{{- $structName := $data.UpperHead $oneStruct.Name}}
+type {{$structName}} struct {
     {{- range $field := $oneStruct.Fields}}
     {{$data.UpperHead $field.Name}} {{$data.GenTypeString $field.Name $field.Type nil $field.Optional}} `thrift:"{{$data.FieldTagThrift $field}}" json:"{{$data.FieldTagJson $field}}"`
     {{- end}}
 }
-{{- end}}
+
+func (this *{{$structName}}) Valid() bool {
+    if this == nil {
+        return false
+    }
+
+    {{- range $field := $oneStruct.Fields}}
+    {{if and (not $field.Optional) ($data.IsStruct $field.Type)}}
+    if valid := this.{{$data.UpperHead $field.Name}}.Valid(); valid == false {
+        return false
+    }
+    {{- end}}
+    {{- end}}
+
+    return true
+}
+{{end}}
 {{end}}

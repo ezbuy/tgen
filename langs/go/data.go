@@ -21,6 +21,8 @@ type Package struct {
 	thrift   *parser.Thrift
 
 	TplUtils
+
+	ValidateParams bool
 }
 
 func newPackage(thrift *parser.Thrift) *Package {
@@ -34,6 +36,8 @@ func (this *Package) setup(thrift *parser.Thrift) {
 	this.PkgName, this.ImportPath = this.GenNamespace(namespace)
 
 	this.thrift = thrift
+
+	this.ValidateParams = global.ValidateParams
 }
 
 func (this *Package) setupIncludes(packages map[string]*Package) {
@@ -186,7 +190,7 @@ func (this *Package) GenTypeString(fieldName string, typ, parent *parser.Type, o
 		}
 
 		// 对于实际是 Struct 的类型, 统一使用指针
-		if pkg.IsStructType(name) {
+		if pkg.isStructType(name) {
 			usePtr = true
 		}
 
@@ -249,7 +253,43 @@ func (this *Package) GenConstants(constant *parser.Constant) string {
 	return fmt.Sprintf("%s %s = "+format, constant.Name, typeStrs[constant.Type.Name], constant.Value)
 }
 
-func (this *Package) IsStructType(name string) bool {
+func (this *Package) IsStruct(typ *parser.Type) bool {
+	name := typ.Name
+
+	switch name {
+	case TypeBool,
+		TypeByte,
+		TypeI16,
+		TypeI32,
+		TypeI64,
+		TypeDouble,
+		TypeString,
+		TypeBinary,
+		TypeList,
+		TypeMap,
+		TypeSet:
+
+		return false
+	}
+
+	pkg := this
+
+	// 形为 <include>.<typeName>
+	pieces := strings.Split(name, dot)
+
+	if len(pieces) > 1 {
+		name = pieces[1]
+
+		// 找到指定的 package
+		if pkg, _ = this.includes[pieces[0]]; pkg == nil {
+			return false
+		}
+	}
+
+	return pkg.isStructType(name)
+}
+
+func (this *Package) isStructType(name string) bool {
 	if _, ok := this.thrift.Structs[name]; ok {
 		return true
 	}
