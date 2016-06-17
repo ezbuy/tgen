@@ -1,5 +1,9 @@
 ### tgen 更新记录
 
+#### v0.0.7
+##### 修复
+-   SomeServer 实现中, 返回的 err 不为 nil, 也需要对 SomeResponse.Value 进行赋值
+
 #### v0.0.6
 ##### 增加
 -   [issue50](https://github.com/ezbuy/tgen/issues/50)

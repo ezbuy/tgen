@@ -11,5 +11,5 @@ func Version() string {
 const (
 	versionMajor = 0
 	versionMinor = 0
-	versionPatch = 6
+	versionPatch = 7
 )
