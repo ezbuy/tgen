@@ -78,6 +78,10 @@ type {{$serviceName}}Server struct {
 func (this *{{$serviceName}}Server) {{$methodName}} (params *{{$data.MethodRequestName $serviceName $methodName}}{{if not $method.Oneway}}, res *{{$data.MethodResponseName $serviceName $methodName}}{{end}}) error {
     {{if not $noReturn}}val, {{end}}err := this.Implementation.{{$methodName}}({{$data.GenWebApiServiceParams $method.Arguments}})
 
+    {{if not $noReturn}}
+    res.Value = val
+    {{- end}}
+
     {{if ne $exceptionCount 0}}
     if err != nil {
         switch e := err.(type) {
@@ -94,11 +98,6 @@ func (this *{{$serviceName}}Server) {{$methodName}} (params *{{$data.MethodReque
     }
     {{- end}}
 
-    {{if not $noReturn}}
-    if err == nil {
-        res.Value = val
-    }
-    {{- end}}
     return err
 }
 {{- end}}
