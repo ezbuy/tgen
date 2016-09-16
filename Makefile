@@ -56,6 +56,10 @@ gen-swift-jsonrpc: buildTpl
 
 gen-swift: gen-swift-rest gen-swift-jsonrpc
 
+genjavascriptrest: buildTpl
+	go build
+	./tgen gen -l javascript -m rest -i example/javascript/FlashSales.thrift -o ./javascriptoutputrest
+
 clean:
 	go clean
 	rm -rf ./output-swift-rest

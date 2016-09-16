@@ -13,6 +13,8 @@
 // tmpl/java/jsonrpc_struct.gojava
 // tmpl/java/rest_service.gojava
 // tmpl/java/rest_struct.gojava
+// tmpl/javascript/jsonrpc_service.gojavascript
+// tmpl/javascript/rest_service.gojavascript
 // tmpl/swift/enum.goswift
 // tmpl/swift/jsonrpc_service.goswift
 // tmpl/swift/rest_service.goswift
@@ -99,7 +101,7 @@ func tmplGolangConstantGogo() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "tmpl/golang/constant.gogo", size: 268, mode: os.FileMode(420), modTime: time.Unix(1462329564, 0)}
+	info := bindataFileInfo{name: "tmpl/golang/constant.gogo", size: 268, mode: os.FileMode(420), modTime: time.Unix(1473992908, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -119,7 +121,7 @@ func tmplGolangDefines_fileGogo() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "tmpl/golang/defines_file.gogo", size: 469, mode: os.FileMode(420), modTime: time.Unix(1463126645, 0)}
+	info := bindataFileInfo{name: "tmpl/golang/defines_file.gogo", size: 469, mode: os.FileMode(420), modTime: time.Unix(1473992908, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -139,7 +141,7 @@ func tmplGolangEcho_moduleGogo() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "tmpl/golang/echo_module.gogo", size: 3787, mode: os.FileMode(420), modTime: time.Unix(1466130686, 0)}
+	info := bindataFileInfo{name: "tmpl/golang/echo_module.gogo", size: 3787, mode: os.FileMode(420), modTime: time.Unix(1473992908, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -159,7 +161,7 @@ func tmplGolangEnumGogo() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "tmpl/golang/enum.gogo", size: 590, mode: os.FileMode(420), modTime: time.Unix(1462329564, 0)}
+	info := bindataFileInfo{name: "tmpl/golang/enum.gogo", size: 590, mode: os.FileMode(420), modTime: time.Unix(1473992908, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -179,7 +181,7 @@ func tmplGolangExceptionGogo() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "tmpl/golang/exception.gogo", size: 554, mode: os.FileMode(420), modTime: time.Unix(1462329564, 0)}
+	info := bindataFileInfo{name: "tmpl/golang/exception.gogo", size: 554, mode: os.FileMode(420), modTime: time.Unix(1473992908, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -199,7 +201,7 @@ func tmplGolangIncludeGogo() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "tmpl/golang/include.gogo", size: 368, mode: os.FileMode(420), modTime: time.Unix(1463125965, 0)}
+	info := bindataFileInfo{name: "tmpl/golang/include.gogo", size: 368, mode: os.FileMode(420), modTime: time.Unix(1473992908, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -219,7 +221,7 @@ func tmplGolangRpc_clientGogo() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "tmpl/golang/rpc_client.gogo", size: 1557, mode: os.FileMode(420), modTime: time.Unix(1463202985, 0)}
+	info := bindataFileInfo{name: "tmpl/golang/rpc_client.gogo", size: 1557, mode: os.FileMode(420), modTime: time.Unix(1473992908, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -239,7 +241,7 @@ func tmplGolangServiceGogo() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "tmpl/golang/service.gogo", size: 3715, mode: os.FileMode(420), modTime: time.Unix(1466131326, 0)}
+	info := bindataFileInfo{name: "tmpl/golang/service.gogo", size: 3715, mode: os.FileMode(420), modTime: time.Unix(1473992908, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -259,7 +261,7 @@ func tmplGolangStructGogo() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "tmpl/golang/struct.gogo", size: 774, mode: os.FileMode(420), modTime: time.Unix(1466130686, 0)}
+	info := bindataFileInfo{name: "tmpl/golang/struct.gogo", size: 774, mode: os.FileMode(420), modTime: time.Unix(1473992908, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -279,7 +281,7 @@ func tmplJavaJsonrpc_serviceGojava() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "tmpl/java/jsonrpc_service.gojava", size: 4308, mode: os.FileMode(420), modTime: time.Unix(1458736724, 0)}
+	info := bindataFileInfo{name: "tmpl/java/jsonrpc_service.gojava", size: 4308, mode: os.FileMode(420), modTime: time.Unix(1473992908, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -299,7 +301,7 @@ func tmplJavaJsonrpc_structGojava() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "tmpl/java/jsonrpc_struct.gojava", size: 612, mode: os.FileMode(420), modTime: time.Unix(1458736724, 0)}
+	info := bindataFileInfo{name: "tmpl/java/jsonrpc_struct.gojava", size: 612, mode: os.FileMode(420), modTime: time.Unix(1473992908, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -319,7 +321,7 @@ func tmplJavaRest_serviceGojava() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "tmpl/java/rest_service.gojava", size: 4380, mode: os.FileMode(420), modTime: time.Unix(1460537907, 0)}
+	info := bindataFileInfo{name: "tmpl/java/rest_service.gojava", size: 4380, mode: os.FileMode(420), modTime: time.Unix(1473992908, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -339,7 +341,47 @@ func tmplJavaRest_structGojava() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "tmpl/java/rest_struct.gojava", size: 612, mode: os.FileMode(420), modTime: time.Unix(1460537907, 0)}
+	info := bindataFileInfo{name: "tmpl/java/rest_struct.gojava", size: 612, mode: os.FileMode(420), modTime: time.Unix(1473992908, 0)}
+	a := &asset{bytes: bytes, info: info}
+	return a, nil
+}
+
+var _tmplJavascriptJsonrpc_serviceGojavascript = []byte("\x1f\x8b\x08\x00\x00\x09\x6e\x88\x00\xff\x01\x00\x00\xff\xff\x00\x00\x00\x00\x00\x00\x00\x00")
+
+func tmplJavascriptJsonrpc_serviceGojavascriptBytes() ([]byte, error) {
+	return bindataRead(
+		_tmplJavascriptJsonrpc_serviceGojavascript,
+		"tmpl/javascript/jsonrpc_service.gojavascript",
+	)
+}
+
+func tmplJavascriptJsonrpc_serviceGojavascript() (*asset, error) {
+	bytes, err := tmplJavascriptJsonrpc_serviceGojavascriptBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "tmpl/javascript/jsonrpc_service.gojavascript", size: 0, mode: os.FileMode(420), modTime: time.Unix(1474006122, 0)}
+	a := &asset{bytes: bytes, info: info}
+	return a, nil
+}
+
+var _tmplJavascriptRest_serviceGojavascript = []byte("\x1f\x8b\x08\x00\x00\x09\x6e\x88\x00\xff\xa4\x92\xc1\x8e\xda\x30\x10\x86\xef\x7e\x8a\xd1\x0a\x89\x04\x41\xb8\xaf\x44\x55\xda\xed\x61\x2b\x75\x85\xca\x4a\x3d\x0f\xf1\x40\xd2\x26\x76\x34\x9e\x2c\x20\x9a\x77\xaf\xed\x44\x90\xb6\x6a\xf7\xb0\xbe\x24\x9e\xf9\x67\xfc\xfd\xf6\x2c\x97\xf0\x7e\x5f\xd9\xa3\x5a\xce\x66\x0a\x66\xf0\x5c\x94\x0e\xf6\x65\x45\xe0\xbf\xd8\x8a\x5d\x1c\xc8\x10\xa3\x90\x86\xdd\x19\xc4\xef\x82\xec\xc1\x9a\xa9\x40\x5e\xa0\x39\x10\xd4\x68\x5a\xac\xaa\xb3\x4f\x2c\xd5\xe5\x02\x93\xef\x0e\xee\x57\x90\xc1\xa2\xeb\x54\x5e\xa1\x73\xe0\xa3\xd9\x96\xf8\xa5\xcc\x29\x7b\xc2\x9a\xba\x6e\xd8\x7d\xec\xd3\x4a\x81\x5f\xb9\x35\x4e\xb8\xcd\xc5\x72\xa2\x6d\x8d\xa5\xd9\x30\xed\xcb\xd3\x6a\x7a\xa4\x1d\x36\xe5\x34\xbd\x44\x5d\x58\xe2\x41\xb3\xb1\x08\x56\x30\xde\x46\x61\xa7\x02\x0f\x47\xca\xc9\x8f\x39\x4c\x6a\x92\xc2\xea\x40\x37\xb9\xf2\x7c\x89\x31\x07\x1e\x36\xd4\x04\x03\xbd\x2c\x92\xfa\x70\x72\x0b\xc1\xcf\xe0\x2e\xfb\x80\x8e\x3e\xe3\x0b\x6e\x73\x2e\x1b\xc9\xd6\xce\x51\xbd\xab\x68\x83\x8c\x75\x68\x94\xc2\x0d\x94\x49\x5a\x36\xf0\x8d\x76\xeb\xcd\xa3\x27\x4e\x6e\xa9\xe1\xb8\x81\x0f\xf9\xf0\xa8\x4f\xf3\xf8\x13\x09\x07\x8a\x35\x1f\xda\x9a\x8c\x5c\x09\x6f\xa5\x8b\x28\xee\x39\xfd\x65\xcf\xff\x4a\x93\xd1\xe3\xaa\x2e\xcd\xa4\x20\x93\x24\x1a\x05\xef\xe1\x35\x5f\xfd\xcd\x7c\x8d\x06\x9e\xcf\x4d\x3c\x23\x5d\xbd\xfb\xdd\xc0\xe0\x2f\x74\x1c\x9f\x93\xa3\xe4\x45\x42\xcc\x96\xff\xac\x90\x82\xed\x11\x0c\x1d\xe1\x53\x48\xf7\xa2\x74\x54\x3c\xbc\x9d\xc7\x0b\xfc\x61\x8a\xfc\x43\xc6\xe1\x18\xae\xf1\x9f\xe3\xe4\x87\x20\xf4\xfd\xff\xb8\x25\xa9\x52\x74\x6a\x2c\x0b\x68\xda\x63\x5b\xbd\xda\xf6\xaa\xef\x21\x1e\x36\x4f\xdb\xb7\x53\xdc\xe9\xc6\xb8\x3b\x6f\xf6\x57\x00\x00\x00\xff\xff\x36\x71\xfc\x64\x84\x03\x00\x00")
+
+func tmplJavascriptRest_serviceGojavascriptBytes() ([]byte, error) {
+	return bindataRead(
+		_tmplJavascriptRest_serviceGojavascript,
+		"tmpl/javascript/rest_service.gojavascript",
+	)
+}
+
+func tmplJavascriptRest_serviceGojavascript() (*asset, error) {
+	bytes, err := tmplJavascriptRest_serviceGojavascriptBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "tmpl/javascript/rest_service.gojavascript", size: 900, mode: os.FileMode(420), modTime: time.Unix(1474041314, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -359,7 +401,7 @@ func tmplSwiftEnumGoswift() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "tmpl/swift/enum.goswift", size: 362, mode: os.FileMode(420), modTime: time.Unix(1461899264, 0)}
+	info := bindataFileInfo{name: "tmpl/swift/enum.goswift", size: 362, mode: os.FileMode(420), modTime: time.Unix(1473992908, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -379,7 +421,7 @@ func tmplSwiftJsonrpc_serviceGoswift() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "tmpl/swift/jsonrpc_service.goswift", size: 2670, mode: os.FileMode(420), modTime: time.Unix(1461899264, 0)}
+	info := bindataFileInfo{name: "tmpl/swift/jsonrpc_service.goswift", size: 2670, mode: os.FileMode(420), modTime: time.Unix(1473992908, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -399,7 +441,7 @@ func tmplSwiftRest_serviceGoswift() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "tmpl/swift/rest_service.goswift", size: 2646, mode: os.FileMode(420), modTime: time.Unix(1461899264, 0)}
+	info := bindataFileInfo{name: "tmpl/swift/rest_service.goswift", size: 2646, mode: os.FileMode(420), modTime: time.Unix(1473992908, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -419,7 +461,7 @@ func tmplSwiftStructGoswift() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "tmpl/swift/struct.goswift", size: 2900, mode: os.FileMode(420), modTime: time.Unix(1461899264, 0)}
+	info := bindataFileInfo{name: "tmpl/swift/struct.goswift", size: 2900, mode: os.FileMode(420), modTime: time.Unix(1473992908, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -489,6 +531,8 @@ var _bindata = map[string]func() (*asset, error){
 	"tmpl/java/jsonrpc_struct.gojava": tmplJavaJsonrpc_structGojava,
 	"tmpl/java/rest_service.gojava": tmplJavaRest_serviceGojava,
 	"tmpl/java/rest_struct.gojava": tmplJavaRest_structGojava,
+	"tmpl/javascript/jsonrpc_service.gojavascript": tmplJavascriptJsonrpc_serviceGojavascript,
+	"tmpl/javascript/rest_service.gojavascript": tmplJavascriptRest_serviceGojavascript,
 	"tmpl/swift/enum.goswift": tmplSwiftEnumGoswift,
 	"tmpl/swift/jsonrpc_service.goswift": tmplSwiftJsonrpc_serviceGoswift,
 	"tmpl/swift/rest_service.goswift": tmplSwiftRest_serviceGoswift,
@@ -552,6 +596,10 @@ var _bintree = &bintree{nil, map[string]*bintree{
 			"jsonrpc_struct.gojava": &bintree{tmplJavaJsonrpc_structGojava, map[string]*bintree{}},
 			"rest_service.gojava": &bintree{tmplJavaRest_serviceGojava, map[string]*bintree{}},
 			"rest_struct.gojava": &bintree{tmplJavaRest_structGojava, map[string]*bintree{}},
+		}},
+		"javascript": &bintree{nil, map[string]*bintree{
+			"jsonrpc_service.gojavascript": &bintree{tmplJavascriptJsonrpc_serviceGojavascript, map[string]*bintree{}},
+			"rest_service.gojavascript": &bintree{tmplJavascriptRest_serviceGojavascript, map[string]*bintree{}},
 		}},
 		"swift": &bintree{nil, map[string]*bintree{
 			"enum.goswift": &bintree{tmplSwiftEnumGoswift, map[string]*bintree{}},
