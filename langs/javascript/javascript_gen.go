@@ -34,6 +34,7 @@ func (this *BaseJavaScript) AssembleParams(method *parser.Method) string {
 
 	for _, arg := range method.Arguments {
 		params = append(params, fmt.Sprintf("%s: %s", arg.Name, this.typecast(arg.Type)))
+		// params = append(params, fmt.Sprintf("%s", arg.Name))
 	}
 	return strings.Join(params, " , ")
 }
