@@ -2,11 +2,11 @@ package javascript
 
 import (
 	"fmt"
-	"html/template"
 	"log"
 	"os"
 	"path/filepath"
 	"strings"
+	"text/template"
 
 	"github.com/ezbuy/tgen/global"
 	"github.com/ezbuy/tgen/langs"
@@ -56,6 +56,8 @@ func (this *BaseJavaScript) typecast(t *parser.Type) string {
 			return "JSONArray"
 		case langs.ThriftTypeMap:
 			return "JSONObject"
+		default:
+			return "object"
 
 		}
 	}
