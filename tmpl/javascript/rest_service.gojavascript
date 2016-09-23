@@ -9,7 +9,7 @@ import WebAPI from "./webapi.js"
 {{ $js := . -}}
 
 {{ range $k, $method := $.Service.Methods }}
-export const {{ $method.Name }} = function {{ $method.Name }}({{ $method | $js.BaseJavaScript.AssembleParams }}) {
+export const {{ $method.Name }} = function {{ $method.Name }}({{ $method | $js.BaseJavaScript.AssembleParams }}):Promise<{{ $method | $js.BaseJavaScript.MethodReturnType }}> {
     return WebAPI(
         '{{ $.Service.Name }}.{{ $method.Name }}',
         {
