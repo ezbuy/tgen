@@ -10,23 +10,30 @@ import (
 	"strings"
 
 	"github.com/ezbuy/tgen/langs"
+	"github.com/ezbuy/tgen/tmpl"
 	"github.com/samuel/go-thrift/parser"
 )
 
 const TPL_SERVICE = "tgen/typescript/service"
 
 const (
-	langName = "ts"
+	langName = "typescript"
 )
 
 type TypeScriptGen struct {
 	langs.BaseGen
 }
 
+type Argument struct {
+	Name string
+	Type string
+}
+
 type Method struct {
-	Name       string
-	Arguments  string
-	ReturnType string
+	ServiceName string
+	Name        string
+	Arguments   []*Argument
+	ReturnType  string
 }
 
 type InterfaceField struct {
@@ -56,8 +63,31 @@ type Thrift struct {
 	Enums      map[string]*parser.Enum
 }
 
+func (t *Thrift) AssembleParamsValType(args []*Argument) string {
+	strList := make([]string, 0)
+	for _, arg := range args {
+		strList = append(strList, arg.Name+": "+arg.Type)
+	}
+
+	return strings.Join(strList, ", ")
+}
+
+func (t *Thrift) AssembleParamsVal(args []*Argument) string {
+	strList := make([]string, 0)
+	for _, arg := range args {
+		strList = append(strList, arg.Name)
+	}
+
+	return strings.Join(strList, ", ")
+}
+
 func initemplate(n string, path string) *template.Template {
-	tpl, err := template.ParseFiles(path)
+	data, err := tmpl.Asset(path)
+	if err != nil {
+		panic(err)
+	}
+
+	tpl, err := template.New(n).Parse(string(data))
 	if err != nil {
 		panic(err)
 	}
@@ -65,7 +95,7 @@ func initemplate(n string, path string) *template.Template {
 	return tpl
 }
 
-func outputfile(fp string, t *template.Template, data interface{}) error {
+func outputfile(fp string, t *template.Template, tplname string, data interface{}) error {
 	file, err := os.OpenFile(fp, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
 	if err != nil {
 		return err
@@ -73,7 +103,7 @@ func outputfile(fp string, t *template.Template, data interface{}) error {
 
 	defer file.Close()
 
-	return t.Execute(file, data)
+	return t.ExecuteTemplate(file, tplname, data)
 }
 
 func typeCast(t *parser.Type) string {
@@ -110,7 +140,7 @@ func (this *TypeScriptGen) Generate(output string, parsedThrift map[string]*pars
 	}
 
 	var servicetpl *template.Template
-	servicetpl = initemplate(TPL_SERVICE, "./tmpl/typescript/rest_service.gots")
+	servicetpl = initemplate(TPL_SERVICE, "tmpl/typescript/rest_service.gots")
 
 	for fileName, t := range parsedThrift {
 		data := &Thrift{
@@ -134,13 +164,15 @@ func (this *TypeScriptGen) Generate(output string, parsedThrift map[string]*pars
 			for mName, mVal := range s.Methods {
 				m := &Method{}
 				m.Name = mName
+				m.ServiceName = s.Name
 
-				args := make([]string, 0)
 				for _, arg := range mVal.Arguments {
-					argStr := arg.Name + ": " + typeCast(arg.Type)
-					args = append(args, argStr)
+					a := &Argument{}
+
+					a.Name = arg.Name
+					a.Type = typeCast(arg.Type)
+					m.Arguments = append(m.Arguments, a)
 				}
-				m.Arguments = strings.Join(args, ", ")
 
 				m.ReturnType = typeCast(mVal.ReturnType)
 
@@ -166,7 +198,7 @@ func (this *TypeScriptGen) Generate(output string, parsedThrift map[string]*pars
 		}
 		data.Interfaces = interfaces
 
-		if err := outputfile(outputPath, servicetpl, data); err != nil {
+		if err := outputfile(outputPath, servicetpl, TPL_SERVICE, data); err != nil {
 			panic(fmt.Errorf("failed to write file %s. error: %v\n", outputPath, err))
 		}
 
