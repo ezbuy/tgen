@@ -66,7 +66,7 @@ clean:
 	rm -rf javaoutputrest
 	rm -rf javaoutputjsonrpc
 
-build:
+build: buildTpl
 	go clean
 	go build
-	open .
+	
