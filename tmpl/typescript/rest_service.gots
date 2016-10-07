@@ -3,10 +3,10 @@
  * Don't change manually
  */
 
-import { Promise } from 'es6-promise'
-import webapi from './webapi'
+import { Promise } from "es6-promise"
+import webapi from "../helpers/webapi"
 {{- range .Includes }}
-import * as {{ . }} from './{{ . }}Service.ts'
+import * as {{ . }} from "./{{ . }}Service"
 {{- end }}
 
 {{ range $enumKey, $enum := .Enums }}
