@@ -4,8 +4,7 @@
  */
 
 import { Promise } from 'es6-promise'
-
-import webapi from 'src-react/helpers/webapi.js'
+import webapi from './webapi'
 {{- range .Includes }}
 import * as {{ . }} from './{{ . }}Service.ts'
 {{- end }}
@@ -29,12 +28,14 @@ export interface {{ .Name }} {
 {{ $root := . -}}
 {{ range .Methods }}
 export function {{ .Name }}({{ .Arguments | $root.AssembleParamsValType}}): Promise<{{ .ReturnType }}> {
-    return webapi('{{ .ServiceName }}.{{ .Name }}', { {{ .Arguments | $root.AssembleParamsVal }} })
+    return webapi<{{ .ReturnType }}>('{{ .ServiceName }}.{{ .Name }}', { {{ .Arguments | $root.AssembleParamsVal }} })
 }
 {{ end }}
 
+{{ $length := len .Methods }} {{ if gt $length 0 }}
 export default {
 {{- range .Methods }}
     {{ .Name -}},
 {{- end }}
 }
+{{ end }}
