@@ -151,7 +151,6 @@ func (this *TypeScriptGen) Generate(output string, parsedThrift map[string]*pars
 		}
 		outputPath := genOutputPath(output, fileName)
 
-		// fill in Enums
 		data.Enums = t.Enums
 
 		// fill in Includes
