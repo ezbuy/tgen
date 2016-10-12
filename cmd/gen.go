@@ -26,6 +26,7 @@ import (
 	_ "github.com/ezbuy/tgen/langs/java"
 	_ "github.com/ezbuy/tgen/langs/javascript"
 	_ "github.com/ezbuy/tgen/langs/swift"
+	_ "github.com/ezbuy/tgen/langs/typescript"
 	"github.com/samuel/go-thrift/parser"
 	"github.com/spf13/cobra"
 )
