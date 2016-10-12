@@ -4,7 +4,7 @@
  */
 
 import { Promise } from "es6-promise"
-import webapi from "../helpers/webapi"
+import webapi from "./webapi"
 {{- range .Includes }}
 import * as {{ . }} from "./{{ . }}Service"
 {{- end }}
