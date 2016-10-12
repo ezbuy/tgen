@@ -69,4 +69,3 @@ clean:
 build: buildTpl
 	go clean
 	go build
-	
