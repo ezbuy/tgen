@@ -213,13 +213,25 @@ func (this *Package) GenServiceMethodArguments(fields []*parser.Field) string {
 
 	maxIdx := len(fields) - 1
 	for idx, field := range fields {
-		str += fmt.Sprintf("%s %s", field.Name, this.GenTypeString(field.Name, field.Type, nil, field.Optional))
+		argName := this.renameInvalidArgumentName(field.Name)
+
+		str += fmt.Sprintf("%s %s", argName, this.GenTypeString(field.Name, field.Type, nil, field.Optional))
 		if idx != maxIdx {
 			str += ", "
 		}
 	}
 
 	return str
+}
+
+func (this *Package) renameInvalidArgumentName(n string) string {
+	if n == "type" || n == "case" || n == "struct" || n == "if" || n == "switch" || n == "map" ||
+		n == "go" || n == "func" || n == "var" || n == "range" || n == "for" || n == "append" ||
+		n == "default" || n == "return" {
+		return "a" + this.UpperHead(n)
+	}
+
+	return n
 }
 
 func (this *Package) GenServiceMethodReturn(method *parser.Method) string {
