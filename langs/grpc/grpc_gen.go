@@ -60,8 +60,8 @@ type Field struct {
 	*parser.Field
 }
 
-func (s *Field) GetType() string {
-	name := s.Type.Name
+func getType(t *parser.Type) string {
+	name := t.Name
 	if name == "i32" {
 		return "int32"
 	}
@@ -70,7 +70,15 @@ func (s *Field) GetType() string {
 		return "int64"
 	}
 
+	if name == "list" {
+		return "repeated " + getType(t.ValueType)
+	}
+
 	return name
+}
+
+func (s *Field) GetType() string {
+	return getType(s.Type)
 }
 
 func (g *GrpcGen) GetStructs() (structs []*Struct) {
