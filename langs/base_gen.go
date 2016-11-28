@@ -18,6 +18,10 @@ func (g *BaseGen) Init(lang string, parsedThrift map[string]*parser.Thrift) {
 }
 
 func (g *BaseGen) CheckNamespace() {
+	if g.Lang == "grpc" {
+		return
+	}
+
 	for f, t := range g.Thrifts {
 		if _, ok := t.Namespaces[g.Lang]; !ok {
 			log.Fatalf("Namespace not found for language '%s' in file '%s'", g.Lang, f)
