@@ -45,9 +45,37 @@ func (g *GrpcGen) Includes() (includes []string) {
 	return
 }
 
-func (g *GrpcGen) Structs() (structs []*parser.Struct) {
+type Struct struct {
+	*parser.Struct
+}
+
+func (s *Struct) GetFields() (fields []*Field) {
+	for _, inc := range s.Fields {
+		fields = append(fields, &Field{inc})
+	}
+	return
+}
+
+type Field struct {
+	*parser.Field
+}
+
+func (s *Field) GetType() string {
+	name := s.Type.Name
+	if name == "i32" {
+		return "int32"
+	}
+
+	if name == "i64" {
+		return "int64"
+	}
+
+	return name
+}
+
+func (g *GrpcGen) GetStructs() (structs []*Struct) {
 	for _, inc := range g.thrift.Structs {
-		structs = append(structs, inc)
+		structs = append(structs, &Struct{inc})
 	}
 
 	return

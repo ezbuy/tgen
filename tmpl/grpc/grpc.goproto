@@ -6,11 +6,11 @@ package {{ .ServiceName }};
 import "{{ . }}";
 {{- end }}
 
-{{- range .Structs }}
+{{- range .GetStructs }}
 
 message {{ .Name }} {
-{{- range .Fields }}
-	{{ .Type.Name}} {{ .Name }} = {{ .ID }};
+{{- range .GetFields }}
+	{{ .GetType}} {{ .Name }} = {{ .ID }};
 {{- end }}
 }
 
