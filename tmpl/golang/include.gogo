@@ -1,0 +1,15 @@
+{{define "include"}}
+{{- $includeList := .Includes }}
+{{- $includeCount := len $includeList -}}
+{{if ne $includeCount 0}}
+import (
+    {{- range $included := $includeList }}
+    {{$included.PkgName}} "{{$included.FullImportPath}}"
+    {{- end}}
+)
+
+{{- range $included := $includeList }}
+var _ = {{$included.PkgName}}.GoUnusedProtection__
+{{- end}}
+{{- end}}
+{{- end}}

@@ -1,0 +1,5 @@
+tgen
+*/gen_*.go
+.DS_Store
+*.sublime-project
+*.sublime-workspace

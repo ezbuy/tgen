@@ -16,10 +16,17 @@ package cmd
 
 import (
 	"fmt"
+	"log"
 	"os"
+	"path/filepath"
 
+	"github.com/ezbuy/tgen/global"
 	"github.com/ezbuy/tgen/langs"
+	_ "github.com/ezbuy/tgen/langs/go"
+	_ "github.com/ezbuy/tgen/langs/java"
+	_ "github.com/ezbuy/tgen/langs/javascript"
 	_ "github.com/ezbuy/tgen/langs/swift"
+	_ "github.com/ezbuy/tgen/langs/typescript"
 	"github.com/samuel/go-thrift/parser"
 	"github.com/spf13/cobra"
 )
@@ -40,6 +47,18 @@ var genCmd = &cobra.Command{
 			return
 		}
 
+		f, err := filepath.Abs(input)
+		if err != nil {
+			log.Fatalf("failed to get absoulte path of input idl file: %s", err.Error())
+		}
+
+		global.InputFile = f
+		global.Mode = mode
+		global.NamespacePrefix = namespacePrefix
+		global.GenWebApi = genWebApi
+		global.GenRpcClient = genRpcCli
+		global.ValidateParams = validateParams
+
 		p := &parser.Parser{}
 		parsedThrift, _, err := p.ParseFile(input)
 		if err != nil {
@@ -48,11 +67,12 @@ var genCmd = &cobra.Command{
 		}
 
 		if generator, ok := langs.Langs[lang]; ok {
-			generator.Generate(parsedThrift)
+			generator.Generate(output, parsedThrift)
 		} else {
 			fmt.Printf("lang %s is not supported\n", lang)
 			fmt.Println("Supported language options are:")
-			for key, _ := range langs.Langs {
+
+			for key := range langs.Langs {
 				fmt.Printf("\t%s\n", key)
 			}
 		}
@@ -60,8 +80,13 @@ var genCmd = &cobra.Command{
 }
 
 var lang string
+var namespacePrefix string
+var mode string
+var genWebApi bool
+var genRpcCli bool
 var input string
 var output string
+var validateParams bool
 
 func init() {
 	RootCmd.AddCommand(genCmd)
@@ -71,8 +96,13 @@ func init() {
 	// Cobra supports Persistent Flags which will work for this command
 	// and all subcommands, e.g.:
 	genCmd.PersistentFlags().StringVarP(&lang, "lang", "l", "", "language")
+	genCmd.PersistentFlags().StringVarP(&namespacePrefix, "prefix", "p", "", "namespace prefix")
+	genCmd.PersistentFlags().StringVarP(&mode, "mode", "m", "", "mode: rest or jsonrpc")
+	genCmd.PersistentFlags().BoolVarP(&genWebApi, "webapi", "w", true, "generate webapi file(default true)")
+	genCmd.PersistentFlags().BoolVarP(&genRpcCli, "rpccli", "r", false, "generate rpc client file(default false)")
 	genCmd.PersistentFlags().StringVarP(&input, "input", "i", "", "input file")
 	genCmd.PersistentFlags().StringVarP(&output, "output", "o", "", "output path")
+	genCmd.PersistentFlags().BoolVarP(&validateParams, "validate", "", false, "validate service method params (default false)")
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
