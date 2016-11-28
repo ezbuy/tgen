@@ -29,10 +29,10 @@ test-go-ezrpc: test-go-gen
 	go install github.com/ezbuy/tgen/thriftgotest/...
 
 buildTpl:
-	go-bindata -o tmpl/bindata.go -ignore bindata.go -pkg tmpl tmpl/*
+	go-bindata -nometadata -o tmpl/bindata.go -ignore bindata.go -pkg tmpl tmpl/*
 
 debugTpl:
-	go-bindata -o tmpl/bindata.go -ignore bindata.go -pkg tmpl -debug tmpl/*
+	go-bindata -nometadata -o tmpl/bindata.go -ignore bindata.go -pkg tmpl -debug tmpl/*
 
 genjava: buildTpl
 	go build
