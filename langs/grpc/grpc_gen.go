@@ -107,7 +107,7 @@ func genOutputPath(base string, fileName string) string {
 	start := strings.LastIndex(fileName, "/")
 	end := strings.LastIndex(fileName, ".")
 	name := fileName[start+1 : end]
-	return filepath.Join(base, name+"Service.proto")
+	return filepath.Join(base, name+".proto")
 }
 
 func outputfile(fp string, t *template.Template, tplname string, data interface{}) error {
