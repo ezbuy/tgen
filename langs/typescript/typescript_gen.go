@@ -190,6 +190,9 @@ func (this *TypeScriptGen) Generate(output string, parsedThrift map[string]*pars
 				field := &InterfaceField{}
 				field.Name = rawFiled.Name
 				field.Type = typeCast(rawFiled.Type)
+				if rawFiled.Optional {
+					field.Name += "?"
+				}
 				fields = append(fields, field)
 			}
 			ife.Fields = fields
