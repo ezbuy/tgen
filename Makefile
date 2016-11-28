@@ -60,6 +60,10 @@ genjavascriptrest: buildTpl
 	go build
 	./tgen gen -l javascript -m rest -i example/javascript/FlashSales.thrift -o ./javascriptoutputrest
 
+gengrpc: buildTpl
+	go build
+	./tgen gen -l grpc -i example/javascript/FlashSales.thrift -o ./grpcoutputrest
+
 clean:
 	go clean
 	rm -rf ./output-swift-rest

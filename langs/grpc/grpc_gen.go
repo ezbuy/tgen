@@ -1,0 +1,79 @@
+package grpc
+
+import (
+	"fmt"
+	"html/template"
+	"log"
+	"os"
+	"path/filepath"
+	"strings"
+
+	"github.com/ezbuy/tgen/langs"
+	"github.com/ezbuy/tgen/tmpl"
+	"github.com/samuel/go-thrift/parser"
+)
+
+const (
+	langName = "grpc"
+)
+
+const TPL_SERVICE = "tgen/grpc/grpc"
+
+type GrpcGen struct {
+	langs.BaseGen
+}
+
+func initemplate(n string, path string) *template.Template {
+	data, err := tmpl.Asset(path)
+	if err != nil {
+		panic(err)
+	}
+
+	tpl, err := template.New(n).Parse(string(data))
+	if err != nil {
+		panic(err)
+	}
+
+	return tpl
+}
+
+func genOutputPath(base string, fileName string) string {
+	start := strings.LastIndex(fileName, "/")
+	end := strings.LastIndex(fileName, ".")
+	name := fileName[start+1 : end]
+	return filepath.Join(base, name+"Service.pb")
+}
+
+func outputfile(fp string, t *template.Template, tplname string, data interface{}) error {
+	file, err := os.OpenFile(fp, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
+	if err != nil {
+		return err
+	}
+
+	defer file.Close()
+
+	return t.ExecuteTemplate(file, tplname, data)
+}
+
+func (this *GrpcGen) Generate(output string, parsedThrift map[string]*parser.Thrift) {
+	if err := os.MkdirAll(output, 0755); err != nil {
+		panic(fmt.Errorf("failed to create output directory %s", output))
+	}
+
+	var servicetpl *template.Template
+	servicetpl = initemplate(TPL_SERVICE, "tmpl/grpc/grpc.goproto")
+
+	for fileName, t := range parsedThrift {
+		outputPath := genOutputPath(output, fileName)
+
+		if err := outputfile(outputPath, servicetpl, TPL_SERVICE, t); err != nil {
+			panic(fmt.Errorf("failed to write file %s. error: %v\n", outputPath, err))
+		}
+
+		log.Printf("%s", outputPath)
+	}
+}
+
+func init() {
+	langs.Langs[langName] = &GrpcGen{}
+}

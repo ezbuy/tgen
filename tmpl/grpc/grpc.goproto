@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package example;
+
+import "example/send_mail.proto";
+
+message ReceiveMailPingResp {
+	string Msg = 1;
+}
+
+service ReceiveMail {
+	rpc Ping(SendMailPingResp) returns (ReceiveMailPingResp);
+}
