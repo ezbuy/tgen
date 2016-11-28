@@ -45,6 +45,14 @@ func (g *GrpcGen) Includes() (includes []string) {
 	return
 }
 
+func (g *GrpcGen) Structs() (structs []*parser.Struct) {
+	for _, inc := range g.thrift.Structs {
+		structs = append(structs, inc)
+	}
+
+	return
+}
+
 func initemplate(n string, path string) *template.Template {
 	data, err := tmpl.Asset(path)
 	if err != nil {

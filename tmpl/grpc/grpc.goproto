@@ -6,9 +6,15 @@ package {{ .ServiceName }};
 import "{{ . }}";
 {{- end }}
 
-message ReceiveMailPingResp {
-	string Msg = 1;
+{{- range .Structs }}
+
+message {{ .Name }} {
+{{- range .Fields }}
+	{{ .Type.Name}} {{ .Name }} = {{ .ID }};
+{{- end }}
 }
+
+{{- end }}
 
 service {{ .ServiceName }} {
 	rpc Ping(SendMailPingResp) returns (ReceiveMailPingResp);
