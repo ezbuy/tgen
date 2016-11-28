@@ -1,13 +1,15 @@
 syntax = "proto3";
 
-package example;
+package {{ .ServiceName }};
 
-import "example/send_mail.proto";
+{{- range .Includes }}
+import "{{ . }}";
+{{- end }}
 
 message ReceiveMailPingResp {
 	string Msg = 1;
 }
 
-service ReceiveMail {
+service {{ .ServiceName }} {
 	rpc Ping(SendMailPingResp) returns (ReceiveMailPingResp);
 }

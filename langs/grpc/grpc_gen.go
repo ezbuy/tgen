@@ -21,6 +21,28 @@ const TPL_SERVICE = "tgen/grpc/grpc"
 
 type GrpcGen struct {
 	langs.BaseGen
+	thrift *parser.Thrift
+}
+
+func (g *GrpcGen) ServiceName() string {
+	for key, _ := range g.thrift.Services {
+		return key
+	}
+	return ""
+}
+
+func (g *GrpcGen) Includes() (includes []string) {
+	for _, inc := range g.thrift.Includes {
+		i := strings.LastIndex(inc, "/")
+		if i > 0 {
+			inc = inc[i+1:]
+		}
+
+		inc = strings.Replace(inc, ".thrift", ".proto", 1)
+		includes = append(includes, inc)
+	}
+
+	return
 }
 
 func initemplate(n string, path string) *template.Template {
@@ -41,7 +63,7 @@ func genOutputPath(base string, fileName string) string {
 	start := strings.LastIndex(fileName, "/")
 	end := strings.LastIndex(fileName, ".")
 	name := fileName[start+1 : end]
-	return filepath.Join(base, name+"Service.pb")
+	return filepath.Join(base, name+"Service.proto")
 }
 
 func outputfile(fp string, t *template.Template, tplname string, data interface{}) error {
@@ -62,11 +84,13 @@ func (this *GrpcGen) Generate(output string, parsedThrift map[string]*parser.Thr
 
 	var servicetpl *template.Template
 	servicetpl = initemplate(TPL_SERVICE, "tmpl/grpc/grpc.goproto")
+	this.BaseGen.Init("grpc", parsedThrift)
 
 	for fileName, t := range parsedThrift {
 		outputPath := genOutputPath(output, fileName)
+		this.thrift = t
 
-		if err := outputfile(outputPath, servicetpl, TPL_SERVICE, t); err != nil {
+		if err := outputfile(outputPath, servicetpl, TPL_SERVICE, this); err != nil {
 			panic(fmt.Errorf("failed to write file %s. error: %v\n", outputPath, err))
 		}
 
