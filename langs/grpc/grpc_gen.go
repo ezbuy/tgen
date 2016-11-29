@@ -62,7 +62,7 @@ type Field struct {
 
 func getType(t *parser.Type) string {
 	name := t.Name
-	if name == "i32" {
+	if name == "i32" || name == "i16" {
 		return "int32"
 	}
 
