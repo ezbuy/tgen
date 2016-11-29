@@ -65,6 +65,10 @@ type Field struct {
 }
 
 func getType(t *parser.Type) string {
+	if t == nil {
+		return ""
+	}
+
 	name := t.Name
 	if name == "i32" || name == "i16" {
 		return "int32"
@@ -100,7 +104,8 @@ func initemplate(n string, path string) *template.Template {
 	}
 
 	tpl, err := template.New(n).Funcs(template.FuncMap{
-		"ListEnumValue": ListEnumValue,
+		"listEnumValue": listEnumValue,
+		"getType":       getType,
 	}).Parse(string(data))
 	if err != nil {
 		panic(err)
@@ -116,7 +121,7 @@ func genOutputPath(base string, fileName string) string {
 	return filepath.Join(base, name+".proto")
 }
 
-func ListEnumValue(enums map[string]*parser.EnumValue) (result []*parser.EnumValue) {
+func listEnumValue(enums map[string]*parser.EnumValue) (result []*parser.EnumValue) {
 	zeroKey := "UNKNOWN"
 	for _, v := range enums {
 		if v.Value == 0 {

@@ -9,7 +9,7 @@ import "{{ . }}";
 {{- range .Thrift.Enums }}
 
 enum {{ .Name }} {
-{{- range ListEnumValue .Values }}
+{{- range listEnumValue .Values }}
 	{{ .Name }} = {{ .Value }};
 {{- end }}
 }
@@ -25,6 +25,11 @@ message {{ .Name }} {
 
 {{- end }}
 
-service {{ .ServiceName }} {
-	rpc Ping(SendMailPingResp) returns (ReceiveMailPingResp);
+{{- range .Thrift.Services }}
+
+service {{ .Name }} {
+	{{- range .Methods }}
+	rpc {{ .Name }}({{ getType .ReturnType }}) returns ({{ getType .ReturnType }});
+	{{- end }}
 }
+{{- end }}
