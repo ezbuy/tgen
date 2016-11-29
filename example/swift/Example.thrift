@@ -19,7 +19,7 @@ struct TExample {
     10:required list<i64> int64s;
 }
 
-service Example extends Shared.Basic {
+service Example extends Shared.Shared {
   void ping(1: string ip),
   i32 getPendingWithdrawAmount()
 }
