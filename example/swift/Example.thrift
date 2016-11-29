@@ -11,12 +11,12 @@ struct TExample {
     3:optional bool amountPendingVerification;
     4:optional i32 pendingWithdrawAmount;
     5:optional TServiceType serviceType;
-    5:optional i64 unpaidAmount;
-    6:required list<TFoo> fooes;
-    7:required list<string> strs;
-    8:required list<i16> ints;
-    9:required list<Shared.TBasic> basics;
-    10:required list<i64> int64s;
+    6:optional i64 unpaidAmount;
+    7:required list<TFoo> fooes;
+    8:required list<string> strs;
+    9:required list<i16> ints;
+    10:required list<Shared.TBasic> basics;
+    11:required list<i64> int64s;
 }
 
 service Example extends Shared.Shared {
