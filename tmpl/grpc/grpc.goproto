@@ -6,6 +6,15 @@ package {{ .ServiceName }};
 import "{{ . }}";
 {{- end }}
 
+{{- range .Thrift.Enums }}
+
+enum {{ .Name }} {
+{{- range ListEnumValue .Values }}
+	{{ .Name }} = {{ .Value }};
+{{- end }}
+}
+{{- end }}
+
 {{- range .GetStructs }}
 
 message {{ .Name }} {

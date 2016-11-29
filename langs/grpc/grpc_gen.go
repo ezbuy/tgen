@@ -21,18 +21,22 @@ const TPL_SERVICE = "tgen/grpc/grpc"
 
 type GrpcGen struct {
 	langs.BaseGen
-	thrift *parser.Thrift
+	Thrift *parser.Thrift
 }
 
 func (g *GrpcGen) ServiceName() string {
-	for key, _ := range g.thrift.Services {
+	for key, _ := range g.Thrift.Services {
 		return key
 	}
 	return ""
 }
 
+func (g *GrpcGen) SetThrift(t *parser.Thrift) {
+	g.Thrift = t
+}
+
 func (g *GrpcGen) Includes() (includes []string) {
-	for _, inc := range g.thrift.Includes {
+	for _, inc := range g.Thrift.Includes {
 		i := strings.LastIndex(inc, "/")
 		if i > 0 {
 			inc = inc[i+1:]
@@ -82,7 +86,7 @@ func (s *Field) GetType() string {
 }
 
 func (g *GrpcGen) GetStructs() (structs []*Struct) {
-	for _, inc := range g.thrift.Structs {
+	for _, inc := range g.Thrift.Structs {
 		structs = append(structs, &Struct{inc})
 	}
 
@@ -95,7 +99,9 @@ func initemplate(n string, path string) *template.Template {
 		panic(err)
 	}
 
-	tpl, err := template.New(n).Parse(string(data))
+	tpl, err := template.New(n).Funcs(template.FuncMap{
+		"ListEnumValue": ListEnumValue,
+	}).Parse(string(data))
 	if err != nil {
 		panic(err)
 	}
@@ -108,6 +114,27 @@ func genOutputPath(base string, fileName string) string {
 	end := strings.LastIndex(fileName, ".")
 	name := fileName[start+1 : end]
 	return filepath.Join(base, name+".proto")
+}
+
+func ListEnumValue(enums map[string]*parser.EnumValue) (result []*parser.EnumValue) {
+	zeroKey := "UNKNOWN"
+	for _, v := range enums {
+		if v.Value == 0 {
+			zeroKey = v.Name
+		}
+	}
+
+	result = append(result, &parser.EnumValue{
+		Name:  zeroKey,
+		Value: 0,
+	})
+
+	for _, v := range enums {
+		if v.Name != zeroKey {
+			result = append(result, v)
+		}
+	}
+	return
 }
 
 func outputfile(fp string, t *template.Template, tplname string, data interface{}) error {
@@ -132,7 +159,7 @@ func (this *GrpcGen) Generate(output string, parsedThrift map[string]*parser.Thr
 
 	for fileName, t := range parsedThrift {
 		outputPath := genOutputPath(output, fileName)
-		this.thrift = t
+		this.SetThrift(t)
 
 		if err := outputfile(outputPath, servicetpl, TPL_SERVICE, this); err != nil {
 			panic(fmt.Errorf("failed to write file %s. error: %v\n", outputPath, err))
