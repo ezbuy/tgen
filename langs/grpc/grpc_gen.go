@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/bradfitz/slice"
 	"github.com/ezbuy/tgen/langs"
 	"github.com/ezbuy/tgen/tmpl"
 	"github.com/samuel/go-thrift/parser"
@@ -57,6 +58,14 @@ func (g *GrpcGen) SetThrift(t *parser.Thrift) {
 			g.respStructs = append(g.respStructs, args)
 		}
 	}
+
+	slice.Sort(g.respStructs, func(i, j int) bool {
+		return g.respStructs[i].Name < g.respStructs[j].Name
+	})
+
+	slice.Sort(g.reqStructs, func(i, j int) bool {
+		return g.reqStructs[i].Name < g.reqStructs[j].Name
+	})
 
 	return
 }
@@ -183,6 +192,10 @@ func listEnumValue(enums map[string]*parser.EnumValue) (result []*parser.EnumVal
 			result = append(result, v)
 		}
 	}
+
+	slice.Sort(result, func(i, j int) bool {
+		return result[i].Value < result[j].Value
+	})
 	return
 }
 

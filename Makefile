@@ -8,6 +8,7 @@ init:
 	go get github.com/samuel/go-thrift/parser
 	go get github.com/spf13/cobra/cobra
 	go get github.com/jteeuwen/go-bindata/...
+	go get github.com/bradfitz/slice
 
 test: buildTpl
 	go test ./...

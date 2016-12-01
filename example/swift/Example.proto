@@ -30,18 +30,18 @@ message TExample {
 	repeated int64 int64s = 11;
 }
 
+message getPendingWithdrawAmountRequest {
+}
+
 message pingRequest {
 	string ip = 1;
 }
 
-message getPendingWithdrawAmountRequest {
+message getPendingWithdrawAmountResponse {
+	int32 Result = 1;
 }
 
 message pingResponse {
-}
-
-message getPendingWithdrawAmountResponse {
-	int32 Result = 1;
 }
 
 service Example {

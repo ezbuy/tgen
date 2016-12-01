@@ -19,14 +19,14 @@ message getBasicsRequest {
 	repeated int64 int64s = 3;
 }
 
-message getInt64sRequest {
-	int64 id = 1;
-	repeated int64 int64s = 2;
-}
-
 message getCommonsRequest {
 	int32 key = 1;
 	int64 id = 2;
+}
+
+message getInt64sRequest {
+	int64 id = 1;
+	repeated int64 int64s = 2;
 }
 
 message getBasicResponse {
@@ -37,12 +37,12 @@ message getBasicsResponse {
 	repeated TBasic Result = 1;
 }
 
-message getInt64sResponse {
-	repeated int64 Result = 1;
-}
-
 message getCommonsResponse {
 	repeated Common.TCommon Result = 1;
+}
+
+message getInt64sResponse {
+	repeated int64 Result = 1;
 }
 
 service Shared {
