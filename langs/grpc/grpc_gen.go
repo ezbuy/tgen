@@ -175,7 +175,7 @@ func genOutputPath(base string, fileName string) string {
 }
 
 func listEnumValue(enums map[string]*parser.EnumValue) (result []*parser.EnumValue) {
-	zeroKey := "UNKNOWN"
+	zeroKey := "Unknown"
 	for _, v := range enums {
 		if v.Value == 0 {
 			zeroKey = v.Name
