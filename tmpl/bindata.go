@@ -102,7 +102,7 @@ func tmplGolangConstantGogo() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "tmpl/golang/constant.gogo", size: 268, mode: os.FileMode(420), modTime: time.Unix(1476259297, 0)}
+	info := bindataFileInfo{name: "tmpl/golang/constant.gogo", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -122,7 +122,7 @@ func tmplGolangDefines_fileGogo() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "tmpl/golang/defines_file.gogo", size: 469, mode: os.FileMode(420), modTime: time.Unix(1476259297, 0)}
+	info := bindataFileInfo{name: "tmpl/golang/defines_file.gogo", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -142,7 +142,7 @@ func tmplGolangEcho_moduleGogo() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "tmpl/golang/echo_module.gogo", size: 3787, mode: os.FileMode(420), modTime: time.Unix(1476259297, 0)}
+	info := bindataFileInfo{name: "tmpl/golang/echo_module.gogo", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -162,7 +162,7 @@ func tmplGolangEnumGogo() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "tmpl/golang/enum.gogo", size: 590, mode: os.FileMode(420), modTime: time.Unix(1476259297, 0)}
+	info := bindataFileInfo{name: "tmpl/golang/enum.gogo", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -182,7 +182,7 @@ func tmplGolangExceptionGogo() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "tmpl/golang/exception.gogo", size: 554, mode: os.FileMode(420), modTime: time.Unix(1476259297, 0)}
+	info := bindataFileInfo{name: "tmpl/golang/exception.gogo", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -202,7 +202,7 @@ func tmplGolangIncludeGogo() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "tmpl/golang/include.gogo", size: 368, mode: os.FileMode(420), modTime: time.Unix(1476259297, 0)}
+	info := bindataFileInfo{name: "tmpl/golang/include.gogo", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -222,7 +222,7 @@ func tmplGolangRpc_clientGogo() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "tmpl/golang/rpc_client.gogo", size: 1557, mode: os.FileMode(420), modTime: time.Unix(1476259297, 0)}
+	info := bindataFileInfo{name: "tmpl/golang/rpc_client.gogo", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -242,7 +242,7 @@ func tmplGolangServiceGogo() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "tmpl/golang/service.gogo", size: 3715, mode: os.FileMode(420), modTime: time.Unix(1476259297, 0)}
+	info := bindataFileInfo{name: "tmpl/golang/service.gogo", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -262,7 +262,7 @@ func tmplGolangStructGogo() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "tmpl/golang/struct.gogo", size: 774, mode: os.FileMode(420), modTime: time.Unix(1476259297, 0)}
+	info := bindataFileInfo{name: "tmpl/golang/struct.gogo", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -282,7 +282,7 @@ func tmplJavaJsonrpc_serviceGojava() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "tmpl/java/jsonrpc_service.gojava", size: 4308, mode: os.FileMode(420), modTime: time.Unix(1476259297, 0)}
+	info := bindataFileInfo{name: "tmpl/java/jsonrpc_service.gojava", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -302,7 +302,7 @@ func tmplJavaJsonrpc_structGojava() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "tmpl/java/jsonrpc_struct.gojava", size: 612, mode: os.FileMode(420), modTime: time.Unix(1476259297, 0)}
+	info := bindataFileInfo{name: "tmpl/java/jsonrpc_struct.gojava", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -322,7 +322,7 @@ func tmplJavaRest_serviceGojava() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "tmpl/java/rest_service.gojava", size: 4380, mode: os.FileMode(420), modTime: time.Unix(1476259297, 0)}
+	info := bindataFileInfo{name: "tmpl/java/rest_service.gojava", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -342,7 +342,7 @@ func tmplJavaRest_structGojava() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "tmpl/java/rest_struct.gojava", size: 612, mode: os.FileMode(420), modTime: time.Unix(1476259297, 0)}
+	info := bindataFileInfo{name: "tmpl/java/rest_struct.gojava", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -362,7 +362,7 @@ func tmplJavascriptJsonrpc_serviceGojavascript() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "tmpl/javascript/jsonrpc_service.gojavascript", size: 0, mode: os.FileMode(420), modTime: time.Unix(1476259297, 0)}
+	info := bindataFileInfo{name: "tmpl/javascript/jsonrpc_service.gojavascript", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -382,7 +382,7 @@ func tmplJavascriptRest_serviceGojavascript() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "tmpl/javascript/rest_service.gojavascript", size: 900, mode: os.FileMode(420), modTime: time.Unix(1476863657, 0)}
+	info := bindataFileInfo{name: "tmpl/javascript/rest_service.gojavascript", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -402,7 +402,7 @@ func tmplSwiftEnumGoswift() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "tmpl/swift/enum.goswift", size: 362, mode: os.FileMode(420), modTime: time.Unix(1476259297, 0)}
+	info := bindataFileInfo{name: "tmpl/swift/enum.goswift", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -422,7 +422,7 @@ func tmplSwiftJsonrpc_serviceGoswift() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "tmpl/swift/jsonrpc_service.goswift", size: 2670, mode: os.FileMode(420), modTime: time.Unix(1476259297, 0)}
+	info := bindataFileInfo{name: "tmpl/swift/jsonrpc_service.goswift", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -442,7 +442,7 @@ func tmplSwiftRest_serviceGoswift() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "tmpl/swift/rest_service.goswift", size: 2646, mode: os.FileMode(420), modTime: time.Unix(1476259297, 0)}
+	info := bindataFileInfo{name: "tmpl/swift/rest_service.goswift", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -462,7 +462,7 @@ func tmplSwiftStructGoswift() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "tmpl/swift/struct.goswift", size: 2900, mode: os.FileMode(420), modTime: time.Unix(1476259297, 0)}
+	info := bindataFileInfo{name: "tmpl/swift/struct.goswift", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -482,7 +482,7 @@ func tmplTypescriptRest_serviceGots() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "tmpl/typescript/rest_service.gots", size: 888, mode: os.FileMode(420), modTime: time.Unix(1480167342, 0)}
+	info := bindataFileInfo{name: "tmpl/typescript/rest_service.gots", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
