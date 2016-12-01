@@ -1,0 +1,53 @@
+syntax = "proto3";
+
+package Shared;
+option java_package = "com.ezbuy.basic";
+
+import "Common.proto";
+
+message TBasic {
+}
+
+message getBasicRequest {
+	int32 key = 1;
+	int64 id = 2;
+}
+
+message getBasicsRequest {
+	int32 key = 1;
+	int64 id = 2;
+	repeated int64 int64s = 3;
+}
+
+message getCommonsRequest {
+	int32 key = 1;
+	int64 id = 2;
+}
+
+message getInt64sRequest {
+	int64 id = 1;
+	repeated int64 int64s = 2;
+}
+
+message getBasicResponse {
+	TBasic Result = 1;
+}
+
+message getBasicsResponse {
+	repeated TBasic Result = 1;
+}
+
+message getCommonsResponse {
+	repeated Common.TCommon Result = 1;
+}
+
+message getInt64sResponse {
+	repeated int64 Result = 1;
+}
+
+service Shared {
+	rpc getBasic(getBasicRequest) returns (getBasicResponse);
+	rpc getBasics(getBasicsRequest) returns (getBasicsResponse);
+	rpc getCommons(getCommonsRequest) returns (getCommonsResponse);
+	rpc getInt64s(getInt64sRequest) returns (getInt64sResponse);
+}

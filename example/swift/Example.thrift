@@ -11,15 +11,16 @@ struct TExample {
     3:optional bool amountPendingVerification;
     4:optional i32 pendingWithdrawAmount;
     5:optional TServiceType serviceType;
-    5:optional i64 unpaidAmount;
-    6:required list<TFoo> fooes;
-    7:required list<string> strs;
-    8:required list<i16> ints;
-    9:required list<Shared.TBasic> basics;
-    10:required list<i64> int64s;
+    6:optional i64 unpaidAmount;
+    7:required list<TFoo> fooes;
+    8:required list<string> strs;
+    9:required list<i16> ints;
+    10:required list<Shared.TBasic> basics;
+    11:required list<i64> int64s;
+    12:optional TPaymentType paymentType;
 }
 
-service Example extends Shared.Basic {
+service Example extends Shared.Shared {
   void ping(1: string ip),
   i32 getPendingWithdrawAmount()
 }
@@ -30,3 +31,11 @@ enum TServiceType {
   Ezbuy = 3
   Prime = 4
 }
+
+enum TPaymentType {
+  Buy4Me = 1
+  Ship4Me = 2
+  Ezbuy = 3
+  Prime = 4
+}
+

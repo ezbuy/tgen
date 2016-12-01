@@ -8,6 +8,7 @@ init:
 	go get github.com/samuel/go-thrift/parser
 	go get github.com/spf13/cobra/cobra
 	go get github.com/jteeuwen/go-bindata/...
+	go get github.com/bradfitz/slice
 
 test: buildTpl
 	go test ./...
@@ -59,6 +60,10 @@ gen-swift: gen-swift-rest gen-swift-jsonrpc
 genjavascriptrest: buildTpl
 	go build
 	./tgen gen -l javascript -m rest -i example/javascript/FlashSales.thrift -o ./javascriptoutputrest
+
+gengrpc: buildTpl
+	go build
+	./tgen gen -l grpc -i example/swift/Example.thrift -o ./example/swift
 
 clean:
 	go clean

@@ -23,6 +23,7 @@ import (
 	"github.com/ezbuy/tgen/global"
 	"github.com/ezbuy/tgen/langs"
 	_ "github.com/ezbuy/tgen/langs/go"
+	_ "github.com/ezbuy/tgen/langs/grpc"
 	_ "github.com/ezbuy/tgen/langs/java"
 	_ "github.com/ezbuy/tgen/langs/javascript"
 	_ "github.com/ezbuy/tgen/langs/swift"

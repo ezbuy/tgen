@@ -1,0 +1,59 @@
+syntax = "proto3";
+
+package {{ .ServiceName }};
+{{- range $lang, $package := .GetPackages }}
+option {{ $lang }} = "{{ $package }}";
+{{- end}}
+
+{{- range .Includes }}
+
+import "{{ . }}";
+{{- end }}
+
+{{- range $enumName, $values := .Thrift.Enums }}
+
+enum {{ $enumName }} {
+{{- range listEnumValue $values.Values }}
+	{{$enumName}}{{ .Name }} = {{ .Value }};
+{{- end }}
+}
+{{- end }}
+
+{{- range .GetStructs }}
+
+message {{ .Name }} {
+{{- range .GetFields }}
+	{{ .GetType}} {{ .Name }} = {{ .ID }};
+{{- end }}
+}
+
+{{- end }}
+
+{{- range .GetReqStructs }}
+
+message {{ .Name }} {
+{{- range .GetFields }}
+	{{ .GetType}} {{ .Name }} = {{ .ID }};
+{{- end }}
+}
+
+{{- end }}
+
+{{- range .GetRespStructs }}
+
+message {{ .Name }} {
+{{- range .GetFields }}
+	{{ .GetType}} {{ .Name }} = {{ .ID }};
+{{- end }}
+}
+
+{{- end }}
+
+{{- range .Thrift.Services }}
+
+service {{ .Name }} {
+	{{- range .Methods }}
+	rpc {{ .Name }}({{ .Name }}Request) returns ({{ .Name }}Response);
+	{{- end }}
+}
+{{- end }}
