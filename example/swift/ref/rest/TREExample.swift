@@ -36,8 +36,10 @@ public final class TREExample: EzObject {
     @objc(int64s)
     public var objc_int64s:[NSNumber]?
 
+    public var paymentType: TREPaymentType?
+
     public override var allKeys: Set<String> {
-        return ["amountAvailable", "rebateAmountAvailable", "amountPendingVerification", "pendingWithdrawAmount", "serviceType", "unpaidAmount", "fooes", "strs", "ints", "basics", "int64s"]
+        return ["amountAvailable", "rebateAmountAvailable", "amountPendingVerification", "pendingWithdrawAmount", "serviceType", "unpaidAmount", "fooes", "strs", "ints", "basics", "int64s", "paymentType"]
     }
 
     public override func fromJSON(jsonObject: AnyObject?) -> Bool {
@@ -55,6 +57,7 @@ public final class TREExample: EzObject {
         ints = dict["ints"] as? [Int]
         basics = [TRSharedBasic](jsonObject: dict["basics"])
         int64s = (dict["int64s"] as? [NSNumber])?.map { value in value.longLongValue }
+        paymentType = TREPaymentType(code: dict["paymentType"] as? Int)
 
         return true
     }
@@ -72,6 +75,7 @@ public final class TREExample: EzObject {
         dict["ints"] = ints
         dict["basics"] = basics?.toJSON()
         dict["int64s"] = int64s?.map { value in NSNumber(longLong: value) }
+        dict["paymentType"] = paymentType?.rawValue
 
         return dict
     }
