@@ -9,6 +9,7 @@
 // tmpl/golang/rpc_client.gogo
 // tmpl/golang/service.gogo
 // tmpl/golang/struct.gogo
+// tmpl/grpc/grpc.goproto
 // tmpl/java/jsonrpc_service.gojava
 // tmpl/java/jsonrpc_struct.gojava
 // tmpl/java/rest_service.gojava
@@ -263,6 +264,26 @@ func tmplGolangStructGogo() (*asset, error) {
 	}
 
 	info := bindataFileInfo{name: "tmpl/golang/struct.gogo", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
+	a := &asset{bytes: bytes, info: info}
+	return a, nil
+}
+
+var _tmplGrpcGrpcGoproto = []byte("\x1f\x8b\x08\x00\x00\x09\x6e\x88\x00\xff\xcc\x92\x3f\x4f\xc3\x30\x10\xc5\xe7\xe6\x53\x9c\xa2\x0e\x54\x82\x2c\x6c\x44\xd9\xf8\xa3\x0e\x20\x44\x2b\x76\x2b\x39\xa8\x45\x62\x1b\xfb\x82\xa8\xa2\x7c\x77\x2e\x76\x02\x26\x94\xce\x9d\x7c\x3e\xbf\xf7\xf2\xcb\xe9\xdc\x5e\x91\xf8\x84\x02\x52\x63\x35\xe9\xcb\x34\x4f\x12\x23\xca\x37\xf1\x8a\xd0\x75\x90\x6d\xd0\x7e\xc8\x12\x1f\x44\x83\xd0\xf7\x79\xd2\x75\x17\x60\x85\xe2\xd7\x65\xcd\xc7\x39\x2c\x27\xf5\x55\x01\xd9\x1d\xd2\x63\xb8\x3a\x56\x27\xda\x90\xd4\x6a\xc8\xf1\x62\x6e\xf9\x7a\x72\x4c\x79\xa8\x2a\x16\x47\xd1\xd9\x5a\x95\x75\x5b\x85\x90\x44\x36\x46\x5b\x82\x74\xc0\xe1\x46\xfa\x6d\x82\x99\x6b\xbb\xb3\xf2\x85\xb2\x1b\xd5\x36\xc1\x89\x5c\xf9\xbf\x18\xf1\xa1\x8b\xe4\xb5\x74\x34\x48\x9f\x45\xdd\xb2\xd9\x1f\xde\xb6\x88\x1d\x85\xf7\x07\x4d\xc4\x3b\xe8\xfa\xff\x38\x78\x0a\x1b\xb2\x6d\x49\x81\xa2\x41\xe7\xa6\x71\x1e\x02\x19\xf4\xb7\x12\xeb\xea\xe7\xeb\xdc\xd9\xee\x0d\x86\x79\xcd\x58\xd6\xd7\x7f\x41\x8e\x90\x3c\xe1\xfb\x29\xc1\x38\x73\x22\x34\xe3\xb2\x8c\xfb\x1d\x70\x5c\xb8\xcc\x70\x16\x91\xeb\x1e\x69\xa7\x47\x1a\x6b\xca\x58\x79\x16\xd5\x3c\x74\x5e\x26\x5a\x81\x45\x6a\xad\x72\xf0\xfb\xd1\x19\xad\x1c\xae\xf2\x10\x7d\x68\x9d\xbe\x02\x00\x00\xff\xff\x6d\x61\xbe\x4f\x97\x03\x00\x00")
+
+func tmplGrpcGrpcGoprotoBytes() ([]byte, error) {
+	return bindataRead(
+		_tmplGrpcGrpcGoproto,
+		"tmpl/grpc/grpc.goproto",
+	)
+}
+
+func tmplGrpcGrpcGoproto() (*asset, error) {
+	bytes, err := tmplGrpcGrpcGoprotoBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "tmpl/grpc/grpc.goproto", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -548,6 +569,7 @@ var _bindata = map[string]func() (*asset, error){
 	"tmpl/golang/rpc_client.gogo": tmplGolangRpc_clientGogo,
 	"tmpl/golang/service.gogo": tmplGolangServiceGogo,
 	"tmpl/golang/struct.gogo": tmplGolangStructGogo,
+	"tmpl/grpc/grpc.goproto": tmplGrpcGrpcGoproto,
 	"tmpl/java/jsonrpc_service.gojava": tmplJavaJsonrpc_serviceGojava,
 	"tmpl/java/jsonrpc_struct.gojava": tmplJavaJsonrpc_structGojava,
 	"tmpl/java/rest_service.gojava": tmplJavaRest_serviceGojava,
@@ -612,6 +634,9 @@ var _bintree = &bintree{nil, map[string]*bintree{
 			"rpc_client.gogo": &bintree{tmplGolangRpc_clientGogo, map[string]*bintree{}},
 			"service.gogo": &bintree{tmplGolangServiceGogo, map[string]*bintree{}},
 			"struct.gogo": &bintree{tmplGolangStructGogo, map[string]*bintree{}},
+		}},
+		"grpc": &bintree{nil, map[string]*bintree{
+			"grpc.goproto": &bintree{tmplGrpcGrpcGoproto, map[string]*bintree{}},
 		}},
 		"java": &bintree{nil, map[string]*bintree{
 			"jsonrpc_service.gojava": &bintree{tmplJavaJsonrpc_serviceGojava, map[string]*bintree{}},
