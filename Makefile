@@ -62,7 +62,7 @@ genjavascriptrest: buildTpl
 
 gengrpc: buildTpl
 	go build
-	./tgen gen -l grpc -i example/javascript/FlashSales.thrift -o ./grpcoutputrest
+	./tgen gen -l grpc -i example/swift/Example.thrift -o ./example/swift
 
 clean:
 	go clean

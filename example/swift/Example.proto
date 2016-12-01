@@ -1,0 +1,50 @@
+syntax = "proto3";
+
+package Example;
+option java_package com.ezbuy.example;
+
+import "Shared.proto";
+
+enum TServiceType {
+	UNKNOWN = 0;
+	Buy4Me = 1;
+	Ship4Me = 2;
+	Ezbuy = 3;
+	Prime = 4;
+}
+
+message TFoo {
+}
+
+message TExample {
+	double amountAvailable = 1;
+	string rebateAmountAvailable = 2;
+	bool amountPendingVerification = 3;
+	int32 pendingWithdrawAmount = 4;
+	TServiceType serviceType = 5;
+	int64 unpaidAmount = 6;
+	repeated TFoo fooes = 7;
+	repeated string strs = 8;
+	repeated int32 ints = 9;
+	repeated Shared.TBasic basics = 10;
+	repeated int64 int64s = 11;
+}
+
+message pingRequest {
+	string ip = 1;
+}
+
+message getPendingWithdrawAmountRequest {
+}
+
+message pingResponse {
+}
+
+message getPendingWithdrawAmountResponse {
+	int32 Result = 1;
+}
+
+service Example {
+	rpc getPendingWithdrawAmount(getPendingWithdrawAmountRequest) returns (getPendingWithdrawAmountResponse);
+	rpc ping(pingRequest) returns (pingResponse);
+}

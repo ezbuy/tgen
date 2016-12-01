@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+package Common;
+option java_package com.ezbuy.basic;
+
+message TCommon {
+}
+
+message getAgesRequest {
+	int64 id = 1;
+}
+
+message getNamesRequest {
+}
+
+message getAgesResponse {
+	repeated int32 Result = 1;
+}
+
+message getNamesResponse {
+	repeated string Result = 1;
+}
+
+service Common {
+	rpc getAges(getAgesRequest) returns (getAgesResponse);
+	rpc getNames(getNamesRequest) returns (getNamesResponse);
+}
