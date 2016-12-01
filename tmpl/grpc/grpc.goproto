@@ -10,11 +10,11 @@ option {{ $lang }} = "{{ $package }}";
 import "{{ . }}";
 {{- end }}
 
-{{- range .Thrift.Enums }}
+{{- range $enumName, $values := .Thrift.Enums }}
 
-enum {{ .Name }} {
-{{- range listEnumValue .Values }}
-	{{ .Name }} = {{ .Value }};
+enum {{ $enumName }} {
+{{- range listEnumValue $values.Values }}
+	{{$enumName}}{{ .Name }} = {{ .Value }};
 {{- end }}
 }
 {{- end }}

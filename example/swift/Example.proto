@@ -5,12 +5,20 @@ option java_package = "com.ezbuy.example";
 
 import "Shared.proto";
 
+enum TPaymentType {
+	TPaymentTypeUNKNOWN = 0;
+	TPaymentTypeBuy4Me = 1;
+	TPaymentTypeShip4Me = 2;
+	TPaymentTypeEzbuy = 3;
+	TPaymentTypePrime = 4;
+}
+
 enum TServiceType {
-	UNKNOWN = 0;
-	Buy4Me = 1;
-	Ship4Me = 2;
-	Ezbuy = 3;
-	Prime = 4;
+	TServiceTypeUNKNOWN = 0;
+	TServiceTypeBuy4Me = 1;
+	TServiceTypeShip4Me = 2;
+	TServiceTypeEzbuy = 3;
+	TServiceTypePrime = 4;
 }
 
 message TFoo {
@@ -28,6 +36,7 @@ message TExample {
 	repeated int32 ints = 9;
 	repeated Shared.TBasic basics = 10;
 	repeated int64 int64s = 11;
+	TPaymentType paymentType = 12;
 }
 
 message getPendingWithdrawAmountRequest {

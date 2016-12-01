@@ -17,6 +17,7 @@ struct TExample {
     9:required list<i16> ints;
     10:required list<Shared.TBasic> basics;
     11:required list<i64> int64s;
+    12:optional TPaymentType paymentType;
 }
 
 service Example extends Shared.Shared {
@@ -30,3 +31,11 @@ enum TServiceType {
   Ezbuy = 3
   Prime = 4
 }
+
+enum TPaymentType {
+  Buy4Me = 1
+  Ship4Me = 2
+  Ezbuy = 3
+  Prime = 4
+}
+
