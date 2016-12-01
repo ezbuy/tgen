@@ -1,8 +1,12 @@
 syntax = "proto3";
 
 package {{ .ServiceName }};
+{{- range $lang, $package := .GetPackages }}
+option {{ $lang }} {{ $package }};
+{{- end}}
 
 {{- range .Includes }}
+
 import "{{ . }}";
 {{- end }}
 

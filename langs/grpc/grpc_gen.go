@@ -115,6 +115,16 @@ func (s *Field) GetType() string {
 	return getType(s.Type)
 }
 
+func (g *GrpcGen) GetPackages() (result map[string]string) {
+	result = make(map[string]string)
+	for k, v := range g.Thrift.Namespaces {
+		if k != "swift" {
+			result[k+"_package"] = v
+		}
+	}
+	return
+}
+
 func (g *GrpcGen) GetStructs() (structs []*Struct) {
 	for _, inc := range g.Thrift.Structs {
 		structs = append(structs, &Struct{inc})
