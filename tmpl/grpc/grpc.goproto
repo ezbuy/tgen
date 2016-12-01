@@ -25,11 +25,31 @@ message {{ .Name }} {
 
 {{- end }}
 
+{{- range .GetReqStructs }}
+
+message {{ .Name }} {
+{{- range .GetFields }}
+	{{ .GetType}} {{ .Name }} = {{ .ID }};
+{{- end }}
+}
+
+{{- end }}
+
+{{- range .GetRespStructs }}
+
+message {{ .Name }} {
+{{- range .GetFields }}
+	{{ .GetType}} {{ .Name }} = {{ .ID }};
+{{- end }}
+}
+
+{{- end }}
+
 {{- range .Thrift.Services }}
 
 service {{ .Name }} {
 	{{- range .Methods }}
-	rpc {{ .Name }}({{ getType .ReturnType }}) returns ({{ getType .ReturnType }});
+	rpc {{ .Name }}({{ .Name }}Request) returns ({{ .Name }}Response);
 	{{- end }}
 }
 {{- end }}

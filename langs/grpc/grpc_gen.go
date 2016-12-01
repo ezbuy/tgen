@@ -21,7 +21,9 @@ const TPL_SERVICE = "tgen/grpc/grpc"
 
 type GrpcGen struct {
 	langs.BaseGen
-	Thrift *parser.Thrift
+	Thrift      *parser.Thrift
+	reqStructs  []*Struct
+	respStructs []*Struct
 }
 
 func (g *GrpcGen) ServiceName() string {
@@ -33,6 +35,30 @@ func (g *GrpcGen) ServiceName() string {
 
 func (g *GrpcGen) SetThrift(t *parser.Thrift) {
 	g.Thrift = t
+	g.reqStructs = nil
+	g.respStructs = nil
+
+	for _, svr := range g.Thrift.Services {
+		for _, method := range svr.Methods {
+			args := &Struct{&parser.Struct{}}
+			args.Name = method.Name + "Request"
+			args.Fields = method.Arguments
+			g.reqStructs = append(g.reqStructs, args)
+
+			args = &Struct{&parser.Struct{}}
+			args.Name = method.Name + "Response"
+			if method.ReturnType != nil {
+				f := &parser.Field{}
+				f.ID = 1
+				f.Name = "Result"
+				f.Type = method.ReturnType
+				args.Fields = append(args.Fields, f)
+			}
+			g.respStructs = append(g.respStructs, args)
+		}
+	}
+
+	return
 }
 
 func (g *GrpcGen) Includes() (includes []string) {
@@ -95,6 +121,14 @@ func (g *GrpcGen) GetStructs() (structs []*Struct) {
 	}
 
 	return
+}
+
+func (g *GrpcGen) GetReqStructs() (structs []*Struct) {
+	return g.reqStructs
+}
+
+func (g *GrpcGen) GetRespStructs() (structs []*Struct) {
+	return g.respStructs
 }
 
 func initemplate(n string, path string) *template.Template {
