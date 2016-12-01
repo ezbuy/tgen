@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package {{ .ServiceName }};
 {{- range $lang, $package := .GetPackages }}
-option {{ $lang }} {{ $package }};
+option {{ $lang }} = "{{ $package }}";
 {{- end}}
 
 {{- range .Includes }}

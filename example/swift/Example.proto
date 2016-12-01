@@ -1,7 +1,7 @@
 syntax = "proto3";
 
 package Example;
-option java_package com.ezbuy.example;
+option java_package = "com.ezbuy.example";
 
 import "Shared.proto";
 
