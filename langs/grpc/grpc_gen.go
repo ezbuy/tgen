@@ -137,6 +137,8 @@ func (g *GrpcGen) GetPackages() (result map[string]string) {
 		if k != "webapi" && k != "objc" && k != "javascript" &&
 			k != "csharp" && k != "swift" && k != "*" {
 			result[k+"_package"] = v
+		} else if k == "csharp" {
+			result["csharp_namespace"] = v
 		}
 	}
 	return
