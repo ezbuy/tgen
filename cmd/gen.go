@@ -48,6 +48,11 @@ var genCmd = &cobra.Command{
 			return
 		}
 
+		if output == "" {
+			fmt.Println("-o output path must be specified")
+			return
+		}
+
 		f, err := filepath.Abs(input)
 		if err != nil {
 			log.Fatalf("failed to get absoulte path of input idl file: %s", err.Error())
