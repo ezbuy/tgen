@@ -31,6 +31,13 @@ func (g *GrpcGen) ServiceName() string {
 	for key, _ := range g.Thrift.Services {
 		return key
 	}
+
+	for k, v := range g.Thrift.Namespaces {
+		if k == "*" {
+			return v
+		}
+	}
+
 	return ""
 }
 
@@ -127,7 +134,7 @@ func (s *Field) GetType() string {
 func (g *GrpcGen) GetPackages() (result map[string]string) {
 	result = make(map[string]string)
 	for k, v := range g.Thrift.Namespaces {
-		if k != "swift" {
+		if k != "swift" && k != "*" {
 			result[k+"_package"] = v
 		}
 	}
