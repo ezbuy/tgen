@@ -134,7 +134,8 @@ func (s *Field) GetType() string {
 func (g *GrpcGen) GetPackages() (result map[string]string) {
 	result = make(map[string]string)
 	for k, v := range g.Thrift.Namespaces {
-		if k != "swift" && k != "*" {
+		if k != "webapi" && k != "objc" && k != "javascript" &&
+			k != "csharp" && k != "swift" && k != "*" {
 			result[k+"_package"] = v
 		}
 	}
