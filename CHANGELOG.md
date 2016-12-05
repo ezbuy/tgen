@@ -1,5 +1,9 @@
 ### tgen 更新记录
 
+#### v0.0.8
+##### 增加
+-   试增加 grpc 支持
+
 #### v0.0.7
 ##### 修复
 -   SomeServer 实现中, 返回的 err 不为 nil, 也需要对 SomeResponse.Value 进行赋值
