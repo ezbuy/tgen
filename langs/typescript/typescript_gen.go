@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"sort"
 	"text/template"
 
 	"strings"
@@ -36,6 +37,14 @@ type Method struct {
 	ReturnType  string
 }
 
+type ByMethodServiceNameAndMethodName []*Method
+
+func (a ByMethodServiceNameAndMethodName) Len() int      { return len(a) }
+func (a ByMethodServiceNameAndMethodName) Swap(i, j int) { a[i], a[j] = a[j], a[i] }
+func (a ByMethodServiceNameAndMethodName) Less(i, j int) bool {
+	return a[i].ServiceName+a[i].Name < a[j].ServiceName+a[j].Name
+}
+
 type InterfaceField struct {
 	Name string
 	Type string
@@ -45,6 +54,12 @@ type Interface struct {
 	Name   string
 	Fields []*InterfaceField
 }
+
+type ByInterfaceName []*Interface
+
+func (a ByInterfaceName) Len() int           { return len(a) }
+func (a ByInterfaceName) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
+func (a ByInterfaceName) Less(i, j int) bool { return a[i].Name < a[j].Name }
 
 type EnumVal struct {
 	Name string
@@ -157,6 +172,7 @@ func (this *TypeScriptGen) Generate(output string, parsedThrift map[string]*pars
 		for name, _ := range t.Includes {
 			data.Includes = append(data.Includes, name)
 		}
+		sort.Strings(data.Includes)
 
 		// fill in Methods
 		for _, s := range t.Services {
@@ -178,6 +194,7 @@ func (this *TypeScriptGen) Generate(output string, parsedThrift map[string]*pars
 				data.Methods = append(data.Methods, m)
 			}
 		}
+		sort.Sort(ByMethodServiceNameAndMethodName(data.Methods))
 
 		// fill in Interfaces
 		interfaces := make([]*Interface, 0)
@@ -199,6 +216,7 @@ func (this *TypeScriptGen) Generate(output string, parsedThrift map[string]*pars
 			interfaces = append(interfaces, ife)
 		}
 		data.Interfaces = interfaces
+		sort.Sort(ByInterfaceName(data.Interfaces))
 
 		if err := outputfile(outputPath, servicetpl, TPL_SERVICE, data); err != nil {
 			panic(fmt.Errorf("failed to write file %s. error: %v\n", outputPath, err))
