@@ -4,10 +4,10 @@
  */
 {{- $length := len .Methods -}}
 {{- if gt $length 0 }}
-import webapi from "./webapi"
+import webapi from "./webapi";
 {{- end }}
 {{- range .Includes }}
-import * as {{ . }} from "./{{ . }}Service"
+import * as {{ . }} from "./{{ . }}Service";
 {{- end }}
 
 {{ range $enumKey, $enum := .Enums }}
@@ -29,7 +29,7 @@ export interface {{ .Name }} {
 {{ $root := . -}}
 {{ range .Methods }}
 export function {{ .Name }}({{ .Arguments | $root.AssembleParamsValType}}): Promise<{{ .ReturnType }}> {
-	return webapi<{{ .ReturnType }}>('{{ .ServiceName }}.{{ .Name }}', { {{ .Arguments | $root.AssembleParamsVal }} })
+	return webapi<{{ .ReturnType }}>("{{ .ServiceName }}.{{ .Name }}", { {{ .Arguments | $root.AssembleParamsVal }} });
 }
 {{ end }}
 
@@ -38,5 +38,5 @@ export default {
 {{- range .Methods }}
 	{{ .Name -}},
 {{- end }}
-}
+};
 {{ end }}
