@@ -3,6 +3,7 @@ package {{.PkgName}}
 {{- $data := .}}
 
 import (
+    "fmt"
     "net/http"
     "encoding/json"
 
@@ -16,12 +17,42 @@ var _ json.Unmarshaler
 var _ echo.Context
 var _ = http.StatusOK
 var _ = echoutils.OKMessage
+var _ = fmt.Sprintf("okay")
 
 const WebApiPrefix = "{{.WebApiPrefix}}"
 
 {{- $serviceList := .Services }}
 {{- range $service := $serviceList }}
 {{- $serviceName := $data.UpperHead $service.Name }}
+
+type IBase{{$serviceName}}Error interface {
+	httpStatusCode() int
+	message()        string
+}
+
+type base{{$serviceName}}Error struct {
+	_httpStatusCode int
+	_message        string
+}
+
+func (b *base{{$serviceName}}Error) Error() string {
+	return fmt.Sprintf("%d %s", b.httpStatusCode, b.message)
+}
+
+func (b *base{{$serviceName}}Error) httpStatusCode() int {
+	return b._httpStatusCode
+}
+
+func (b *base{{$serviceName}}Error) message() string {
+	return b._message
+}
+
+func NewBase{{$serviceName}}Error(code int, message string) *base{{$serviceName}}Error {
+	return &base{{$serviceName}}Error{
+		_httpStatusCode: code,
+		_message:        message,
+	}
+}
 
 {{- range $method := $service.Methods}}
 {{- $methodName := $data.UpperHead $method.Name }}
@@ -93,6 +124,10 @@ func (this *{{$serviceName}}ServiceAPIModule) {{$methodName}}(c *echo.Context) e
         case {{$data.GenTypeString $exception.Name $exception.Type nil $exception.Optional}}:
             return c.JSON(http.StatusOK, err)
         {{end}}
+
+        case IBase{{$serviceName}}Error:
+            baseError := err.(IBase{{$serviceName}}Error)
+            return c.String(baseError.httpStatusCode(), baseError.message())
 
         default:
             echoutils.RequestLogger(c).Infof("service error: %s", err)
