@@ -121,7 +121,7 @@ func typeCast(t *parser.Type) string {
 			valType := typeCast(t.ValueType)
 			return valType + "[]"
 		case langs.ThriftTypeMap:
-			return "JSONObject"
+			return fmt.Sprintf("{[key: %s]: %s}", typeCast(t.KeyType), typeCast(t.ValueType))
 		default:
 			return t.Name
 		}
