@@ -95,8 +95,7 @@ func (this *{{$serviceName}}ServiceAPIModule) {{$methodName}}(c *echo.Context) e
         {{end}}
 
         default:
-            echoutils.RequestLogger(c).Infof("service error: %s", err)
-            return echoutils.InternalError
+            return err
         }
     }
 
