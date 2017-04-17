@@ -44,7 +44,7 @@ type Echo{{$serviceName}}Service interface {
     {{- end}}
 }
 
-func Register{{$serviceName}}ServiceAPIModule(mux *echo.Group, service Echo{{$serviceName}}Service) {
+func Register{{$serviceName}}ServiceAPIModule(mux *echo.Group, service Echo{{$serviceName}}Service) *echo.Group {
     mod := &{{$serviceName}}ServiceAPIModule{
         service: service,
     }
@@ -55,6 +55,7 @@ func Register{{$serviceName}}ServiceAPIModule(mux *echo.Group, service Echo{{$se
     group.Post("/{{$methodName}}", mod.{{$methodName}})
     {{- end}}
     group.Get("/health/ping", mod.healthPing)
+    return group
 }
 
 type {{$serviceName}}ServiceAPIModule struct {
