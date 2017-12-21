@@ -76,7 +76,7 @@ func (this *{{$serviceName}}ServiceAPIModule) {{$methodName}}(c *echo.Context) e
 
     {{- if $data.ValidateParams}}
     {{- range $arg := $method.Arguments}}
-    {{if $data.IsStruct $arg.Type}}
+    {{if and ($data.IsStruct $arg.Type) (not $arg.Optional)}}
     if valid := params.{{$data.UpperHead $arg.Name}}.Valid(); valid == false {
         return echo.NewHTTPError(http.StatusBadRequest, "one or more required fields in {{$arg.Name}} not found")
     }
