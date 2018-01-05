@@ -124,11 +124,33 @@ func getType(t *parser.Type) string {
 		return "repeated " + getType(t.ValueType)
 	}
 
+	if name == "map" {
+		return getMapType(t)
+	}
+
 	return name
 }
 
-func (s *Field) GetType() string {
-	return getType(s.Type)
+func genListMessageName(typeName string) string {
+	return "ListOf" + strings.Title(typeName)
+}
+
+func genMapDefine(keyType, valueType string) string {
+	return "map<" + keyType + "," + valueType + ">"
+}
+
+func getMapType(t *parser.Type) string {
+
+	if t.ValueType.Name == "list" {
+		return genMapDefine(getType(t.KeyType), genListMessageName(getType(t.ValueType.ValueType)))
+	}
+
+	return genMapDefine(getType(t.KeyType), getType(t.ValueType))
+
+}
+
+func (s *Field) GetType() template.HTML {
+	return template.HTML(getType(s.Type))
 }
 
 func (g *GrpcGen) GetPackages() (result map[string]string) {
@@ -230,6 +252,7 @@ func (this *GrpcGen) Generate(output string, parsedThrift map[string]*parser.Thr
 	this.BaseGen.Init("grpc", parsedThrift)
 
 	for fileName, t := range parsedThrift {
+		this.preProcessMapType(t)
 		outputPath := genOutputPath(output, fileName)
 		this.SetThrift(t)
 
@@ -241,6 +264,65 @@ func (this *GrpcGen) Generate(output string, parsedThrift map[string]*parser.Thr
 	}
 }
 
+func (this *GrpcGen) preProcessMapType(thrift *parser.Thrift) {
+
+	expandMap := make(map[string]*parser.Struct)
+
+	appendExpandMap := func(tType *parser.Type) {
+		if tType.Name == "map" && tType.ValueType.Name == "list" {
+			structName := genListMessageName(getType(tType.ValueType.ValueType))
+			fmt.Printf("warning: convert thrift map list value [map<_,list<%s>] to [map<_, %s] \n", getType(tType.ValueType.ValueType), genListMessageName(getType(tType.ValueType.ValueType)))
+			expandMap[structName] = &parser.Struct{
+				Name: structName,
+				Fields: []*parser.Field{
+					{
+						ID:   1,
+						Name: "Data",
+						Type: &parser.Type{
+							Name:      "list",
+							ValueType: tType.ValueType.ValueType,
+						},
+					},
+				},
+			}
+		}
+
+	}
+
+	eraseEnumMapkey := func(tType *parser.Type) {
+		if tType.Name == "map" {
+			if _, ok := thrift.Enums[tType.KeyType.Name]; ok {
+				fmt.Printf("warning: convert thrift map enum key [%s] to map<int32,_>\n", getMapType(tType))
+				tType.KeyType = &parser.Type{
+					Name: "i32",
+				}
+			}
+		}
+	}
+
+	for _, tstruct := range thrift.Structs {
+		for i, field := range tstruct.Fields {
+			appendExpandMap(field.Type)
+			eraseEnumMapkey(field.Type)
+			field.ID = i + 1 // reorder
+		}
+	}
+
+	for _, tservice := range thrift.Services {
+		for _, method := range tservice.Methods {
+			for _, arg := range method.Arguments {
+				appendExpandMap(arg.Type)
+				eraseEnumMapkey(arg.Type)
+			}
+			appendExpandMap(method.ReturnType)
+			eraseEnumMapkey(method.ReturnType)
+		}
+	}
+	for name, expand := range expandMap {
+		thrift.Structs[name] = expand
+	}
+
+}
 func init() {
 	langs.Langs[langName] = &GrpcGen{}
 }
