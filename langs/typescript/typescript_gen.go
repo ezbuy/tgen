@@ -5,11 +5,9 @@ import (
 	"log"
 	"os"
 	"path/filepath"
-	"text/template"
-
-	"github.com/bradfitz/slice"
-
+	"sort"
 	"strings"
+	"text/template"
 
 	"github.com/ezbuy/tgen/langs"
 	"github.com/ezbuy/tgen/tmpl"
@@ -159,7 +157,7 @@ func (this *TypeScriptGen) Generate(output string, parsedThrift map[string]*pars
 		for name, _ := range t.Includes {
 			data.Includes = append(data.Includes, name)
 		}
-		slice.Sort(data.Includes, func(i, j int) bool {
+		sort.Slice(data.Includes, func(i, j int) bool {
 			return data.Includes[i] < data.Includes[j]
 		})
 
@@ -183,7 +181,7 @@ func (this *TypeScriptGen) Generate(output string, parsedThrift map[string]*pars
 				data.Methods = append(data.Methods, m)
 			}
 		}
-		slice.Sort(data.Methods, func(i, j int) bool {
+		sort.Slice(data.Methods, func(i, j int) bool {
 			return data.Methods[i].ServiceName+data.Methods[i].Name < data.Methods[j].ServiceName+data.Methods[j].Name
 		})
 
@@ -207,7 +205,7 @@ func (this *TypeScriptGen) Generate(output string, parsedThrift map[string]*pars
 			interfaces = append(interfaces, ife)
 		}
 		data.Interfaces = interfaces
-		slice.Sort(data.Interfaces, func(i, j int) bool {
+		sort.Slice(data.Interfaces, func(i, j int) bool {
 			return data.Interfaces[i].Name < data.Interfaces[j].Name
 		})
 

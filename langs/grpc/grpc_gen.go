@@ -6,9 +6,9 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"sort"
 	"strings"
 
-	"github.com/bradfitz/slice"
 	"github.com/ezbuy/tgen/langs"
 	"github.com/ezbuy/tgen/tmpl"
 	"github.com/samuel/go-thrift/parser"
@@ -66,11 +66,11 @@ func (g *GrpcGen) SetThrift(t *parser.Thrift) {
 		}
 	}
 
-	slice.Sort(g.respStructs, func(i, j int) bool {
+	sort.Slice(g.respStructs, func(i, j int) bool {
 		return g.respStructs[i].Name < g.respStructs[j].Name
 	})
 
-	slice.Sort(g.reqStructs, func(i, j int) bool {
+	sort.Slice(g.reqStructs, func(i, j int) bool {
 		return g.reqStructs[i].Name < g.reqStructs[j].Name
 	})
 
@@ -225,7 +225,7 @@ func listEnumValue(enums map[string]*parser.EnumValue) (result []*parser.EnumVal
 		}
 	}
 
-	slice.Sort(result, func(i, j int) bool {
+	sort.Slice(result, func(i, j int) bool {
 		return result[i].Value < result[j].Value
 	})
 	return
