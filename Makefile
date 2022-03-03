@@ -6,7 +6,7 @@ init:
 	ln -s ../../githooks/pre-push .git/hooks/pre-push
 	ln -s ../../githooks/pre-commit .git/hooks/pre-commit
 	go get github.com/samuel/go-thrift/parser
-	go get github.com/spf13/cobra/cobra
+	go get github.com/spf13/cobra
 	go get github.com/jteeuwen/go-bindata/...
 
 test: buildTpl
